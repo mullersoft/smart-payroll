@@ -20,12 +20,14 @@ return new class extends Migration
             $table->foreignId('employee_id')->nullable()->constrained('employees')->nullOnDelete();
 
 
-            // $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->boolean('is_active')->default(true);
+
+
         });
     }
 

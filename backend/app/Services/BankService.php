@@ -12,10 +12,19 @@ class BankService
 {
     public function processPayrollTransaction(Payroll $payroll)
     {
-        DB::transaction(function () use ($payroll) {
-            // Load employee and their bank account
-            $payroll->load(['employee.bankAccount']);
+        // Check approval status
+        if ($payroll->status !== 'approved') {
+            throw new \Exception('Payroll must be approved before processing.');
+        }
 
+        // Prevent duplicate processing
+        if ($payroll->is_processed) {
+            throw new \Exception('Payroll has already been processed.');
+        }
+
+        DB::transaction(function () use ($payroll) {
+            // Load related employee and their bank account
+            $payroll->load(['employee.bankAccount']);
             $employee = $payroll->employee;
 
             if (!$employee || !$employee->bankAccount) {
@@ -28,30 +37,30 @@ class BankService
             $companyAccNo = env('COMPANY_ACCOUNT', 'QM-COMPANY-001');
             $taxAccNo = env('TAX_ACCOUNT', 'TAX-AUTH-001');
 
-            // Fetch company and tax accounts
+            // Lock company and tax accounts for update
             $company = BankAccount::where('account_number', $companyAccNo)->lockForUpdate()->firstOrFail();
             $tax = BankAccount::where('account_number', $taxAccNo)->lockForUpdate()->firstOrFail();
 
             $total = $payroll->net_payment + $payroll->income_tax;
 
             if ($company->balance < $total) {
-                throw new \Exception('Company account has insufficient balance');
+                throw new \Exception('Company account has insufficient balance.');
             }
 
-            // Transfer to employee
+            // ➕ Transfer to employee
             $company->balance -= $payroll->net_payment;
             $employeeBank->balance += $payroll->net_payment;
 
-            // Transfer to tax office
+            // ➕ Transfer tax
             $company->balance -= $payroll->income_tax;
             $tax->balance += $payroll->income_tax;
 
-            // Save balances
+            // Save updated balances
             $company->save();
             $employeeBank->save();
             $tax->save();
 
-            // Log salary transaction
+            // ➕ Log transactions
             Transaction::create([
                 'payroll_id' => $payroll->id,
                 'transaction_type' => 'salary',
@@ -62,7 +71,6 @@ class BankService
                 'processed_by' => auth()->user()->name ?? 'System',
             ]);
 
-            // Log tax transaction
             Transaction::create([
                 'payroll_id' => $payroll->id,
                 'transaction_type' => 'tax',
@@ -72,6 +80,10 @@ class BankService
                 'transaction_date' => Carbon::now(),
                 'processed_by' => auth()->user()->name ?? 'System',
             ]);
+
+            // ✅ Mark as processed
+            $payroll->is_processed = true;
+            $payroll->save();
         });
     }
 }

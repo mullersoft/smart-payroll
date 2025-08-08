@@ -10,11 +10,8 @@ class CreateBankAccountsTable  extends Migration
 {
  Schema::create('bank_accounts', function (Blueprint $table) {
     $table->id();
-    // $table->foreignId('employee_id')->nullable()->constrained()->onDelete('cascade'); // employee-owned or system-owned
-    // $table->foreignId('employee_id')->nullable()->constrained()->onDelete('set null');
     $table->foreignId('employee_id')->nullable()->unique()->constrained()->onDelete('cascade');
     $table->string('account_number')->unique();
-    // $table->string('owner_name');
     $table->string('owner_name')->nullable(); // optional
     $table->decimal('balance', 12, 2)->default(0);
     $table->timestamps();

@@ -14,7 +14,7 @@ class AuthController extends Controller
         $data = $request->validate([
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,hr',
+            'role' => 'required|in:admin,preparer,approver',
             'employee_id' => 'nullable|exists:employees,id',
         ]);
 
@@ -24,21 +24,41 @@ class AuthController extends Controller
         return response()->json(['user' => $user], 201);
     }
 
+ 
     public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+{
+    $credentials = $request->only('email', 'password');
 
-        if (!Auth::attempt($credentials)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
-        }
-
-        $user = Auth::user();
-        return response()->json(['message' => 'Login successful', 'user' => $user]);
+    if (!Auth::attempt($credentials)) {
+        return response()->json(['error' => 'Invalid credentials'], 401);
     }
 
-    public function logout()
-    {
-        Auth::logout();
-        return response()->json(['message' => 'Logged out']);
-    }
+    $user = Auth::user();
+    $token = $user->createToken('api-token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Login successful',
+        'user' => $user,
+        'token' => $token
+    ]);
+}
+
+
+   public function logout(Request $request)
+{
+    $request->user()->currentAccessToken()->delete();
+
+    return response()->json(['message' => 'Token revoked. Logged out successfully']);
+}
+
+public function toggleStatus($id)
+{
+    $user = User::findOrFail($id);
+    $user->is_active = !$user->is_active;
+    $user->save();
+
+    return response()->json(['message' => 'User status updated', 'user' => $user]);
+}
+
+
 }

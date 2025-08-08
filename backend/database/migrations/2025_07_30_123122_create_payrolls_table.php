@@ -32,10 +32,14 @@ class CreatePayrollsTable extends Migration
             $table->decimal('total_deduction', 10, 2);
             $table->decimal('net_payment', 10, 2);
 
-            $table->enum('status', ['prepared', 'approved', 'paid'])->default('prepared');
-            $table->foreignId('prepared_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->enum('status', ['prepared', 'approved', 'paid','rejected'])->default('prepared');
+            $table->boolean('is_processed')->default(false); 
+
+            $table->foreignId('prepared_by')->nullable()->constrained('users')->restrictOnDelete()->cascadeOnUpdate();
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
 
+            $table->text('rejection_reason')->nullable();
+            $table->timestamp('rejected_at')->nullable();
             $table->timestamps();
         });
     }

@@ -15,12 +15,11 @@ class CreateEmployeesTable extends Migration
         $table->enum('position', ['CEO', 'COO', 'CTO', 'CISO', 'Director', 'Dept Lead', 'Normal Employee']);
         $table->enum('employment_type', ['permanent', 'contract']);
         $table->decimal('base_salary', 10, 2);
-        // $table->decimal('allowance', 10, 2)->default(0);
-        // $table->decimal('deduction', 10, 2)->default(0);
         $table->string('gender'); 
         $table->date('employment_date');
-        // $table->string('bank_account')->nullable();
         $table->timestamps();
+        $table->boolean('is_active')->default(true);
+
     });
 }
 

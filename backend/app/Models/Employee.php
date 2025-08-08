@@ -15,11 +15,10 @@ class Employee extends Model
     'position',
     'employment_type',
     'base_salary',
-    // 'allowance',
-    // 'deduction',
     'gender',             
-    'employment_date',    
-    // 'bank_account',
+    'employment_date', 
+    'is_active'
+   
 ];
     public function payrolls()
     {

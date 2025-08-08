@@ -52,4 +52,10 @@ class Payroll extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function approver()
+{
+    return $this->belongsTo(User::class, 'approved_by');
+}
+
 }
