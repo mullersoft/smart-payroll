@@ -12,8 +12,10 @@ class CreateBankAccountsTable  extends Migration
     $table->id();
     $table->foreignId('employee_id')->nullable()->unique()->constrained()->onDelete('cascade');
     $table->string('account_number')->unique();
-    $table->string('owner_name')->nullable(); // optional
+    $table->string('owner_name')->nullable(); 
     $table->decimal('balance', 12, 2)->default(0);
+    $table->dropColumn('bank_name');
+
     $table->timestamps();
 });
 

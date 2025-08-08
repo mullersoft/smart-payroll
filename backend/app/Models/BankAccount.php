@@ -10,6 +10,7 @@ class BankAccount extends Model
     use HasFactory;
 
     protected $fillable = [
+        'bank_name',   // Add this line
         'account_number',
         'owner_name',
         'balance',

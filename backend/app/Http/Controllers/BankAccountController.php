@@ -14,6 +14,7 @@ class BankAccountController extends Controller
 public function store(Request $request)
 {
     $data = $request->validate([
+        'bank_name' => 'required|string|max:255',
         'account_number' => 'required|unique:bank_accounts',
         'balance' => 'nullable|numeric',
         'employee_id' => 'nullable|exists:employees,id',
@@ -32,6 +33,18 @@ public function store(Request $request)
     return response()->json($account, 201);
 }
 
+public function update(Request $request, BankAccount $bankAccount)
+{
+    $validated = $request->validate([
+        'bank_name' => 'required|string|max:255',
+        'account_number' => 'required|string|max:255',
+        'owner_name' => 'nullable|string|max:255',
+        'employee_id' => 'nullable|exists:employees,id',
+        // other rules...
+    ]);
 
+    $bankAccount->update($validated);
+    return response()->json($bankAccount);
+}
  
 }
