@@ -3,7 +3,9 @@
   <MainLayout>
     <div class="space-y-6">
       <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-indigo-700">🏦 Bank Accounts</h1>
+        <h1 class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">
+          🏦 Bank Accounts
+        </h1>
         <button
           @click="openModal()"
           class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md"
@@ -12,13 +14,15 @@
         </button>
       </div>
 
-      <!-- List of Bank Accounts -->
-      <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4">
+      <!-- List of Bank Accounts with dark mode classes -->
+      <div
+        class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-300"
+      >
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
           Bank Account List
         </h2>
-        <table class="min-w-full table-auto">
-          <thead class="bg-gray-100 text-left">
+        <table class="min-w-full table-auto text-gray-900 dark:text-gray-100">
+          <thead class="bg-gray-100 dark:bg-gray-700 text-left">
             <tr>
               <th class="px-4 py-2">#</th>
               <th class="px-4 py-2">Bank Name</th>
@@ -32,7 +36,7 @@
             <tr
               v-for="(account, index) in bankAccounts"
               :key="account.id"
-              class="border-b"
+              class="border-b border-gray-300 dark:border-gray-600"
             >
               <td class="px-4 py-2">{{ index + 1 }}</td>
               <td class="px-4 py-2">{{ account.bank_name }}</td>
@@ -59,7 +63,10 @@
               </td>
             </tr>
             <tr v-if="bankAccounts.length === 0">
-              <td colspan="6" class="text-center py-4 text-gray-500">
+              <td
+                colspan="6"
+                class="text-center py-4 text-gray-500 dark:text-gray-400"
+              >
                 No bank accounts found.
               </td>
             </tr>
@@ -72,39 +79,47 @@
         v-if="showModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       >
-        <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-xl relative">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-xl relative transition-colors duration-300"
+        >
           <button
             @click="closeModal"
-            class="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            class="absolute top-2 right-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100"
           >
             ✖
           </button>
-          <h2 class="text-xl font-semibold mb-4">
+          <h2
+            class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100"
+          >
             {{ isEditMode ? "Edit Bank Account" : "Add Bank Account" }}
           </h2>
           <form @submit.prevent="submitBankAccount" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >Bank Name</label
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
+                Bank Name
+              </label>
               <input
                 v-model="newAccount.bank_name"
                 type="text"
                 required
-                class="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:outline-none focus:ring-indigo-300"
+                class="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:outline-none focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >Owner Name (select employee or type manually)</label
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
+                Owner Name (select employee or type manually)
+              </label>
               <input
                 list="employeeList"
                 v-model="newAccount.owner_name"
                 @input="onOwnerNameInput"
                 type="text"
-                class="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:outline-none focus:ring-indigo-300"
+                class="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:outline-none focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 placeholder="Start typing to search employee"
               />
               <datalist id="employeeList">
@@ -117,14 +132,16 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >Account Number</label
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
+                Account Number
+              </label>
               <input
                 v-model="newAccount.account_number"
                 type="text"
                 required
-                class="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:outline-none focus:ring-indigo-300"
+                class="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:outline-none focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
             </div>
 
@@ -132,7 +149,7 @@
               <button
                 type="button"
                 @click="closeModal"
-                class="px-4 py-2 text-gray-600"
+                class="px-4 py-2 text-gray-600 dark:text-gray-300"
               >
                 Cancel
               </button>
@@ -171,7 +188,6 @@ const newAccount = ref({
 
 const openModal = (account = null) => {
   if (account) {
-    // Edit mode
     isEditMode.value = true;
     editingAccountId.value = account.id;
     newAccount.value = {
@@ -181,7 +197,6 @@ const openModal = (account = null) => {
       employee_id: account.employee_id || null,
     };
   } else {
-    // Add mode
     isEditMode.value = false;
     editingAccountId.value = null;
     newAccount.value = {
@@ -200,7 +215,6 @@ const closeModal = () => {
   editingAccountId.value = null;
 };
 
-// Fetch bank accounts from API
 const fetchBankAccounts = async () => {
   try {
     const response = await api.get("/bank-accounts");
@@ -210,17 +224,15 @@ const fetchBankAccounts = async () => {
   }
 };
 
-// Fetch employees for owner name dropdown
 const fetchEmployees = async () => {
   try {
-    const res = await api.get("/employees"); // Adjust API route if needed
+    const res = await api.get("/employees");
     employees.value = res.data;
   } catch (error) {
     console.error("Failed to fetch employees", error);
   }
 };
 
-// Handle owner name input to link employee_id if matches
 const onOwnerNameInput = () => {
   const inputName = newAccount.value.owner_name.trim().toLowerCase();
   const selected = employees.value.find(
@@ -228,22 +240,19 @@ const onOwnerNameInput = () => {
   );
   if (selected) {
     newAccount.value.employee_id = selected.id;
-    newAccount.value.owner_name = selected.full_name; // ensure exact casing
+    newAccount.value.owner_name = selected.full_name;
   } else {
     newAccount.value.employee_id = null;
   }
 };
 
-// Submit Add or Edit form
 const submitBankAccount = async () => {
   try {
     if (isEditMode.value) {
-      // Update existing account
       const res = await api.put(
         `/bank-accounts/${editingAccountId.value}`,
         newAccount.value
       );
-      // Update local list
       const index = bankAccounts.value.findIndex(
         (acc) => acc.id === editingAccountId.value
       );
@@ -251,7 +260,6 @@ const submitBankAccount = async () => {
         bankAccounts.value[index] = res.data;
       }
     } else {
-      // Create new account
       const res = await api.post("/bank-accounts", newAccount.value);
       bankAccounts.value.push(res.data);
     }
@@ -261,7 +269,6 @@ const submitBankAccount = async () => {
   }
 };
 
-// Delete bank account with confirmation
 const deleteBankAccount = async (id) => {
   const confirmed = window.confirm(
     "Are you sure you want to delete this bank account?"

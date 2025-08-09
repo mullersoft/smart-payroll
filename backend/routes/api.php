@@ -18,7 +18,7 @@ use App\Http\Controllers\ResetPasswordController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
-// Route::post('/register', [AuthController::class, 'register']); // Can be admin-only depending on use case -->
+Route::post('/register', [AuthController::class, 'register']); // Can be admin-only depending on use case -->
 
 // --------------------
 // 🔐 Protected Routes
@@ -45,7 +45,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // 🛡️ Admin-Only Routes
     // --------------------
     Route::middleware('role:admin')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
+    // Route::post('/register', [AuthController::class, 'register']);
         // You can add user management routes here
     });
 

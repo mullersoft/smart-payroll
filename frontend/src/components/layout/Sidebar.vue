@@ -1,37 +1,5 @@
-<!-- src/components/layout/Sidebar.vue -->
-<template>
-  <aside
-    class="w-64 bg-gray-800 text-white h-full fixed top-0 left-0 pt-4 shadow-lg flex flex-col"
-  >
-    <!-- Logo area -->
-    <div
-      class="flex items-center justify-center h-24 mb-6 border-b border-gray-700 px-4"
-    >
-      <!-- Bold large colored text logo -->
-      <span class="text-5xl font-extrabold text-indigo-400 select-none"
-        >QMT</span
-      >
-
-      <!-- Image logo option (uncomment if you want to use image instead) -->
-      <!-- <img src="/logo.png" alt="QMT Logo" class="h-16 object-contain" /> -->
-    </div>
-
-    <!-- Navigation links -->
-    <nav class="flex flex-col space-y-2 px-4 flex-grow">
-      <router-link
-        v-for="link in filteredLinks"
-        :key="link.path"
-        :to="link.path"
-        class="py-2 px-3 rounded hover:bg-gray-700 transition"
-        active-class="bg-gray-700"
-      >
-        {{ link.label }}
-      </router-link>
-    </nav>
-  </aside>
-</template>
-
 <script setup>
+import { isSidebarOpen, toggleSidebar } from "@/store/sidebar";
 import { useAuthStore } from "@/store/auth";
 
 const auth = useAuthStore();
@@ -65,3 +33,66 @@ const filteredLinks = allLinks.filter((link) =>
   link.roles.includes(auth.user?.role)
 );
 </script>
+
+<template>
+  <div>
+    <button
+      @click="toggleSidebar"
+      class="fixed top-4 left-4 z-50 p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none"
+    >
+      <span v-if="isSidebarOpen">✖</span>
+      <span v-else>☰</span>
+    </button>
+    <aside
+      class="bg-gray-800 dark:bg-gray-900 text-white dark:text-gray-100 h-full fixed top-0 left-0 shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out"
+      :class="isSidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64'"
+    >
+      <div
+        class="flex items-center justify-center h-24 mb-6 border-b border-gray-700 dark:border-gray-600 px-4"
+      >
+        <span class="text-5xl font-extrabold text-indigo-400 select-none"
+          >QMT</span
+        >
+      </div>
+
+      <nav class="flex flex-col space-y-2 px-4 flex-grow">
+        <router-link
+          v-for="link in filteredLinks"
+          :key="link.path"
+          :to="link.path"
+          class="py-2 px-3 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition"
+          active-class="bg-gray-700 dark:bg-gray-800"
+          @click="isSidebarOpen = false"
+        >
+          {{ link.label }}
+        </router-link>
+      </nav>
+    </aside>
+
+    <!-- <aside
+      class="bg-gray-800 text-white h-full fixed top-0 left-0 shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out"
+      :class="isSidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64'"
+    >
+      <div
+        class="flex items-center justify-center h-24 mb-6 border-b border-gray-700 px-4"
+      >
+        <span class="text-5xl font-extrabold text-indigo-400 select-none"
+          >QMT</span
+        >
+      </div>
+
+      <nav class="flex flex-col space-y-2 px-4 flex-grow">
+        <router-link
+          v-for="link in filteredLinks"
+          :key="link.path"
+          :to="link.path"
+          class="py-2 px-3 rounded hover:bg-gray-700 transition"
+          active-class="bg-gray-700"
+          @click="isSidebarOpen = false"
+        >
+          {{ link.label }}
+        </router-link>
+      </nav>
+    </aside> -->
+  </div>
+</template>

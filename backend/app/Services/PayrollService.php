@@ -36,6 +36,7 @@ switch ($position) {
         break;
     case 'Director':
     case 'Dept Lead':
+    case 'Normal Employee':
         $position_allowance = 982.76;
         break;
     default:
@@ -63,8 +64,8 @@ switch ($position) {
         $income_tax = $this->calculateIncomeTax($taxable_income);
 
         // Pensions
-        $employee_pension = $employee->employment_type === 'permanent' ? 0.07 * $base : 0;
-        $employer_pension = $employee->employment_type === 'permanent' ? 0.11 * $base : 0;
+        $employee_pension = $employee->employment_type === 'permanent' ? 0.07 * $earned_salary : 0;
+        $employer_pension = $employee->employment_type === 'permanent' ? 0.11 * $earned_salary : 0;
 
         // Total deduction
         $total_deduction = $income_tax + $employee_pension;

@@ -1,10 +1,9 @@
-<!-- src/pages/payrolls/PayrollsPage.vue -->
 <template>
   <MainLayout>
     <div class="space-y-6">
       <!-- Header -->
       <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-indigo-700">💰 Payrolls</h1>
+        <h1 class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">💰 Payrolls</h1>
         <button
           @click="openBulkModal"
           class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md"
@@ -14,9 +13,9 @@
       </div>
 
       <!-- Payroll Table -->
-      <div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
-        <table class="min-w-full table-auto text-sm">
-          <thead class="bg-gray-100 text-left">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md overflow-x-auto transition-colors duration-300">
+        <table class="min-w-full table-auto text-sm text-gray-900 dark:text-gray-100">
+          <thead class="bg-gray-100 dark:bg-gray-700 text-left text-gray-600 dark:text-gray-300">
             <tr>
               <th class="px-4 py-2">#</th>
               <th class="px-4 py-2">Employee</th>
@@ -31,7 +30,7 @@
             <tr
               v-for="(payroll, index) in payrolls"
               :key="payroll.id"
-              class="border-b"
+              class="border-b border-gray-300 dark:border-gray-600"
             >
               <td class="px-4 py-2">{{ index + 1 }}</td>
               <td class="px-4 py-2">{{ payroll.employee?.full_name }}</td>
@@ -60,7 +59,7 @@
               </td>
             </tr>
             <tr v-if="payrolls.length === 0">
-              <td colspan="7" class="text-center py-4 text-gray-500">
+              <td colspan="7" class="text-center py-4 text-gray-500 dark:text-gray-400">
                 No payrolls found.
               </td>
             </tr>
@@ -73,30 +72,31 @@
         v-if="showBulkModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       >
-        <div class="bg-white rounded-lg p-6 w-full max-w-4xl shadow-xl">
-          <h2 class="text-xl font-semibold mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-4xl shadow-xl transition-colors duration-300">
+          <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
             Prepare Payroll (Bulk or Single)
           </h2>
 
           <!-- Common Pay Month -->
           <div class="mb-4">
-            <label class="block text-sm font-medium">Pay Month</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pay Month</label>
             <input
               v-model="bulkPayMonth"
               type="month"
-              class="w-64 border rounded px-3 py-2"
+              class="w-64 border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
             />
           </div>
 
           <!-- Employee Table with Editable Fields -->
-          <table class="min-w-full border text-sm mb-4">
-            <thead class="bg-gray-100">
+          <table class="min-w-full border border-gray-300 dark:border-gray-600 text-sm mb-4 text-gray-900 dark:text-gray-100">
+            <thead class="bg-gray-100 dark:bg-gray-700">
               <tr>
                 <th class="px-3 py-2">
                   <input
                     type="checkbox"
                     @change="toggleAllEmployees"
                     :checked="allSelected"
+                    class="dark:bg-gray-700"
                   />
                 </th>
                 <th class="px-3 py-2">Full Name</th>
@@ -105,12 +105,13 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="emp in employees" :key="emp.id" class="border-b">
+              <tr v-for="emp in employees" :key="emp.id" class="border-b border-gray-300 dark:border-gray-600">
                 <td class="px-3 py-2">
                   <input
                     type="checkbox"
                     :value="emp.id"
                     v-model="selectedEmployees"
+                    class="dark:bg-gray-700"
                   />
                 </td>
                 <td class="px-3 py-2">{{ emp.full_name }}</td>
@@ -120,7 +121,7 @@
                     min="0"
                     max="30"
                     v-model.number="emp.working_days"
-                    class="w-20 border rounded px-2 py-1"
+                    class="w-20 border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
                   />
                 </td>
                 <td class="px-3 py-2">
@@ -128,7 +129,7 @@
                     type="number"
                     step="0.01"
                     v-model.number="emp.other_commission"
-                    class="w-24 border rounded px-2 py-1"
+                    class="w-24 border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
                   />
                 </td>
               </tr>
@@ -136,7 +137,10 @@
           </table>
 
           <div class="flex justify-end space-x-3 mt-6">
-            <button @click="closeBulkModal" class="px-4 py-2 text-gray-600">
+            <button
+              @click="closeBulkModal"
+              class="px-4 py-2 text-gray-600 dark:text-gray-300"
+            >
               Cancel
             </button>
             <button
@@ -155,9 +159,9 @@
         v-if="showViewModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       >
-        <div class="bg-white rounded-lg p-6 w-full max-w-2xl shadow-xl">
-          <h2 class="text-xl font-semibold mb-4">Payroll Details</h2>
-          <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl shadow-xl transition-colors duration-300">
+          <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Payroll Details</h2>
+          <div class="grid grid-cols-2 gap-4 text-gray-900 dark:text-gray-100">
             <p>
               <strong>Employee:</strong>
               {{ selectedPayroll.employee?.full_name }}
@@ -177,7 +181,7 @@
           <div class="flex justify-end mt-4">
             <button
               @click="showViewModal = false"
-              class="bg-gray-500 text-white px-4 py-2 rounded"
+              class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
             >
               Close
             </button>

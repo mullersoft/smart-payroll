@@ -2,7 +2,9 @@
   <MainLayout>
     <div class="space-y-6">
       <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-800">👥 Employees</h1>
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
+          👥 Employees
+        </h1>
         <button
           class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
           @click="openAddModal"
@@ -12,9 +14,13 @@
       </div>
 
       <!-- Employee Table -->
-      <div class="overflow-x-auto bg-white shadow rounded-lg">
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-100 text-left text-gray-600">
+      <div
+        class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-lg transition-colors duration-300"
+      >
+        <table class="min-w-full text-sm text-gray-900 dark:text-gray-100">
+          <thead
+            class="bg-gray-100 dark:bg-gray-700 text-left text-gray-600 dark:text-gray-300"
+          >
             <tr>
               <th class="py-3 px-4">#</th>
               <th class="py-3 px-4">Full Name</th>
@@ -32,7 +38,7 @@
             <tr
               v-for="(emp, index) in employees"
               :key="emp.id"
-              class="border-b hover:bg-gray-50"
+              class="border-b border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <td class="py-2 px-4">{{ index + 1 }}</td>
               <td class="py-2 px-4">{{ emp.full_name }}</td>
@@ -62,16 +68,13 @@
                 >
                   {{ emp.is_active ? "Deactivate" : "Activate" }}
                 </button>
-                <!-- <button
-                  class="text-red-600 hover:underline"
-                  @click="deleteEmployee(emp.id)"
-                >
-                  Delete
-                </button> -->
               </td>
             </tr>
             <tr v-if="employees.length === 0">
-              <td colspan="10" class="py-4 px-4 text-center text-gray-500">
+              <td
+                colspan="10"
+                class="py-4 px-4 text-center text-gray-500 dark:text-gray-400"
+              >
                 No employees found.
               </td>
             </tr>
@@ -85,35 +88,46 @@
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       >
         <div
-          class="bg-white rounded-lg p-6 w-full max-w-2xl shadow-xl overflow-y-auto max-h-[90vh]"
+          class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl shadow-xl overflow-y-auto max-h-[90vh] transition-colors duration-300"
         >
-          <h2 class="text-xl font-semibold mb-4">
+          <h2
+            class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100"
+          >
             {{ isEditing ? "Edit Employee" : "Add New Employee" }}
           </h2>
           <form @submit.prevent="handleSubmit">
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium">Full Name</label>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >Full Name</label
+                >
                 <input
                   v-model="form.full_name"
                   required
-                  class="w-full border rounded px-3 py-2"
+                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium">Employee ID</label>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >Employee ID</label
+                >
                 <input
                   v-model="form.employee_id"
                   required
-                  class="w-full border rounded px-3 py-2"
+                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium">Position</label>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >Position</label
+                >
                 <select
                   v-model="form.position"
                   required
-                  class="w-full border rounded px-3 py-2"
+                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
                 >
                   <option>CEO</option>
                   <option>COO</option>
@@ -125,32 +139,41 @@
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium">Employment Type</label>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >Employment Type</label
+                >
                 <select
                   v-model="form.employment_type"
                   required
-                  class="w-full border rounded px-3 py-2"
+                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
                 >
                   <option>permanent</option>
                   <option>contract</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium">Base Salary</label>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >Base Salary</label
+                >
                 <input
                   v-model="form.base_salary"
                   type="number"
                   step="0.01"
                   required
-                  class="w-full border rounded px-3 py-2"
+                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium">Gender</label>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >Gender</label
+                >
                 <select
                   v-model="form.gender"
                   required
-                  class="w-full border rounded px-3 py-2"
+                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
                 >
                   <option>Male</option>
                   <option>Female</option>
@@ -158,12 +181,15 @@
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium">Employment Date</label>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >Employment Date</label
+                >
                 <input
                   v-model="form.employment_date"
                   type="date"
                   required
-                  class="w-full border rounded px-3 py-2"
+                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
                 />
               </div>
             </div>
@@ -172,7 +198,7 @@
               <button
                 type="button"
                 @click="showModal = false"
-                class="text-gray-600"
+                class="text-gray-600 dark:text-gray-300"
               >
                 Cancel
               </button>
@@ -254,16 +280,6 @@ const handleSubmit = async () => {
     console.error("Save failed:", err);
   }
 };
-
-// const deleteEmployee = async (id) => {
-//   if (!confirm("Are you sure you want to delete this employee?")) return;
-//   try {
-//     await api.delete(`/employees/${id}`);
-//     employees.value = employees.value.filter((emp) => emp.id !== id);
-//   } catch (err) {
-//     console.error("Delete failed:", err);
-//   }
-// };
 
 const toggleStatus = async (emp) => {
   try {

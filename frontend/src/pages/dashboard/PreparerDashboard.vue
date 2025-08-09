@@ -1,24 +1,44 @@
-<!-- src/pages/dashboard/PreparerDashboard.vue -->
 <template>
   <MainLayout>
     <div class="space-y-4">
-      <h1 class="text-3xl font-bold text-indigo-800">Preparer Dashboard</h1>
-      <p class="text-gray-600">
-        Welcome, Preparer. You can create payrolls, manage employees, and run reports.
+      <h1 class="text-3xl font-bold text-indigo-800 dark:text-indigo-400">
+        Preparer Dashboard
+      </h1>
+      <p class="text-gray-600 dark:text-gray-300">
+        Welcome, Preparer. You can create payrolls, manage employees, and run
+        reports.
       </p>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white shadow-md rounded-lg p-6 border-l-4 border-indigo-500">
-          <h2 class="text-lg font-semibold text-gray-700">Employees</h2>
-          <p class="text-indigo-600 font-bold text-xl">{{ employeeCount }}</p>
+        <div
+          class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 border-l-4 border-indigo-500 dark:border-indigo-400"
+        >
+          <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">
+            Employees
+          </h2>
+          <p class="text-indigo-600 dark:text-indigo-400 font-bold text-xl">
+            {{ employeeCount }}
+          </p>
         </div>
-        <div class="bg-white shadow-md rounded-lg p-6 border-l-4 border-indigo-500">
-          <h2 class="text-lg font-semibold text-gray-700">Prepared Payrolls</h2>
-          <p class="text-indigo-600 font-bold text-xl">{{ payrollCount }}</p>
+        <div
+          class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 border-l-4 border-indigo-500 dark:border-indigo-400"
+        >
+          <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">
+            Prepared Payrolls
+          </h2>
+          <p class="text-indigo-600 dark:text-indigo-400 font-bold text-xl">
+            {{ payrollCount }}
+          </p>
         </div>
-        <div class="bg-white shadow-md rounded-lg p-6 border-l-4 border-indigo-500">
-          <h2 class="text-lg font-semibold text-gray-700">Bank Accounts</h2>
-          <p class="text-indigo-600 font-bold text-xl">{{ bankAccountCount }}</p>
+        <div
+          class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 border-l-4 border-indigo-500 dark:border-indigo-400"
+        >
+          <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">
+            Bank Accounts
+          </h2>
+          <p class="text-indigo-600 dark:text-indigo-400 font-bold text-xl">
+            {{ bankAccountCount }}
+          </p>
         </div>
       </div>
     </div>
