@@ -7,7 +7,7 @@
         </h1>
         <button
           @click="openCreateModal"
-          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
         >
           + Create User
         </button>
@@ -25,6 +25,7 @@
             class="bg-gray-100 text-left text-sm uppercase dark:bg-gray-700 dark:text-gray-300"
           >
             <tr>
+              <th class="p-3">Full Name</th>
               <th class="p-3">Email</th>
               <th class="p-3">Role</th>
               <th class="p-3">Status</th>
@@ -37,6 +38,9 @@
               :key="user.id"
               class="border-t border-gray-200 dark:border-gray-600"
             >
+              <td class="p-3 text-gray-800 dark:text-gray-200">
+                {{ user.name }}
+              </td>
               <td class="p-3 text-gray-800 dark:text-gray-200">
                 {{ user.email }}
               </td>
@@ -57,7 +61,7 @@
               <td class="p-3 space-x-2">
                 <button
                   @click="toggleStatus(user)"
-                  class="text-sm text-white px-3 py-1 rounded"
+                  class="text-sm text-white px-3 py-1 rounded-lg"
                   :class="
                     user.is_active
                       ? 'bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800'
@@ -97,12 +101,21 @@
           </h2>
           <form @submit.prevent="handleSubmit">
             <div class="mb-4">
+              <label class="block text-sm font-medium">Full Name</label>
+              <input
+                v-model="form.name"
+                type="text"
+                required
+                class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+            <div class="mb-4">
               <label class="block text-sm font-medium">Email</label>
               <input
                 v-model="form.email"
                 type="email"
                 required
-                class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+                class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 
@@ -112,7 +125,7 @@
                 v-model="form.password"
                 type="password"
                 required
-                class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+                class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 
@@ -120,7 +133,7 @@
               <label class="block text-sm font-medium">Role</label>
               <select
                 v-model="form.role"
-                class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+                class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
               >
                 <option value="admin">Admin</option>
                 <option value="preparer">Preparer</option>
@@ -138,7 +151,7 @@
               </button>
               <button
                 type="submit"
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
               >
                 {{ isEditing ? "Update" : "Create" }}
               </button>
@@ -162,6 +175,7 @@ const isEditing = ref(false);
 const editingUserId = ref(null);
 
 const form = ref({
+  name: "", // Added name field
   email: "",
   password: "",
   role: "preparer",
@@ -180,7 +194,7 @@ const fetchUsers = async () => {
 };
 
 const openCreateModal = () => {
-  form.value = { email: "", password: "", role: "preparer" };
+  form.value = { name: "", email: "", password: "", role: "preparer" }; // Initialized name
   isEditing.value = false;
   editingUserId.value = null;
   showModal.value = true;
@@ -188,6 +202,7 @@ const openCreateModal = () => {
 
 const editUser = (user) => {
   form.value = {
+    name: user.name, // Set name for editing
     email: user.email,
     role: user.role,
     password: "",
@@ -201,6 +216,7 @@ const handleSubmit = async () => {
   try {
     if (isEditing.value) {
       await api.put(`/users/${editingUserId.value}`, {
+        name: form.value.name, // Added name for updating
         email: form.value.email,
         role: form.value.role,
       });
@@ -224,7 +240,8 @@ const toggleStatus = async (user) => {
 };
 
 const deleteUser = async (id) => {
-  if (!confirm("Are you sure you want to delete this user?")) return;
+  // Using a custom modal is recommended for production, but using confirm() for a quick example
+  if (!confirm("Are you sure you want to delete this user?")) return; 
   try {
     await api.delete(`/users/${id}`);
     fetchUsers();

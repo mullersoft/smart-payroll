@@ -144,10 +144,39 @@ const fetchReport = async () => {
 
 const exportReport = async (type) => {
   if (!selectedMonth.value) return;
+
   const url =
     type === "excel"
       ? `/reports/monthly/${selectedMonth.value}/export-excel`
       : `/reports/monthly/${selectedMonth.value}/export-pdf`;
-  window.open(api.defaults.baseURL + url, "_blank");
+
+  try {
+    const token = localStorage.getItem("token");
+    const response = await api.get(url, {
+      responseType: "blob", // Important for binary files
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Create a download link and trigger it
+    const blob = new Blob([response.data], {
+      type:
+        type === "excel"
+          ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          : "application/pdf",
+    });
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download =
+      type === "excel"
+        ? `monthly-report-${selectedMonth.value}.xlsx`
+        : `monthly-report-${selectedMonth.value}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error("Error exporting report:", error);
+  }
 };
 </script>

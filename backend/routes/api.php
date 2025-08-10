@@ -29,11 +29,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // 👤 Authenticated User Routes (Any role)
     // Admin-Only Route to get all users (you already have this group)
     Route::middleware('role:admin')->group(function () {
-    Route::get('/users', function () {
+        Route::get('/users', function () {
             return \App\Models\User::all(); // 👈 Or use a controller if preferred
         });
-    Route::post('/users/{id}/toggle-status', [AuthController::class, 'toggleStatus']);
-
+        Route::post('/users/{id}/toggle-status', [AuthController::class, 'toggleStatus']);
     });
 
     // --------------------
@@ -45,31 +44,33 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // 🛡️ Admin-Only Routes
     // --------------------
     Route::middleware('role:admin')->group(function () {
-    // Route::post('/register', [AuthController::class, 'register']);
+        // Route::post('/register', [AuthController::class, 'register']);
         // You can add user management routes here
     });
 
     // --------------------
     // 🧾 Approver-Only Routes
     // --------------------
-        Route::middleware('role:approver,admin')->group(function () {
+    Route::middleware('role:approver,admin')->group(function () {
         Route::post('/payrolls/{payroll}/approve', [PayrollController::class, 'approve']);
         Route::get('/payrolls/pending', [PayrollController::class, 'pending']);
         Route::post('/payrolls/{payroll}/reject', [PayrollController::class, 'reject'])->middleware('role:approver,admin');
-
     });
 
     // --------------------
     // 🏗️ Preparer-Only Routes 
     // --------------------
-        Route::middleware('role:preparer')->group(function () {
+    Route::middleware('role:preparer')->group(function () {
         Route::apiResource('employees', EmployeeController::class);
         Route::apiResource('bank-accounts', BankAccountController::class)->only(['index', 'store']);
         Route::apiResource('payrolls', PayrollController::class)->only(['index', 'store', 'show']);
         Route::post('/payrolls/{payroll}/process', [PayrollController::class, 'processTransaction']); // Transaction execution
-        Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
         Route::post('/employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus']);
         Route::post('/payrolls/bulk', [PayrollController::class, 'bulkStore']);
+
+        Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
+        Route::get('/reports/monthly/{month}/export-excel', [ReportController::class, 'exportExcel']);
+        Route::get('/reports/monthly/{month}/export-pdf', [ReportController::class, 'exportPdf']); // Add this
 
     });
 
@@ -78,4 +79,3 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // --------------------
     Route::apiResource('transactions', TransactionController::class)->only(['index', 'show']);
 });
-
