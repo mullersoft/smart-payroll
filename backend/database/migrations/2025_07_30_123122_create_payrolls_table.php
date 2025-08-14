@@ -18,7 +18,9 @@ class CreatePayrollsTable extends Migration
             $table->decimal('base_salary', 10, 2);           // snapshot of employee salary
             $table->decimal('earned_salary', 10, 2);
 
-            $table->decimal('position_allowance', 10, 2);
+            $table->decimal('position_allowance_taxable', 10, 2);
+            $table->decimal('position_allowance_non_tax ', 10, 2);
+
             $table->decimal('transport_allowance', 10, 2);
             $table->decimal('other_commission', 10, 2)->nullable();
 
@@ -32,8 +34,8 @@ class CreatePayrollsTable extends Migration
             $table->decimal('total_deduction', 10, 2);
             $table->decimal('net_payment', 10, 2);
 
-            $table->enum('status', ['prepared', 'approved', 'paid','rejected'])->default('prepared');
-            $table->boolean('is_processed')->default(false); 
+            $table->enum('status', ['prepared', 'approved', 'paid', 'rejected'])->default('prepared');
+            $table->boolean('is_processed')->default(false);
 
             $table->foreignId('prepared_by')->nullable()->constrained('users')->restrictOnDelete()->cascadeOnUpdate();
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();

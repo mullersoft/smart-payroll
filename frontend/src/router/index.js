@@ -10,36 +10,33 @@ import ApproverDashboard from "@/pages/dashboard/ApproverDashboard.vue";
 import EmployeesPage from "@/pages/employees/EmployeesPage.vue";
 import BankAccountsPage from "@/pages/bank-accounts/BankAccountsPage.vue";
 import PayrollsPage from "@/pages/payrolls/PayrollsPage.vue";
-import MonthlyReports from "@/pages/reports/MonthlyReports.vue";
+// import MonthlyReports from "@/pages/reports/MonthlyReports.vue";
 import TransactionsPage from "@/pages/transactions/TransactionsPage.vue";
-  import PendingPayrollsPage from "@/pages/approver/PendingPayrollsPage.vue";
-
-
+// import PendingPayrollsPage from "@/pages/approver/PendingPayrollsPage.vue";
 
 const routes = [
-{
-  path: "/admin/users",
-  component: () => import("@/pages/admin/UsersPage.vue"),
-  meta: { requiresAuth: true, role: "admin" },
-}
-,
-{
-  path: "/approver/pending-payrolls",
-  component: PendingPayrollsPage,
-  meta: { requiresAuth: true, role: "approver" },
-}
-,
-{
-  path: "/transactions",
-  component: TransactionsPage,
-  meta: { requiresAuth: true, role: ["admin", "preparer", "approver"] },
-},
   {
-  
-  path: "/reports/monthly",
-  component: MonthlyReports,
-  meta: { requiresAuth: true, role: "preparer" },
-},
+    path: "/admin/users",
+    component: () => import("@/pages/admin/UsersPage.vue"),
+    meta: { requiresAuth: true, role: "admin" },
+  },
+  ,
+  // {
+  //   path: "/approver/pending-payrolls",
+  //   component: PendingPayrollsPage,
+  //   meta: { requiresAuth: true, role: "approver" },
+  // }
+  {
+    path: "/transactions",
+    component: TransactionsPage,
+    meta: { requiresAuth: true, role: ["admin", "preparer", "approver"] },
+  },
+  //   {
+
+  //   path: "/reports/monthly",
+  //   component: MonthlyReports,
+  //   meta: { requiresAuth: true, role: "preparer" },
+  // },
 
   {
     path: "/login",
@@ -93,12 +90,12 @@ const routes = [
     component: BankAccountsPage,
     meta: { requiresAuth: true, role: "preparer" },
   },
-,
-{
-  path: "/payrolls",
-  component: PayrollsPage,
-  meta: { requiresAuth: true, role: "preparer" },
-},
+  ,
+  {
+    path: "/payrolls",
+    component: PayrollsPage,
+    meta: { requiresAuth: true, role: "preparer" },
+  },
   {
     path: "/",
     redirect: () => {
@@ -135,7 +132,9 @@ router.beforeEach((to, from, next) => {
 
   // Block users with wrong roles
   if (to.meta.role) {
-    const allowedRoles = Array.isArray(to.meta.role) ? to.meta.role : [to.meta.role];
+    const allowedRoles = Array.isArray(to.meta.role)
+      ? to.meta.role
+      : [to.meta.role];
     if (!allowedRoles.includes(auth?.role)) {
       return next("/login");
     }

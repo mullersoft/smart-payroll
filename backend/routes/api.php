@@ -39,13 +39,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', fn(Request $request) => $request->user());
     Route::get('/profile', fn(Request $request) => $request->user());
     Route::post('/logout', [AuthController::class, 'logout']);
-
+    // D:\qelem meda\smart-payroll\backend\routes\api.php
+    // ...
+    Route::get('/dashboard-summary', [PayrollController::class, 'getDashboardSummary']);
+    // ...
     // --------------------
     // 🛡️ Admin-Only Routes
     // --------------------
     Route::middleware('role:admin')->group(function () {
         // Route::post('/register', [AuthController::class, 'register']);
-        // You can add user management routes here
     });
 
     // --------------------
@@ -55,6 +57,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/payrolls/{payroll}/approve', [PayrollController::class, 'approve']);
         Route::get('/payrolls/pending', [PayrollController::class, 'pending']);
         Route::post('/payrolls/{payroll}/reject', [PayrollController::class, 'reject'])->middleware('role:approver,admin');
+        Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
+        Route::get('/payrolls', [PayrollController::class, 'list']);
+        Route::get('/payrolls/list', [PayrollController::class, 'list']);
     });
 
     // --------------------
@@ -63,11 +68,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::middleware('role:preparer')->group(function () {
         Route::apiResource('employees', EmployeeController::class);
         Route::apiResource('bank-accounts', BankAccountController::class)->only(['index', 'store']);
-        Route::apiResource('payrolls', PayrollController::class)->only(['index', 'store', 'show']);
+        Route::apiResource('payrolls', PayrollController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
         Route::post('/payrolls/{payroll}/process', [PayrollController::class, 'processTransaction']); // Transaction execution
         Route::post('/employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus']);
         Route::post('/payrolls/bulk', [PayrollController::class, 'bulkStore']);
-
         Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
         Route::get('/reports/monthly/{month}/export-excel', [ReportController::class, 'exportExcel']);
         Route::get('/reports/monthly/{month}/export-pdf', [ReportController::class, 'exportPdf']); // Add this

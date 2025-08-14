@@ -7,10 +7,25 @@ use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Employee::with('bankAccount')->get());
+        $query = Employee::with('bankAccount');
+
+        // Add status filter if provided
+        if ($request->has('is_active')) {
+            $isActive = filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN);
+            $query->where('is_active', $isActive);
+        }
+
+        // Add search functionality if needed
+        if ($request->has('search')) {
+            $query->where('full_name', 'like', '%' . $request->search . '%');
+        }
+
+        return response()->json($query->get());
     }
+
+
 
     public function store(Request $request)
     {
@@ -51,7 +66,7 @@ class EmployeeController extends Controller
 
         return response()->json($employee);
     }
-  //  DELETE /employees/{id}
+    //  DELETE /employees/{id}
     public function destroy($id)
     {
         $employee = Employee::findOrFail($id);

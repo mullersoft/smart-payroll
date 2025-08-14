@@ -61,10 +61,7 @@
                 <th rowspan="2" class="text-center">OT/Com/Other Benefit</th>
                 <th rowspan="2" class="text-center">Gross Pay</th>
                 <th rowspan="2" class="text-center">Taxable Income</th>
-                <th rowspan="2" class="text-center">Income Tax</th>
-                <th colspan="2" class="text-center">Pension</th>
-                <th rowspan="2" class="text-center">Total Pension Contribution</th>
-                <th rowspan="2" class="text-center">Loan/Penalty</th>
+                <th colspan="5" class="text-center">Deductions</th>
                 <th rowspan="2" class="text-center">Total Deduction</th>
                 <th rowspan="2" class="text-center">Net Payment</th>
             </tr>
@@ -73,34 +70,37 @@
                 <th>Taxable</th>
                 <th>Non Taxable</th>
                 <th>Taxable</th>
-                <th>Employee</th>
-                <th>Employer</th>
+                <th>Income Tax</th>
+                <th>Pension (Emp.)</th>
+                <th>Pension (Er.)</th>
+                <th>Total Pension</th>
+                <th>Loan/Penalty</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($records as $index => $row)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td class="text-center">{{ $row['employee_name'] }}</td>
-                    <td class="text-center">{{ $row['employment_date'] }}</td>
-                    <td>{{ number_format($row['base_salary'], 2) }}</td>
-                    <td>{{ $row['working_days'] }}</td>
-                    <td>{{ number_format($row['earned_salary'], 2) }}</td>
-                    <td>{{ number_format($row['position_non_tax'], 2) }}</td>
-                    <td>{{ number_format($row['position_taxable'], 2) }}</td>
-                    <td>{{ number_format($row['transport_non_tax'], 2) }}</td>
-                    <td>{{ number_format($row['transport_taxable'], 2) }}</td>
-                    <td>{{ number_format($row['other_commission'], 2) }}</td>
-                    <td>{{ number_format($row['gross_pay'], 2) }}</td>
-                    <td>{{ number_format($row['taxable_income'], 2) }}</td>
-                    <td>{{ number_format($row['income_tax'], 2) }}</td>
-                    <td>{{ number_format($row['employee_pension'], 2) }}</td>
-                    <td>{{ number_format($row['employer_pension'], 2) }}</td>
-                    <td>{{ number_format($row['employee_pension'] + $row['employer_pension'], 2) }}</td>
-                    <td>{{ number_format($row['loan_penalty'], 2) }}</td>
-                    <td>{{ number_format($row['total_deduction'], 2) }}</td>
-                    <td>{{ number_format($row['net_payment'], 2) }}</td>
-                </tr>
+            <tr>
+                <td>{{ $index + 1 }}</td>
+                <td class="text-center">{{ $row['employee_name'] }}</td>
+                <td class="text-center">{{ $row['employment_date'] }}</td>
+                <td>{{ number_format($row['base_salary'], 2) }}</td>
+                <td>{{ $row['working_days'] }}</td>
+                <td>{{ number_format($row['earned_salary'], 2) }}</td>
+                <td>{{ number_format($row['position_non_tax'], 2) }}</td>
+                <td>{{ number_format($row['position_taxable'], 2) }}</td>
+                <td>{{ number_format($row['transport_non_tax'], 2) }}</td>
+                <td>{{ number_format($row['transport_taxable'], 2) }}</td>
+                <td>{{ number_format($row['other_commission'], 2) }}</td>
+                <td>{{ number_format($row['gross_pay'], 2) }}</td>
+                <td>{{ number_format($row['taxable_income'], 2) }}</td>
+                <td>{{ number_format($row['income_tax'], 2) }}</td>
+                <td>{{ number_format($row['employee_pension'], 2) }}</td>
+                <td>{{ number_format($row['employer_pension'], 2) }}</td>
+                <td>{{ number_format($row['employee_pension'] + $row['employer_pension'], 2) }}</td>
+                <td>{{ number_format($row['loan_penalty'], 2) }}</td>
+                <td>{{ number_format($row['total_deduction'], 2) }}</td>
+                <td>{{ number_format($row['net_payment'], 2) }}</td>
+            </tr>
             @endforeach
 
             <!-- Totals -->

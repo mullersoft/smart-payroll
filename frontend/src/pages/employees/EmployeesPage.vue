@@ -1,280 +1,366 @@
 <template>
   <MainLayout>
     <div class="space-y-6">
-      <div class="flex justify-between items-center">
+      <div
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+      >
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
-          👥 Employees
+          👥 Employees Management
         </h1>
-        <button
-          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
-          @click="openAddModal"
+
+        <div
+          class="flex flex-col sm:flex-row items-end sm:items-center gap-4 w-full sm:w-auto"
         >
-          ➕ Add New Employee
-        </button>
+          <!-- Status Filter -->
+          <div class="w-full sm:w-40">
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >Filter Status</label
+            >
+            <select
+              v-model="statusFilter"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-200"
+            >
+              <option value="active">Active Employees</option>
+              <option value="inactive">Inactive Employees</option>
+              <option value="all">All Employees</option>
+            </select>
+          </div>
+
+          <button
+            class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow-sm flex items-center justify-center gap-2"
+            @click="openAddModal"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Add Employee
+          </button>
+        </div>
       </div>
 
       <!-- Employee Table -->
-      <div
-        class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-lg transition-colors duration-300"
-      >
-        <table class="min-w-full text-sm text-gray-900 dark:text-gray-100">
-          <thead
-            class="bg-gray-100 dark:bg-gray-700 text-left text-gray-600 dark:text-gray-300"
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+        <div class="overflow-x-auto">
+          <table
+            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
           >
-            <tr>
-              <th class="py-3 px-4">#</th>
-              <th class="py-3 px-4">Full Name</th>
-              <th class="py-3 px-4">Emp. ID</th>
-              <th class="py-3 px-4">Position</th>
-              <th class="py-3 px-4">Type</th>
-              <th class="py-3 px-4">Salary</th>
-              <th class="py-3 px-4">Gender</th>
-              <th class="py-3 px-4">Employment Date</th>
-              <th class="py-3 px-4">Status</th>
-              <th class="py-3 px-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(emp, index) in employees"
-              :key="emp.id"
-              class="border-b border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  #
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Full Name
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Position
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Type
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Salary
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
             >
-              <td class="py-2 px-4">{{ index + 1 }}</td>
-              <td class="py-2 px-4">{{ emp.full_name }}</td>
-              <td class="py-2 px-4">{{ emp.employee_id }}</td>
-              <td class="py-2 px-4">{{ emp.position }}</td>
-              <td class="py-2 px-4">{{ emp.employment_type }}</td>
-              <td class="py-2 px-4">{{ emp.base_salary }}</td>
-              <td class="py-2 px-4">{{ emp.gender }}</td>
-              <td class="py-2 px-4">{{ emp.employment_date }}</td>
-              <td class="py-2 px-4">
-                <span
-                  :class="emp.is_active ? 'text-green-600' : 'text-red-600'"
-                >
-                  {{ emp.is_active ? "Active" : "Inactive" }}
-                </span>
-              </td>
-              <td class="py-2 px-4 space-x-2">
-                <button
-                  class="text-blue-600 hover:underline"
-                  @click="openEditModal(emp)"
-                >
-                  Edit
-                </button>
-                <button
-                  class="text-yellow-600 hover:underline"
-                  @click="toggleStatus(emp)"
-                >
-                  {{ emp.is_active ? "Deactivate" : "Activate" }}
-                </button>
-              </td>
-            </tr>
-            <tr v-if="employees.length === 0">
-              <td
-                colspan="10"
-                class="py-4 px-4 text-center text-gray-500 dark:text-gray-400"
+              <tr
+                v-for="(emp, index) in filteredEmployees"
+                :key="emp.id"
+                class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
-                No employees found.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                <td
+                  class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200"
+                >
+                  {{ index + 1 }}
+                </td>
+                <td
+                  class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200"
+                >
+                  {{ emp.full_name }}
+                </td>
+                <td
+                  class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200"
+                >
+                  {{ emp.position }}
+                </td>
+                <td
+                  class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 capitalize"
+                >
+                  {{ emp.employment_type }}
+                </td>
+                <td
+                  class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200"
+                >
+                  Birr {{ Number(emp.base_salary).toLocaleString() }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <span
+                    :class="{
+                      'px-2 py-1 rounded-full text-xs font-semibold': true,
+                      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200':
+                        emp.is_active,
+                      'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200':
+                        !emp.is_active,
+                    }"
+                  >
+                    {{ emp.is_active ? "Active" : "Inactive" }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="relative inline-block text-left">
+                    <button
+                      @click.stop="toggleDropdown(emp.id)"
+                      class="inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none"
+                    >
+                      Actions
+                      <svg
+                        class="-mr-1 ml-2 h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </button>
 
-      <!-- Add/Edit Modal -->
-      <div
-        v-if="showModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      >
-        <div
-          class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl shadow-xl overflow-y-auto max-h-[90vh] transition-colors duration-300"
-        >
-          <h2
-            class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100"
-          >
-            {{ isEditing ? "Edit Employee" : "Add New Employee" }}
-          </h2>
-          <form @submit.prevent="handleSubmit">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >Full Name</label
+                    <transition
+                      enter-active-class="transition ease-out duration-100"
+                      enter-from-class="transform opacity-0 scale-95"
+                      enter-to-class="transform opacity-100 scale-100"
+                      leave-active-class="transition ease-in duration-75"
+                      leave-from-class="transform opacity-100 scale-100"
+                      leave-to-class="transform opacity-0 scale-95"
+                    >
+                      <div
+                        v-if="openDropdownId === emp.id"
+                        class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                      >
+                        <div class="py-1" role="none">
+                          <button
+                            @click="openViewModal(emp)"
+                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <span class="flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 mr-2"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                />
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                />
+                              </svg>
+                              View Details
+                            </span>
+                          </button>
+                          <button
+                            @click="openEditModal(emp)"
+                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <span class="flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 mr-2"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                              </svg>
+                              Edit
+                            </span>
+                          </button>
+                          <button
+                            @click="toggleStatus(emp)"
+                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <span class="flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 mr-2"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
+                              {{ emp.is_active ? "Deactivate" : "Activate" }}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </transition>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="filteredEmployees.length === 0">
+                <td
+                  colspan="7"
+                  class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400"
                 >
-                <input
-                  v-model="form.full_name"
-                  required
-                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
-                />
-              </div>
-              <div>
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >Employee ID</label
-                >
-                <input
-                  v-model="form.employee_id"
-                  required
-                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
-                />
-              </div>
-              <div>
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >Position</label
-                >
-                <select
-                  v-model="form.position"
-                  required
-                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
-                >
-                  <option>CEO</option>
-                  <option>COO</option>
-                  <option>CTO</option>
-                  <option>CISO</option>
-                  <option>Director</option>
-                  <option>Dept Lead</option>
-                  <option>Normal Employee</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >Employment Type</label
-                >
-                <select
-                  v-model="form.employment_type"
-                  required
-                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
-                >
-                  <option>permanent</option>
-                  <option>contract</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >Base Salary</label
-                >
-                <input
-                  v-model="form.base_salary"
-                  type="number"
-                  step="0.01"
-                  required
-                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
-                />
-              </div>
-              <div>
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >Gender</label
-                >
-                <select
-                  v-model="form.gender"
-                  required
-                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
-                >
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >Employment Date</label
-                >
-                <input
-                  v-model="form.employment_date"
-                  type="date"
-                  required
-                  class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
-                />
-              </div>
-            </div>
-
-            <div class="flex justify-end space-x-3 mt-4">
-              <button
-                type="button"
-                @click="showModal = false"
-                class="text-gray-600 dark:text-gray-300"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                class="bg-indigo-600 text-white px-4 py-2 rounded"
-              >
-                {{ isEditing ? "Update" : "Create" }}
-              </button>
-            </div>
-          </form>
+                  No employees found matching your criteria.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
+
+      <!-- Pagination would go here if implemented -->
+
+      <!-- Modals -->
+      <EmployeeEditModal
+        :show="showEditModal"
+        :is-editing="isEditing"
+        :employee="selectedEmployee"
+        @save="handleSave"
+        @close="showEditModal = false"
+      />
+
+      <EmployeeViewModal
+        :show="showViewModal"
+        :employee="selectedEmployee"
+        @close="showViewModal = false"
+      />
     </div>
   </MainLayout>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import MainLayout from "@/components/layout/MainLayout.vue";
 import api from "@/services/api";
+import EmployeeEditModal from "./EmployeeEditModal.vue";
+import EmployeeViewModal from "./EmployeeViewModal.vue";
 
 const employees = ref([]);
-const showModal = ref(false);
+const statusFilter = ref("active");
+const showEditModal = ref(false);
+const showViewModal = ref(false);
 const isEditing = ref(false);
-const editId = ref(null);
+const selectedEmployee = ref(null);
+const openDropdownId = ref(null);
 
-const form = ref({
-  full_name: "",
-  employee_id: "",
-  position: "Normal Employee",
-  employment_type: "permanent",
-  base_salary: "",
-  gender: "Male",
-  employment_date: "",
-});
-
+// Fetch employees with optional status filter
 const fetchEmployees = async () => {
   try {
-    const res = await api.get("/employees");
+    const params = {};
+    if (statusFilter.value !== "all") {
+      params.is_active = statusFilter.value === "active";
+    }
+
+    const res = await api.get("/employees", { params });
     employees.value = res.data;
   } catch (err) {
     console.error("Failed to fetch employees:", err);
   }
 };
 
+// Computed property for filtered employees (client-side fallback)
+const filteredEmployees = computed(() => {
+  if (statusFilter.value === "all") return employees.value;
+  return employees.value.filter((emp) =>
+    statusFilter.value === "active" ? emp.is_active : !emp.is_active
+  );
+});
+
+// Watch for filter changes
+watch(statusFilter, () => {
+  fetchEmployees();
+});
+
 const openAddModal = () => {
   isEditing.value = false;
-  editId.value = null;
-  form.value = {
-    full_name: "",
-    employee_id: "",
-    position: "Normal Employee",
-    employment_type: "permanent",
-    base_salary: "",
-    gender: "Male",
-    employment_date: "",
-  };
-  showModal.value = true;
+  selectedEmployee.value = null;
+  showEditModal.value = true;
+};
+
+const openViewModal = (emp) => {
+  selectedEmployee.value = { ...emp };
+  showViewModal.value = true;
+  openDropdownId.value = null;
 };
 
 const openEditModal = (emp) => {
   isEditing.value = true;
-  editId.value = emp.id;
-  form.value = { ...emp };
-  showModal.value = true;
+  selectedEmployee.value = { ...emp };
+  showEditModal.value = true;
+  openDropdownId.value = null;
 };
 
-const handleSubmit = async () => {
+const handleSave = async (employeeData) => {
   try {
     if (isEditing.value) {
-      await api.put(`/employees/${editId.value}`, form.value);
+      await api.put(`/employees/${selectedEmployee.value.id}`, employeeData);
     } else {
-      await api.post("/employees", form.value);
+      await api.post("/employees", employeeData);
     }
-    showModal.value = false;
+    showEditModal.value = false;
     fetchEmployees();
   } catch (err) {
     console.error("Save failed:", err);
@@ -285,10 +371,26 @@ const toggleStatus = async (emp) => {
   try {
     await api.post(`/employees/${emp.id}/toggle-status`);
     fetchEmployees();
+    openDropdownId.value = null;
   } catch (err) {
     console.error("Toggle status failed:", err);
   }
 };
 
-onMounted(fetchEmployees);
+const toggleDropdown = (employeeId) => {
+  openDropdownId.value =
+    openDropdownId.value === employeeId ? null : employeeId;
+};
+
+// Close dropdown when clicking outside
+const handleClickOutside = (event) => {
+  if (!event.target.closest(".relative.inline-block.text-left")) {
+    openDropdownId.value = null;
+  }
+};
+
+onMounted(() => {
+  fetchEmployees();
+  document.addEventListener("click", handleClickOutside);
+});
 </script>

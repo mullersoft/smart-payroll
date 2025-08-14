@@ -15,7 +15,10 @@ class Payroll extends Model
         'working_days',
         'base_salary',
         'earned_salary',
-        'position_allowance',
+        // 'position_allowance',
+        'position_allowance_taxable',
+        'position_allowance_non_tax',
+
         'transport_allowance',
         'other_commission',
         'gross_pay',

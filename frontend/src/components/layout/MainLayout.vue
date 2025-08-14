@@ -13,7 +13,7 @@ import { isSidebarOpen } from "@/store/sidebar";
     <Sidebar />
     <div
       class="flex-1 flex flex-col transition-all duration-300"
-      :class="isSidebarOpen ? 'ml-64' : 'ml-0'"
+      :class="isSidebarOpen ? 'ml-64' : 'ml-20'"
     >
       <Header />
       <main class="p-6 flex-grow">

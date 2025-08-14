@@ -2,34 +2,29 @@
   <MainLayout>
     <div class="space-y-6">
       <h1 class="text-2xl font-bold text-yellow-700 dark:text-yellow-400">
-        🕒 Pending Payrolls
+        🕒 Approver Payrolls
       </h1>
 
-      <!-- Filters -->
       <div class="flex flex-col md:flex-row md:items-center gap-4">
         <div>
-          <label
-            class="block text-sm font-medium text-gray-600 dark:text-gray-300"
-            >Filter by Month</label
-          >
+          <label class="block text-sm font-medium">Filter by Month</label>
           <input
             type="month"
             v-model="filters.month"
-            class="border rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            @change="fetchPayrolls"
+            class="border rounded px-3 py-2 bg-white dark:bg-gray-700"
           />
         </div>
 
         <div>
-          <label
-            class="block text-sm font-medium text-gray-600 dark:text-gray-300"
-            >Filter by Status</label
-          >
+          <label class="block text-sm font-medium">Filter by Status</label>
           <select
             v-model="filters.status"
-            class="border rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            @change="fetchPayrolls"
+            class="border rounded px-3 py-2 bg-white dark:bg-gray-700"
           >
             <option value="">All</option>
-            <option value="pending">Pending</option>
+            <option value="prepared">Pending</option>
             <option value="approved">Approved</option>
             <option value="rejected">Rejected</option>
           </select>
@@ -43,135 +38,55 @@
         </button>
       </div>
 
-      <!-- Table -->
-      <div v-if="loading" class="text-gray-500 dark:text-gray-400">
-        Loading...
-      </div>
-      <div
-        v-else-if="payrolls.length === 0"
-        class="text-gray-500 dark:text-gray-400"
-      >
-        No payrolls found.
-      </div>
+      <PayrollTable
+        :payrolls="payrolls"
+        :loading="loading"
+        :show-approver-actions="true"
+        :show-view-button="true"
+        @payroll-approved="approvePayroll"
+        @payroll-rejected="promptReject"
+        @view-payroll="viewPayroll"
+      />
 
-      <div v-else class="overflow-x-auto">
-        <table class="min-w-full bg-white dark:bg-gray-800 shadow rounded">
-          <thead
-            class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm uppercase"
-          >
-            <tr>
-              <th class="px-4 py-2 text-left">#</th>
-              <th class="px-4 py-2 text-left">Month</th>
-              <th class="px-4 py-2 text-left">Total</th>
-              <th class="px-4 py-2 text-left">Status</th>
-              <th class="px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(payroll, index) in payrolls"
-              :key="payroll.id"
-              class="border-b hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-              <td class="px-4 py-2">{{ index + 1 }}</td>
-              <td class="px-4 py-2">{{ payroll.month }}</td>
-              <td class="px-4 py-2">Birr {{ payroll.total_amount }}</td>
-              <td class="px-4 py-2">
-                <span :class="statusClass(payroll.status)">{{
-                  payroll.status
-                }}</span>
-              </td>
-              <td class="px-4 py-2 space-x-2">
-                <button
-                  @click="viewPayroll(payroll)"
-                  class="text-sm text-blue-600 dark:text-blue-400 underline"
-                >
-                  Details
-                </button>
-                <button
-                  v-if="payroll.status === 'pending'"
-                  @click="approvePayroll(payroll.id)"
-                  class="bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-1 rounded"
-                >
-                  Approve
-                </button>
-                <button
-                  v-if="payroll.status === 'pending'"
-                  @click="promptRejection(payroll.id)"
-                  class="bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1 rounded"
-                >
-                  Reject
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <PayrollDetailsModal
+        :visible="showViewModal"
+        :payroll="selectedPayroll"
+        @close="showViewModal = false"
+      />
 
-      <!-- Modal -->
       <div
         v-if="showRejectModal"
-        class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       >
         <div
-          class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md"
+          class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-xl"
         >
           <h2
-            class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4"
+            class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100"
           >
             Reject Payroll
           </h2>
+          <p class="text-gray-700 dark:text-gray-300 mb-4">
+            Please provide a reason for rejecting this payroll.
+          </p>
           <textarea
             v-model="rejectionReason"
-            placeholder="Enter reason..."
-            class="w-full border rounded p-2 mb-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             rows="4"
+            class="w-full border rounded-md p-2 bg-white dark:bg-gray-700 dark:text-gray-100"
           ></textarea>
-          <div class="flex justify-end gap-2">
+          <div class="flex justify-end space-x-2 mt-4">
             <button
               @click="showRejectModal = false"
-              class="px-4 py-2 text-gray-700 dark:text-gray-300"
+              class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md"
             >
               Cancel
             </button>
             <button
-              @click="submitRejection"
-              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+              @click="confirmReject"
+              :disabled="!rejectionReason"
+              class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md"
             >
-              Submit
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal for View -->
-      <div
-        v-if="showViewModal"
-        class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center"
-      >
-        <div
-          class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-lg"
-        >
-          <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
-            Payroll Details
-          </h2>
-          <p><strong>Month:</strong> {{ selectedPayroll.month }}</p>
-          <p><strong>Status:</strong> {{ selectedPayroll.status }}</p>
-          <p>
-            <strong>Total Amount:</strong> Birr
-            {{ selectedPayroll.total_amount }}
-          </p>
-          <p>
-            <strong>Employees:</strong>
-            {{ selectedPayroll.employees?.length ?? "N/A" }}
-          </p>
-
-          <div class="flex justify-end mt-4">
-            <button
-              @click="showViewModal = false"
-              class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
-            >
-              Close
+              Confirm Rejection
             </button>
           </div>
         </div>
@@ -181,63 +96,79 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import api from "@/services/api";
 import MainLayout from "@/components/layout/MainLayout.vue";
+import PayrollTable from "@/components/payroll/PayrollTable.vue";
+import PayrollDetailsModal from "@/components/payroll/PayrollDetailsModal.vue";
 
 const payrolls = ref([]);
 const loading = ref(true);
-
-const showRejectModal = ref(false);
-const rejectionReason = ref("");
-const selectedPayrollId = ref(null);
-
+const filters = ref({ month: "", status: "prepared" });
 const showViewModal = ref(false);
 const selectedPayroll = ref({});
 
-const filters = ref({ month: "", status: "pending" });
+// New state for rejection
+const showRejectModal = ref(false);
+const payrollToRejectId = ref(null);
+const rejectionReason = ref("");
+
+const getCurrentMonth = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  return `${year}-${month}`;
+};
 
 const fetchPayrolls = async () => {
   loading.value = true;
   try {
-    let url = "/payrolls";
-    if (filters.value.status === "pending") {
-      url = "/payrolls/pending";
-    }
-    const res = await api.get(url);
-    payrolls.value = res.data.filter((p) => {
-      const monthMatch = filters.value.month
-        ? p.month === filters.value.month
-        : true;
-      const statusMatch = filters.value.status
-        ? p.status === filters.value.status
-        : true;
-      return monthMatch && statusMatch;
+    const res = await api.get("/payrolls/list", {
+      params: {
+        month: filters.value.month,
+        status: filters.value.status,
+      },
     });
-  } catch (e) {
-    console.error("Failed to fetch payrolls", e);
+    payrolls.value = res.data.payrolls || [];
+  } catch (error) {
+    console.error("Error loading payrolls:", error);
+    alert("❌ Failed to load payrolls.");
   } finally {
     loading.value = false;
   }
 };
 
-const approvePayroll = async (id) => {
-  await api.post(`/payrolls/${id}/approve`);
-  await fetchPayrolls();
+const approvePayroll = async (payrollId) => {
+  try {
+    await api.post(`/payrolls/${payrollId}/approve`);
+    alert("✅ Payroll approved successfully.");
+    fetchPayrolls();
+  } catch (error) {
+    console.error("Error approving payroll:", error);
+    alert("❌ Failed to approve payroll.");
+  }
 };
 
-const promptRejection = (id) => {
-  selectedPayrollId.value = id;
-  rejectionReason.value = "";
+// Function to open the rejection modal
+const promptReject = (payrollId) => {
+  payrollToRejectId.value = payrollId;
+  rejectionReason.value = ""; // Clear previous reason
   showRejectModal.value = true;
 };
 
-const submitRejection = async () => {
-  await api.post(`/payrolls/${selectedPayrollId.value}/reject`, {
-    reason: rejectionReason.value,
-  });
-  showRejectModal.value = false;
-  await fetchPayrolls();
+// Function to handle the actual rejection
+const confirmReject = async () => {
+  try {
+    await api.post(`/payrolls/${payrollToRejectId.value}/reject`, {
+      rejection_reason: rejectionReason.value,
+    });
+    alert("✅ Payroll rejected successfully.");
+    showRejectModal.value = false; // Close the modal
+    fetchPayrolls(); // Refresh the payroll list
+  } catch (error) {
+    console.error("Error rejecting payroll:", error);
+    alert("❌ Failed to reject payroll.");
+  }
 };
 
 const viewPayroll = (payroll) => {
@@ -245,18 +176,8 @@ const viewPayroll = (payroll) => {
   showViewModal.value = true;
 };
 
-const statusClass = (status) => {
-  switch (status) {
-    case "approved":
-      return "text-green-600 font-semibold";
-    case "rejected":
-      return "text-red-600 font-semibold";
-    case "pending":
-      return "text-yellow-600 font-semibold";
-    default:
-      return "text-gray-600";
-  }
-};
-
-fetchPayrolls();
+onMounted(() => {
+  filters.value.month = getCurrentMonth();
+  fetchPayrolls();
+});
 </script>
