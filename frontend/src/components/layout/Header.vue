@@ -1,24 +1,54 @@
-<!-- frontend/src/components/layout/Header.vue -->
 <template>
   <header
-    class="bg-gray-100 h-20 dark:bg-gray-800 text-gray-900 dark:text-gray-200 px-6 py-6 flex justify-between items-center shadow-lg transition-colors duration-300"
+    class="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-200 px-4 sm:px-6 py-4 sm:py-6 flex justify-between items-center shadow-lg transition-colors duration-300"
   >
-    <h1 class="text-xl font-semibold">Smart Payroll</h1>
-    <div class="flex items-center space-x-6 relative ">
+    <button
+      @click="toggleSidebar"
+      class="text-gray-600 dark:text-gray-300 p-2 rounded-md lg:hidden hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        />
+      </svg>
+    </button>
 
-      <!-- Profile Dropdown Trigger -->
+    <h1 class="text-lg sm:text-xl font-semibold">Smart Payroll</h1>
+    <div class="flex items-center space-x-4 sm:space-x-6 relative">
       <div v-if="auth.user" class="relative">
         <button
           @click="toggleProfileDropdown"
           class="flex items-center space-x-2 text-gray-700 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
         >
-          <span class="text-base font-medium">{{ auth.user?.role || auth.user?.email }}</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          <span class="text-sm sm:text-base font-medium">{{
+            auth.user?.role || auth.user?.email
+          }}</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-5 h-5"
+          >
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
           </svg>
         </button>
 
-        <!-- Profile Dropdown Menu -->
         <transition
           enter-active-class="transition ease-out duration-100"
           enter-from-class="transform opacity-0 scale-95"
@@ -55,6 +85,7 @@
 import { useAuthStore } from "@/store/auth";
 import { useRouter } from "vue-router";
 import { ref, onMounted, onUnmounted } from "vue";
+import { toggleSidebar } from "@/store/sidebar"; // Import toggleSidebar
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -82,20 +113,16 @@ const logout = async () => {
 
 // Close dropdown when clicking outside
 const handleClickOutside = (event) => {
-  if (isProfileDropdownOpen.value && !event.target.closest('.relative')) {
+  if (isProfileDropdownOpen.value && !event.target.closest(".relative")) {
     closeProfileDropdown();
   }
 };
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
+  document.addEventListener("click", handleClickOutside);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener("click", handleClickOutside);
 });
 </script>
-
-<style scoped>
-/* Optional: You can add custom styles here if needed, but Tailwind should cover most of the styling */
-</style>

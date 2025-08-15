@@ -87,7 +87,7 @@ class BankService
                     'status' => 'completed',
                 ]);
 
-                // ✅ Mark as processed
+                //  Mark as processed
                 $payroll->is_processed = true;
                 $payroll->save();
             });
