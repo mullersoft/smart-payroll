@@ -7,19 +7,18 @@ use Illuminate\Support\Facades\Schema;
 class CreateBankAccountsTable  extends Migration
 {
     public function up()
-{
- Schema::create('bank_accounts', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('employee_id')->nullable()->unique()->constrained()->onDelete('cascade');
-    $table->string('account_number')->unique();
-    $table->string('owner_name')->nullable(); 
-    $table->decimal('balance', 12, 2)->default(0);
-    $table->string('bank_name');
+    {
+        Schema::create('bank_accounts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('employee_id')->nullable()->unique()->constrained()->onDelete('cascade');
+            $table->string('account_number')->unique();
+            $table->string('owner_name')->nullable();
+            $table->decimal('balance', 12, 2)->default(0);
+            $table->string('bank_name');
 
-    $table->timestamps();
-});
-
-}
+            $table->timestamps();
+        });
+    }
 
 
     public function down()

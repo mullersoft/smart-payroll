@@ -72,6 +72,7 @@ the code is : -->
         :loading="loading"
         :show-actions="true"
         :show-view-button="false"
+        @process-payroll="processPayroll"
         @view-payroll="viewPayroll"
         @edit-payroll="editPayroll"
         @delete-payroll="promptDelete"
@@ -245,7 +246,7 @@ const selectedPayroll = ref({});
 
 const selectedMonth = ref(new Date().toISOString().slice(0, 7)); // Default current month
 
-const selectedStatus = ref("");
+const selectedStatus = ref("prepared");
 
 // Fetch payrolls
 
@@ -350,4 +351,18 @@ const handleExportError = (data) => {
 onMounted(() => {
   fetchPayrolls();
 });
+
+// Process payroll
+const processPayroll = async (id) => {
+  try {
+    await api.post(`/payrolls/${id}/process`);
+    await fetchPayrolls();
+  } catch (error) {
+    console.error("Error processing payroll:", error?.response?.data || error);
+    alert(
+      error?.response?.data?.error ||
+        "Failed to process payroll. Ensure it's approved and accounts exist."
+    );
+  }
+};
 </script>

@@ -1,4 +1,3 @@
-<!-- src/pages/bank-accounts/BankAccountsPage.vue -->
 <template>
   <MainLayout>
     <div class="space-y-6">
@@ -14,7 +13,6 @@
         </button>
       </div>
 
-      <!-- List of Bank Accounts with dark mode classes -->
       <div
         class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-300"
       >
@@ -45,21 +43,30 @@
               </td>
               <td class="px-4 py-2">{{ account.account_number }}</td>
               <td class="px-4 py-2">{{ formatCurrency(account.balance) }}</td>
-              <td class="px-4 py-2 space-x-2">
+              <td class="px-4 py-2 relative">
                 <button
-                  @click="openModal(account)"
-                  class="text-blue-600 hover:underline"
-                  title="Edit"
+                  @click="toggleDropdown(account.id)"
+                  class="px-2 py-1 rounded-md text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
                 >
-                  ✏️
+                  <span class="text-2xl font-bold leading-none">...</span>
                 </button>
-                <button
-                  @click="deleteBankAccount(account.id)"
-                  class="text-red-600 hover:underline"
-                  title="Delete"
+                <div
+                  v-if="openDropdownId === account.id"
+                  class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10"
                 >
-                  🗑️
-                </button>
+                  <button
+                    @click="openModal(account)"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    ✏️ Edit
+                  </button>
+                  <button
+                    @click="deleteBankAccount(account.id)"
+                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    🗑️ Delete
+                  </button>
+                </div>
               </td>
             </tr>
             <tr v-if="bankAccounts.length === 0">
@@ -74,7 +81,6 @@
         </table>
       </div>
 
-      <!-- Add/Edit Account Modal -->
       <div
         v-if="showModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -178,6 +184,7 @@ const employees = ref([]);
 const showModal = ref(false);
 const isEditMode = ref(false);
 const editingAccountId = ref(null);
+const openDropdownId = ref(null); // New state to manage dropdown
 
 const newAccount = ref({
   bank_name: "",
@@ -207,12 +214,25 @@ const openModal = (account = null) => {
     };
   }
   showModal.value = true;
+  openDropdownId.value = null; // Close any open dropdown
 };
 
 const closeModal = () => {
   showModal.value = false;
   isEditMode.value = false;
   editingAccountId.value = null;
+  // Reset newAccount form
+  newAccount.value = {
+    bank_name: "",
+    owner_name: "",
+    account_number: "",
+    employee_id: null,
+  };
+};
+
+// Function to toggle the dropdown
+const toggleDropdown = (id) => {
+  openDropdownId.value = openDropdownId.value === id ? null : id;
 };
 
 const fetchBankAccounts = async () => {
@@ -240,7 +260,6 @@ const onOwnerNameInput = () => {
   );
   if (selected) {
     newAccount.value.employee_id = selected.id;
-    newAccount.value.owner_name = selected.full_name;
   } else {
     newAccount.value.employee_id = null;
   }
@@ -278,6 +297,7 @@ const deleteBankAccount = async (id) => {
   try {
     await api.delete(`/bank-accounts/${id}`);
     bankAccounts.value = bankAccounts.value.filter((acc) => acc.id !== id);
+    openDropdownId.value = null; // Close the dropdown after deletion
   } catch (error) {
     console.error("Failed to delete bank account", error);
   }

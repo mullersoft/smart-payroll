@@ -12,13 +12,14 @@ class BankAccountController extends Controller
     {
         return response()->json(BankAccount::all());
     }
+
     public function store(Request $request)
     {
         $data = $request->validate([
             'bank_name' => 'required|string|max:255',
-            'account_number' => 'required|unique:bank_accounts',
+            'account_number' => 'required|unique:bank_accounts,account_number',
             'balance' => 'nullable|numeric',
-            'employee_id' => 'nullable|exists:employees,id',
+            'employee_id' => 'nullable|exists:employees,id|unique:bank_accounts,employee_id',
             'owner_name' => 'nullable|string',
         ]);
 
@@ -38,13 +39,24 @@ class BankAccountController extends Controller
     {
         $validated = $request->validate([
             'bank_name' => 'required|string|max:255',
-            'account_number' => 'required|string|max:255',
+            'account_number' => 'required|string|max:255|unique:bank_accounts,account_number,' . $bankAccount->id,
             'owner_name' => 'nullable|string|max:255',
             'employee_id' => 'nullable|exists:employees,id',
-            // other rules...
         ]);
+
+        // Logic to correctly set owner_name based on employee_id
+        if (!empty($validated['employee_id'])) {
+            $employee = Employee::findOrFail($validated['employee_id']);
+            $validated['owner_name'] = $employee->full_name;
+        }
 
         $bankAccount->update($validated);
         return response()->json($bankAccount);
+    }
+
+    public function destroy(BankAccount $bankAccount)
+    {
+        $bankAccount->delete();
+        return response()->json(null, 204);
     }
 }

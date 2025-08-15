@@ -19,6 +19,8 @@ class CreateTransactionsTable extends Migration
 
             $table->dateTime('transaction_date');
             $table->string('processed_by')->nullable();
+            $table->string('status')->default('completed')->after('processed_by');
+
             $table->timestamps();
         });
     }

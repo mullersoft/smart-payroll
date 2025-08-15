@@ -38,10 +38,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // --------------------
     Route::get('/user', fn(Request $request) => $request->user());
     Route::get('/profile', fn(Request $request) => $request->user());
-    Route::post('/logout', [AuthController::class, 'logout']);
-    // D:\qelem meda\smart-payroll\backend\routes\api.php
-    // ...
-    Route::get('/dashboard-summary', [PayrollController::class, 'getDashboardSummary']);
+
     // ...
     // --------------------
     // 🛡️ Admin-Only Routes
@@ -67,7 +64,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // --------------------
     Route::middleware('role:preparer')->group(function () {
         Route::apiResource('employees', EmployeeController::class);
-        Route::apiResource('bank-accounts', BankAccountController::class)->only(['index', 'store']);
+        Route::apiResource('bank-accounts', BankAccountController::class);
         Route::apiResource('payrolls', PayrollController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
         Route::post('/payrolls/{payroll}/process', [PayrollController::class, 'processTransaction']); // Transaction execution
         Route::post('/employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus']);
