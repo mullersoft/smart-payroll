@@ -10,6 +10,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\EmploymentTypeController;
+use App\Http\Controllers\PositionController;
 
 
 // --------------------
@@ -19,6 +21,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 Route::post('/register', [AuthController::class, 'register']); // Can be admin-only depending on use case -->
+Route::apiResource('positions', PositionController::class)->except(['show']);
+Route::apiResource('employment-types', EmploymentTypeController::class)->except(['show']);
 
 // --------------------
 // 🔐 Protected Routes
@@ -72,7 +76,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
         Route::get('/reports/monthly/{month}/export-excel', [ReportController::class, 'exportExcel']);
         Route::get('/reports/monthly/{month}/export-pdf', [ReportController::class, 'exportPdf']); // Add this
-
     });
 
     // --------------------

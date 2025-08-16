@@ -10,25 +10,38 @@ class Employee extends Model
     use HasFactory;
 
     protected $fillable = [
-    'full_name',
-    'employee_id',
-    'position',
-    'employment_type',
-    'base_salary',
-    'gender',             
-    'employment_date', 
-    'is_active'
-   
-];
+        'full_name',
+        'employee_id',
+        'position_id',
+        'employment_type_id',
+        'base_salary',
+        'gender',
+        'employment_date',
+        'is_active'
+    ];
+
     public function payrolls()
     {
         return $this->hasMany(Payroll::class);
     }
+
     public function bankAccount()
-   {
-       return $this->hasOne(BankAccount::class, 'employee_id');
-   }
-   public function user() {
-    return $this->hasOne(User::class);
-}
+    {
+        return $this->hasOne(BankAccount::class, 'employee_id');
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
+    }
+
+    public function employmentType()
+    {
+        return $this->belongsTo(EmploymentType::class);
+    }
 }

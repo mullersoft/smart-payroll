@@ -13,6 +13,7 @@ import PayrollsPage from "@/pages/payrolls/PayrollsPage.vue";
 // import MonthlyReports from "@/pages/reports/MonthlyReports.vue";
 import TransactionsPage from "@/pages/transactions/TransactionsPage.vue";
 // import PendingPayrollsPage from "@/pages/approver/PendingPayrollsPage.vue";
+import EmployeesSection from "@/pages/employees/EmployeesSection.vue";
 
 const routes = [
   {
@@ -26,6 +27,18 @@ const routes = [
   //   component: PendingPayrollsPage,
   //   meta: { requiresAuth: true, role: "approver" },
   // }
+
+  {
+    path: "/employees-section",
+    name: "EmployeesSection",
+    component: EmployeesSection,
+    meta: { requiresAuth: true, roles: ["preparer"] },
+  },
+  // {
+  //   path: "/employees",
+  //   component: EmployeesPage,
+  //   meta: { requiresAuth: true, role: "preparer" },
+  // },
   {
     path: "/transactions",
     component: TransactionsPage,
@@ -80,11 +93,7 @@ const routes = [
     component: ApproverDashboard,
     meta: { requiresAuth: true, role: "approver" },
   },
-  {
-    path: "/employees",
-    component: EmployeesPage,
-    meta: { requiresAuth: true, role: "preparer" },
-  },
+
   {
     path: "/bank-accounts",
     component: BankAccountsPage,

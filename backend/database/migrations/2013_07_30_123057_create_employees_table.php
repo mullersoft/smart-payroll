@@ -7,21 +7,26 @@ use Illuminate\Support\Facades\Schema;
 class CreateEmployeesTable extends Migration
 {
     public function up()
-{
-    Schema::create('employees', function (Blueprint $table) {
-        $table->id();
-        $table->string('full_name');
-        $table->string('employee_id')->unique();
-        $table->enum('position', ['CEO', 'COO', 'CTO', 'CISO', 'Director', 'Dept Lead', 'Normal Employee']);
-        $table->enum('employment_type', ['permanent', 'contract']);
-        $table->decimal('base_salary', 10, 2);
-        $table->string('gender'); 
-        $table->date('employment_date');
-        $table->timestamps();
-        $table->boolean('is_active')->default(true);
+    {
+        Schema::create('employees', function (Blueprint $table) {
+            $table->id();
+            $table->string('full_name');
+            $table->string('employee_id')->unique();
 
-    });
-}
+            // Foreign keys instead of ENUM
+            $table->foreignId('position_id')->constrained('positions')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('employment_type_id')->constrained('employment_types')->cascadeOnUpdate()->restrictOnDelete();
 
-   
+            $table->decimal('base_salary', 10, 2);
+            $table->string('gender');
+            $table->date('employment_date');
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('employees');
+    }
 }

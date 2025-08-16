@@ -9,23 +9,19 @@ class EmployeeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Employee::with('bankAccount');
+        $query = Employee::with(['bankAccount', 'position', 'employmentType']);
 
-        // Add status filter if provided
         if ($request->has('is_active')) {
             $isActive = filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN);
             $query->where('is_active', $isActive);
         }
 
-        // Add search functionality if needed
         if ($request->has('search')) {
             $query->where('full_name', 'like', '%' . $request->search . '%');
         }
 
         return response()->json($query->get());
     }
-
-
 
     public function store(Request $request)
     {
@@ -34,20 +30,21 @@ class EmployeeController extends Controller
             'full_name' => 'required|string|max:255',
             'gender' => 'required|in:Male,Female',
             'employment_date' => 'required|date',
-            'position' => 'required|string|in:CEO,COO,CTO,CISO,Director,Dept Lead,Normal Employee',
-            'employment_type' => 'required|in:permanent,contract',
+            'position_id' => 'required|exists:positions,id',
+            'employment_type_id' => 'required|exists:employment_types,id',
             'base_salary' => 'required|numeric|min:0',
         ]);
 
         $employee = Employee::create($data);
-        return response()->json($employee, 201);
+
+        return response()->json($employee->load(['position', 'employmentType']), 201);
     }
 
     public function show(Employee $employee)
     {
-        return response()->json($employee->load('bankAccount'));
+        return response()->json($employee->load(['bankAccount', 'position', 'employmentType']));
     }
-    // 📌 PUT /employees/{id}
+
     public function update(Request $request, $id)
     {
         $employee = Employee::findOrFail($id);
@@ -55,8 +52,8 @@ class EmployeeController extends Controller
         $data = $request->validate([
             'full_name' => 'required|string|max:255',
             'employee_id' => 'required|string|max:50|unique:employees,employee_id,' . $employee->id,
-            'position' => 'required|in:CEO,COO,CTO,CISO,Director,Dept Lead,Normal Employee',
-            'employment_type' => 'required|in:permanent,contract',
+            'position_id' => 'required|exists:positions,id',
+            'employment_type_id' => 'required|exists:employment_types,id',
             'base_salary' => 'required|numeric|min:0',
             'gender' => 'required|string|max:20',
             'employment_date' => 'required|date',
@@ -64,9 +61,9 @@ class EmployeeController extends Controller
 
         $employee->update($data);
 
-        return response()->json($employee);
+        return response()->json($employee->load(['position', 'employmentType']));
     }
-    //  DELETE /employees/{id}
+
     public function destroy($id)
     {
         $employee = Employee::findOrFail($id);
@@ -74,7 +71,7 @@ class EmployeeController extends Controller
 
         return response()->json(['message' => 'Employee deleted successfully']);
     }
-    //  POST /employees/{id}/toggle-status
+
     public function toggleStatus($id)
     {
         $employee = Employee::findOrFail($id);

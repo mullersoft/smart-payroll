@@ -19,7 +19,7 @@ class CreatePayrollsTable extends Migration
             $table->decimal('earned_salary', 10, 2);
 
             $table->decimal('position_allowance_taxable', 10, 2);
-            $table->decimal('position_allowance_non_tax ', 10, 2);
+            $table->decimal('position_allowance_non_tax', 10, 2);
 
             $table->decimal('transport_allowance', 10, 2);
             $table->decimal('other_commission', 10, 2)->nullable();

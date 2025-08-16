@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->after('id');
+            $table->string('name');
 
             $table->enum('role', ['preparer', 'approver', 'admin'])->default('preparer');
             $table->foreignId('employee_id')->nullable()->constrained('employees')->nullOnDelete();
@@ -27,8 +27,6 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->boolean('is_active')->default(true);
-
-
         });
     }
 
