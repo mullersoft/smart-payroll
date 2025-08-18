@@ -1,6 +1,6 @@
 <!-- please apply to this one also: a single "..." button that, when clicked, opens a
-dropdown menu containing all the relevant actions: View, Edit, and and delete.
-the code is : -->
+<!-- dropdown menu containing all the relevant actions: View, Edit, and and delete.
+the code is : --> -->
 <template>
   <MainLayout>
     <div class="space-y-6">

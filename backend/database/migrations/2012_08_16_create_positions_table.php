@@ -11,6 +11,9 @@ return new class extends Migration {
             $table->id();
             $table->string('name')->unique(); // e.g. CEO, HR Manager
             $table->text('description')->nullable();
+            $table->decimal('allowance');
+
+
 
             $table->timestamps();
         });

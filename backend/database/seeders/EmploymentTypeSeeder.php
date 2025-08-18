@@ -12,10 +12,14 @@ class EmploymentTypeSeeder extends Seeder
         $types = [
             ['name' => 'permanent', 'description' => 'Permanent employment'],
             ['name' => 'contract', 'description' => 'Contract employment'],
+            ['name' => 'internship', 'description' => 'Internship employment'],
+            ['name' => 'freelance', 'description' => 'Freelance employment'],
+            ['name' => 'part-time', 'description' => 'Part-time employment'],
+            ['name' => 'consultancy', 'description' => 'Consultancy employment'],
         ];
 
         foreach ($types as $type) {
-            EmploymentType::create($type);
+            EmploymentType::updateOrCreate($type);
         }
     }
 }

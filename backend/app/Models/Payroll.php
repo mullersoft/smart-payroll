@@ -26,6 +26,7 @@ class Payroll extends Model
         'income_tax',
         'employee_pension',
         'employer_pension',
+        'pension_contribution',
         'total_deduction',
         'net_payment',
         'status',

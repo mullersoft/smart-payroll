@@ -9,10 +9,17 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $status = $request->get('status', 'completed'); // default is completed
+        $status = $request->get(
+            'status',
+            'completed'
+        ); // default is completed
 
         return response()->json(
-            Transaction::with(['payroll.employee', 'fromBankAccount', 'toBankAccount'])
+            Transaction::with([
+                'payroll.employee',
+                'fromBankAccount',
+                'toBankAccount'
+            ])
                 ->when($status, function ($query, $status) {
                     $query->where('status', $status);
                 })

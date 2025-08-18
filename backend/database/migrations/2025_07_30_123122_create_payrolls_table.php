@@ -29,8 +29,8 @@ class CreatePayrollsTable extends Migration
 
             $table->decimal('income_tax', 10, 2);
             $table->decimal('employee_pension', 10, 2);
-            $table->decimal('employer_pension', 10, 2)->nullable(); // optional for reporting
-
+            $table->decimal('employer_pension', 10, 2);
+            $table->decimal('pension_contribution', 10, 2);
             $table->decimal('total_deduction', 10, 2);
             $table->decimal('net_payment', 10, 2);
 

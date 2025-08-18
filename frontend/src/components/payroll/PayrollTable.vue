@@ -20,15 +20,14 @@
             <th class="px-4 py-2 text-left">#</th>
 
             <th class="px-4 py-2 text-left">Employee</th>
-            <th class="px-4 py-2 text-left">Position</th>
-
+            <!-- <th class="px-4 py-2 text-left">Position</th> -->
             <th class="px-4 py-2 text-left">Working Days</th>
 
             <th class="px-4 py-2 text-left">Base Salary</th>
 
-            <th class="px-4 py-2 text-left">Gross Pay</th>
+            <th class="px-4 py-2 text-left">Total Pension</th>
 
-            <th class="px-4 py-2 text-left">Total Deduction</th>
+            <th class="px-4 py-2 text-left">Income Tax</th>
 
             <th class="px-4 py-2 text-left">Net Payment</th>
 
@@ -54,7 +53,7 @@
             <td class="px-4 py-2">
               {{ payroll.employee?.full_name || "N/A" }}
             </td>
-            <td class="px-4 py-2">{{ payroll.employee?.position || "N/A" }}</td>
+            <!-- <td class="px-4 py-2">{{ payroll.employee?.position || "N/A" }}</td> -->
 
             <td class="px-4 py-2">
               {{ payroll.working_days }}
@@ -65,11 +64,11 @@
             </td>
 
             <td class="px-4 py-2">
-              {{ Number(payroll.gross_pay).toLocaleString() }}
+              {{ Number(payroll.pension_contribution).toLocaleString() }}
             </td>
 
             <td class="px-4 py-2">
-              {{ Number(payroll.total_deduction).toLocaleString() }}
+              {{ Number(payroll.income_tax).toLocaleString() }}
             </td>
 
             <td class="px-4 py-2">

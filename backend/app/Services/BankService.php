@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Payroll;
 use App\Models\Transaction;
 use App\Models\BankAccount;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -39,16 +40,20 @@ class BankService
                 // $taxAccNo = env('TAX_ACCOUNT', 'TAX-AUTH-001');
                 $companyAccNo = env('COMPANY_ACCOUNT');
                 $taxAccNo = env('TAX_ACCOUNT');
+                $pensionAccNo = env('PENSION_ACCOUNT');
 
 
                 // Lock company and tax accounts for update
                 $company = BankAccount::where('account_number', $companyAccNo)->lockForUpdate()->firstOrFail();
                 $tax = BankAccount::where('account_number', $taxAccNo)->lockForUpdate()->firstOrFail();
+                $pension = BankAccount::where('account_number', $pensionAccNo)->lockForUpdate()->firstOrFail();
 
-                $total = $payroll->net_payment + $payroll->income_tax;
+                // $total = $payroll->net_payment + $payroll->income_tax;
+                $total = $payroll->net_payment + $payroll->income_tax + $payroll->pension_contribution;
+
 
                 if ($company->balance < $total) {
-                    throw new \Exception('Company account has insufficient balance.');
+                    throw new \Exception('Company account has insufficient balance. you need to top up the company account first with minimum: ' . $total - $company->balance . ' Birr.');
                 }
 
                 // ➕ Transfer to employee
@@ -59,10 +64,18 @@ class BankService
                 $company->balance -= $payroll->income_tax;
                 $tax->balance += $payroll->income_tax;
 
+                // ➕ Transfer pension contribution
+                $company->balance -= $payroll->pension_contribution;
+                $pension->balance += $payroll->pension_contribution;
+
+
+
+
                 // Save updated balances
                 $company->save();
                 $employeeBank->save();
                 $tax->save();
+                $pension->save();
 
                 // ➕ Log transactions (status completed after successful balance updates)
                 Transaction::create([
@@ -72,7 +85,7 @@ class BankService
                     'from_account' => $company->account_number,
                     'to_account' => $employeeBank->account_number,
                     'transaction_date' => Carbon::now(),
-                    'processed_by' => auth()->user()->name ?? 'System',
+                    'processed_by' => auth()->User()->name ?? 'System',
                     'status' => 'completed',
                 ]);
 
@@ -83,7 +96,17 @@ class BankService
                     'from_account' => $company->account_number,
                     'to_account' => $tax->account_number,
                     'transaction_date' => Carbon::now(),
-                    'processed_by' => auth()->user()->name ?? 'System',
+                    'processed_by' => auth()->User()->name ?? 'System',
+                    'status' => 'completed',
+                ]);
+                Transaction::create([
+                    'payroll_id' => $payroll->id,
+                    'transaction_type' => 'pension',
+                    'amount' => $payroll->pension_contribution,
+                    'from_account' => $company->account_number,
+                    'to_account' => $pension->account_number,
+                    'transaction_date' => Carbon::now(),
+                    'processed_by' => auth()->User()->name ?? 'System',
                     'status' => 'completed',
                 ]);
 

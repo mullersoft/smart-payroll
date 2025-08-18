@@ -12,17 +12,18 @@
       >
         <!-- Status Filter -->
         <div class="w-full sm:w-40">
-          <label
+          <!-- <label
             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >Filter Status</label
-          >
+            >
+            Filter Status</label
+          > -->
           <select
             v-model="statusFilter"
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none dark:bg-gray-700 dark:text-gray-200"
           >
-            <option value="active">Active Employees</option>
-            <option value="inactive">Inactive Employees</option>
-            <option value="all">All Employees</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="all">All</option>
           </select>
         </div>
 
@@ -90,13 +91,13 @@
                   >
                     <button
                       @click="openEditModal(emp)"
-                      class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      class="block w-full text-left px-4 py-2 hover:bg-gray-500"
                     >
                       ✏ Edit
                     </button>
                     <button
                       @click="toggleStatus(emp)"
-                      class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      class="block w-full text-left px-4 py-2 hover:bg-gray-500"
                     >
                       {{ emp.is_active ? "Deactivate" : "Activate" }}
                     </button>
