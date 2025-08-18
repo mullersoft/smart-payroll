@@ -51,6 +51,7 @@
                 <!-- <th class="px-6 py-3">Debited Account</th> -->
                 <th class="px-6 py-3">Credited Acc</th>
                 <th class="px-6 py-3">Transaction Time</th>
+                <th class="px-6 py-3">Processed By</th>
                 <th class="px-6 py-3">View</th>
               </tr>
             </thead>
@@ -99,6 +100,11 @@
                 <td class="px-6 py-3">
                   {{ new Date(txn.transaction_date || txn.created_at).toLocaleString() }}
                 </td>
+
+             <td class="px-6 py-3">
+                {{ txn.processed_by || "—" }}
+                </td>
+
                 <td class="px-6 py-3 text-center">
                   <button
                     @click="openDetail(txn)"
@@ -128,6 +134,7 @@
           <p><strong>Credited Account:</strong> {{ selectedTransaction.to_account }}</p>
           <p><strong>Sender:</strong> {{ selectedTransaction.fromBankAccount?.owner_name || "—" }}</p>
           <p><strong>Receiver:</strong> {{ selectedTransaction.toBankAccount?.owner_name || selectedTransaction.employee_name || "—" }}</p>
+          <p><strong>Processed By:</strong> {{ selectedTransaction.processed_by}} </p>
           <p><strong>Transaction Time:</strong> {{ new Date(selectedTransaction.transaction_date || selectedTransaction.created_at).toLocaleString() }}</p>
           <p><strong>Failure Reason:</strong> {{ selectedTransaction.failure_reason || "—" }}</p>
 
