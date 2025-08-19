@@ -22,11 +22,11 @@ const routes = [
     meta: { requiresAuth: true, role: "admin" },
   },
   ,
-  // {
-  //   path: "/approver/pending-payrolls",
-  //   component: PendingPayrollsPage,
-  //   meta: { requiresAuth: true, role: "approver" },
-  // }
+  {
+    path: "/auth/callback",
+    name: "GoogleCallback",
+    component: () => import("@/pages/auth/GoogleCallback.vue"),
+  },
 
   {
     path: "/employees-section",
@@ -34,11 +34,7 @@ const routes = [
     component: EmployeesSection,
     meta: { requiresAuth: true, roles: ["preparer"] },
   },
-  // {
-  //   path: "/employees",
-  //   component: EmployeesPage,
-  //   meta: { requiresAuth: true, role: "preparer" },
-  // },
+
   {
     path: "/transactions",
     component: TransactionsPage,

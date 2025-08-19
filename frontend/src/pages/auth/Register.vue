@@ -1,59 +1,63 @@
 <template>
   <AuthLayout>
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">
+    <h2 class="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6">
       Create Your Account
     </h2>
 
+    <!-- Register Form -->
     <form @submit.prevent="handleRegister" class="space-y-4">
-      <!-- Full Name Field -->
       <div>
-        <label for="name" class="block text-sm font-medium text-gray-700"
-          >Full Name</label
-        >
+        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Full Name
+        </label>
         <input
           v-model="name"
           type="text"
           id="name"
           required
-          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none focus:ring-blue-400"
+          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none
+                 focus:ring-blue-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
         />
       </div>
 
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700"
-          >Email</label
-        >
+        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Email
+        </label>
         <input
           v-model="email"
           type="email"
           id="email"
           required
-          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none focus:ring-blue-400"
+          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none
+                 focus:ring-blue-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
         />
       </div>
 
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-700"
-          >Password</label
-        >
+        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Password
+        </label>
         <input
           v-model="password"
           type="password"
           id="password"
           required
-          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none focus:ring-blue-400"
+          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none
+                 focus:ring-blue-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
         />
       </div>
 
       <div>
-        <label for="role" class="block text-sm font-medium text-gray-700"
-          >Role</label
-        >
+        <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Role
+        </label>
         <select
           v-model="role"
           id="role"
           required
-          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none focus:ring-blue-400"
+          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none
+                 focus:ring-blue-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
         >
           <option disabled value="">Select role</option>
           <option value="admin">Admin</option>
@@ -62,17 +66,7 @@
         </select>
       </div>
 
-      <div>
-        <label for="employee_id" class="block text-sm font-medium text-gray-700"
-          >Employee ID (Optional)</label
-        >
-        <input
-          v-model="employee_id"
-          type="number"
-          id="employee_id"
-          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none focus:ring-blue-400"
-        />
-      </div>
+
 
       <div v-if="error" class="text-red-500 text-sm">{{ error }}</div>
 
@@ -84,11 +78,26 @@
       </button>
     </form>
 
-    <p class="mt-4 text-sm text-center">
+    <!-- Divider -->
+    <div class="flex items-center my-6">
+      <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+      <span class="mx-2 text-gray-500 text-sm">OR</span>
+      <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+    </div>
+
+    <!-- Google Register Button -->
+    <button
+      @click="registerWithGoogle"
+      class="w-full flex items-center justify-center gap-2 border py-2 rounded-lg font-semibold transition duration-200
+             hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 dark:border-gray-600 text-gray-700 dark:text-gray-200"
+    >
+      <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5" />
+      Sign Up with Google
+    </button>
+
+    <p class="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
       Already have an account?
-      <router-link to="/login" class="text-blue-600 hover:underline"
-        >Login</router-link
-      >
+      <router-link to="/login" class="text-blue-600 hover:underline">Login</router-link>
     </p>
   </AuthLayout>
 </template>
@@ -97,9 +106,9 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import AuthLayout from "@/components/layout/AuthLayout.vue";
-import axios from "@/services/api";
+import api from "@/services/api";
 
-const name = ref(""); // Added name ref
+const name = ref("");
 const email = ref("");
 const password = ref("");
 const role = ref("");
@@ -110,19 +119,19 @@ const router = useRouter();
 const handleRegister = async () => {
   error.value = null;
   try {
-    const payload = {
-      name: name.value, // Added name to the payload
+    await api.post("/register", {
+      name: name.value,
       email: email.value,
       password: password.value,
       role: role.value,
-      employee_id: employee_id.value || null,
-    };
-    // console.log("Payload being sent:", payload);
-
-    await axios.post("/register", payload);
+    });
     router.push("/login");
   } catch (err) {
     error.value = err.response?.data?.message || "Registration failed";
   }
+};
+
+const registerWithGoogle = () => {
+  window.location.href = `${api.defaults.baseURL}/auth/google/redirect`;
 };
 </script>

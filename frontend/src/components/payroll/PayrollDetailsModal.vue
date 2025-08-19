@@ -14,7 +14,9 @@
         <p><strong>Employee:</strong> {{ payroll?.employee?.full_name || payroll?.employee_name }}</p>
         <p><strong>Pay Month:</strong> {{ payroll?.pay_month }}</p>
         <p><strong>Employment Date:</strong>{{ payroll?.employee?.employment_date || payroll?.employment_date }}</p>
-        <p><strong>Position:</strong>{{ payroll?.employee?.position || payroll?.position }}</p>
+        <!-- to display the name of the position on payroll table -->
+        <!-- <p><strong>Position:</strong>{{ payroll?.employee?.position || payroll?.position }}</p> -->
+        <p><strong>Position:</strong>{{ payroll?.employee?.position.name || payroll?.position }}</p>
         <p><strong>Base Salary:</strong> Birr{{ formatNumber(payroll?.base_salary) }}</p>
         <p><strong>Working Days:</strong> {{ payroll?.working_days }}</p>
         <p><strong>Earned Salary:</strong> Birr{{ formatNumber(payroll?.earned_salary) }} </p>

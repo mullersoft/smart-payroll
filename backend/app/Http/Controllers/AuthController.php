@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
+
 
 class AuthController extends Controller
 {
@@ -60,6 +62,32 @@ public function toggleStatus($id)
 
     return response()->json(['message' => 'User status updated', 'user' => $user]);
 }
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->stateless()->redirect();
+    }
 
+    public function handleGoogleCallback()
+    {
+        $googleUser = Socialite::driver('google')->stateless()->user();
 
+        $user = User::firstOrCreate(
+            ['email' => $googleUser->getEmail()],
+            [
+                'name' => $googleUser->getName(),
+                'password' => bcrypt(str()->random(16)), // random placeholder
+                'role' => 'preparer', // default role (change as needed)
+            ]
+        );
+
+        Auth::login($user);
+
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Google login successful',
+            'user' => $user,
+            'token' => $token
+        ]);
+    }
 }

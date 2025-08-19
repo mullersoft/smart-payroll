@@ -24,6 +24,15 @@ Route::post('/register', [AuthController::class, 'register']); // Can be admin-o
 Route::apiResource('positions', PositionController::class)->except(['show']);
 Route::apiResource('employment-types', EmploymentTypeController::class)->except(['show']);
 
+// Google OAuth
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
+    return response()->json(['user' => $request->user()]);
+});
+Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+
 // --------------------
 // 🔐 Protected Routes
 // --------------------

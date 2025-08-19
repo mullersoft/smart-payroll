@@ -1,6 +1,6 @@
 <template>
   <AuthLayout>
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">
+   <h2 class="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6">
       Forgot Password
     </h2>
 

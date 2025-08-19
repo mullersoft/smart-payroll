@@ -20,6 +20,16 @@ export const useAuthStore = defineStore("auth", {
       localStorage.setItem("token", this.token);
     },
 
+    setAuth(token, user) {
+      this.token = token;
+      this.user = user;
+
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
+    },
+
     logout() {
       this.user = null;
       this.token = null;
