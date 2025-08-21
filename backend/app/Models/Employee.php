@@ -12,6 +12,7 @@ class Employee extends Model
     protected $fillable = [
         'full_name',
         'employee_id',
+        'email',
         'position_id',
         'employment_type_id',
         'base_salary',
@@ -43,5 +44,14 @@ class Employee extends Model
     public function employmentType()
     {
         return $this->belongsTo(EmploymentType::class);
+    }
+    public function allowances()
+    {
+        return $this->belongsToMany(Allowance::class, 'employee_allowance');
+    }
+
+    public function positionAllowancePosition()
+    {
+        return $this->belongsTo(Position::class, 'position_allowance_position_id');
     }
 }

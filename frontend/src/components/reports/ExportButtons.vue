@@ -1,5 +1,5 @@
 <template>
-  <div class="relative inline-block text-left mt-6 ml-auto">
+  <div class="relative inline-block text-left mt-6" style="z-index: 30;">
     <div>
       <button
         @click="toggleDropdown"
@@ -64,8 +64,7 @@
     >
       <div
         v-if="isOpen && !isExporting"
-        class="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700"
-        style="left: auto"
+        class="absolute left-0 z-50 mt-2 w-56 origin-top-left rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700"
         role="menu"
         aria-orientation="vertical"
         aria-labelledby="menu-button"
@@ -107,7 +106,7 @@
     </transition>
 
     <!-- Success/Error Toast Notification -->
-    <div v-if="notification.show" class="fixed bottom-4 right-4 z-50">
+    <div v-if="notification.show" class="fixed bottom-4 right-4 z-70">
       <div
         :class="{
           'bg-green-50 dark:bg-green-900 text-green-800 dark:text-green-200':
@@ -217,13 +216,13 @@ const exportReport = async (type) => {
   closeDropdown();
 
   if (!props.month) {
-    showNotification("error", "Please select a month first");
-    emit("export-error", {
-      type,
-      error: "No month selected",
-    });
-    return;
-  }
+  showNotification("error", "Please select a month first");
+  emit("export-error", {
+    type,
+    error: "No month selected",
+  });
+  return;
+}
 
   isExporting.value = true;
 
@@ -299,17 +298,42 @@ onUnmounted(() => {
 
 <style scoped>
 .relative.inline-block.text-left {
-  margin-left: auto;
   display: inline-block;
+  position: relative;
+  z-index: 30;
 }
 
 .absolute {
-  right: 0;
-  left: auto !important;
+  left: 0;
+  right: auto !important;
+  z-index: 50 !important;
 }
 
 button[disabled] {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* Responsive positioning for mobile */
+@media (max-width: 768px) {
+  .absolute {
+    left: 0;
+    right: auto;
+    transform-origin: top left;
+  }
+  
+  .relative.inline-block.text-left {
+    margin-left: 0;
+  }
+}
+
+/* For very small screens, ensure dropdown doesn't go off-screen */
+@media (max-width: 640px) {
+  .absolute {
+    left: 0;
+    right: auto;
+    width: 95vw;
+    max-width: 280px;
+  }
 }
 </style>

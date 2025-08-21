@@ -12,6 +12,8 @@ class CreateEmployeesTable extends Migration
             $table->id();
             $table->string('full_name');
             $table->string('employee_id')->unique();
+            $table->string('email')->nullable()->after('employee_id');
+
 
             // Foreign keys instead of ENUM
             $table->foreignId('position_id')->constrained('positions')->cascadeOnUpdate()->restrictOnDelete();

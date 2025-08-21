@@ -1,6 +1,4 @@
-<!-- please apply to this one also: a single "..." button that, when clicked, opens a
-<!-- dropdown menu containing all the relevant actions: View, Edit, and and delete.
-the code is : --> -->
+
 <template>
   <MainLayout>
     <div class="space-y-6">
@@ -72,6 +70,8 @@ the code is : --> -->
         :loading="loading"
         :show-actions="true"
         :show-view-button="false"
+
+        @payroll-pay="payPayroll"
         @process-payroll="processPayroll"
         @view-payroll="viewPayroll"
         @edit-payroll="editPayroll"
@@ -215,28 +215,21 @@ the code is : --> -->
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-
 import MainLayout from "@/components/layout/MainLayout.vue";
-
 import PayrollTable from "@/components/payroll/PayrollTable.vue";
-
 import PreparePayrollModal from "@/components/payroll/PreparePayrollModal.vue";
 import PayrollDetailsModal from "@/components/payroll/PayrollDetailsModal.vue";
 import ExportButtons from "@/components/reports/ExportButtons.vue";
 import api from "@/services/api";
+import { payWithChapa } from "@/services/chapa";
 
 // State
 
 const payrolls = ref([]);
-
 const loading = ref(true);
-
 const showBulkModal = ref(false);
-
 const showEditModal = ref(false);
-
 const showDeleteModal = ref(false);
-
 const editPayrollData = ref({});
 const payrollToDeleteId = ref(null);
 const showViewModal = ref(false);
@@ -245,14 +238,10 @@ const selectedPayroll = ref({});
 // Filters
 
 const selectedMonth = ref(new Date().toISOString().slice(0, 7)); // Default current month
-
 const selectedStatus = ref("prepared");
-
 // Fetch payrolls
-
 const fetchPayrolls = async () => {
   loading.value = true;
-
   try {
     const res = await api.get("/payrolls");
 
@@ -365,4 +354,14 @@ const processPayroll = async (id) => {
     );
   }
 };
+// Payment with Chapa
+const payPayroll = async (payroll) => {
+  try {
+    await payWithChapa(payroll); // just pass payroll object
+  } catch (error) {
+    console.error("Error processing payroll via Chapa:", error);
+    alert("Payment initialization failed.");
+  }
+};
+
 </script>

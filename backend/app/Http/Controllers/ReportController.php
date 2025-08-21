@@ -64,12 +64,11 @@ class ReportController extends Controller
         $status = $request->query('status', 'all');
         return Excel::download(new PayrollReportExport($month, $status), "payroll_report_{$month}_{$status}.xlsx");
     }
-
     public function exportPdf(Request $request, $month)
     {
         $status = $request->query('status', 'approved');
 
-        $query = Payroll::with('employee')
+        $query = Payroll::with(['employee'])
             ->whereRaw("DATE_FORMAT(pay_month, '%Y-%m') = ?", [$month]);
 
         if ($status && $status !== 'all') {
@@ -78,21 +77,25 @@ class ReportController extends Controller
 
         $recordsRaw = $query->get();
 
-        // Get the preparer from the first payroll record (assuming all payrolls for the month are prepared by the same person)
-        $preparer = null;
-        $approver = null;
+        // Get preparer and approver names
+        $preparer = 'Unknown Preparer';
+        $approver = 'Not Approved';
 
         if ($recordsRaw->count() > 0) {
+            // Get the first payroll record
             $firstPayroll = $recordsRaw->first();
-            // Get preparer name from prepared_by field
+
+            // Get preparer name
             if ($firstPayroll->prepared_by) {
-                $preparer = User::find($firstPayroll->prepared_by);
+                $preparerUser = User::find($firstPayroll->prepared_by);
+                $preparer = $preparerUser ? $preparerUser->name : 'Unknown Preparer';
             }
 
-            // Get the approver from the first approved payroll record
+            // Get approver name from the first approved payroll
             $approvedPayroll = $recordsRaw->where('status', 'approved')->first();
             if ($approvedPayroll && $approvedPayroll->approved_by) {
-                $approver = User::find($approvedPayroll->approved_by);
+                $approverUser = User::find($approvedPayroll->approved_by);
+                $approver = $approverUser ? $approverUser->name : 'Unknown Approver';
             }
         }
 
@@ -136,8 +139,8 @@ class ReportController extends Controller
             'total_loan'         => $records->sum('loan_penalty'),
             'total_deduction'    => $recordsRaw->sum('total_deduction'),
             'total_net_payment'  => $recordsRaw->sum('net_payment'),
-            'prepared_by'        => $preparer ? $preparer->full_name : 'Unknown Preparer',
-            'approved_by'        => $approver ? $approver->full_name : 'Not Approved',
+            'prepared_by'        => $preparer,
+            'approved_by'        => $approver,
             'report_date'        => now()->format('d/m/Y'),
         ];
 

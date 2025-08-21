@@ -28,6 +28,10 @@
       <div v-else-if="currentTab === 'Employment Types'">
         <EmploymentTypesPage />
       </div>
+      <div v-else-if="currentTab === 'Allowances'">
+  <AllowancesPage />
+</div>
+
     </div>
   </MainLayout>
 </template>
@@ -38,7 +42,9 @@ import MainLayout from "@/components/layout/MainLayout.vue";
 import EmployeesPage from "./EmployeesPage.vue";
 import PositionsPage from "./PositionsPage.vue";
 import EmploymentTypesPage from "./EmploymentTypesPage.vue";
+import AllowancesPage from "./AllowancesPage.vue";
 
-const tabs = ["Employees", "Positions", "Employment Types"];
+
+const tabs = ["Employees", "Positions", "Employment Types", "Allowances"];
 const currentTab = ref("Employees");
 </script>

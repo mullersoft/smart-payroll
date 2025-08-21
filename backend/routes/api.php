@@ -12,7 +12,20 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\EmploymentTypeController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\ChapaPaymentController;
+use App\Http\Controllers\AllowanceController;
 
+
+// Initialize a payment for a payroll (approved)
+Route::middleware('auth:sanctum')->post('/payrolls/{payroll}/chapa/pay', [ChapaPaymentController::class, 'pay']);
+// (Optional) public verify endpoint that your front-end can call
+Route::middleware('auth:sanctum')->get('/payments/chapa/verify/{txRef}', [ChapaPaymentController::class, 'verify']);
+// Webhook (must be publicly reachable WITHOUT auth)
+Route::post('/webhooks/chapa', [ChapaPaymentController::class, 'webhook']);
+
+Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
+    return response()->json(['user' => $request->user()]);
+});
 
 // --------------------
 // 📌 Public Routes
@@ -30,8 +43,12 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
     return response()->json(['user' => $request->user()]);
 });
+// Google OAuth
 Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+
+// Set role after first Google signup
+Route::middleware('auth:sanctum')->post('/auth/set-role', [AuthController::class, 'setRole']);
 
 // --------------------
 // 🔐 Protected Routes
@@ -57,8 +74,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // 🛡️ Admin-Only Routes
     // --------------------
     Route::middleware('role:admin')->group(function () {
-        // Route::post('/register', [AuthController::class, 'register']);
+        Route::get('/users', function () {
+            return \App\Models\User::all();
+        });
+        Route::post('/users/{id}/toggle-status', [AuthController::class, 'toggleStatus']);
+        Route::put('/users/{id}', [AuthController::class, 'updateUser']); // 👈 add this
+        Route::delete('/users/{id}', [AuthController::class, 'deleteUser']); // 👈 optional delete
     });
+
 
     // --------------------
     // 🧾 Approver-Only Routes
@@ -85,6 +108,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
         Route::get('/reports/monthly/{month}/export-excel', [ReportController::class, 'exportExcel']);
         Route::get('/reports/monthly/{month}/export-pdf', [ReportController::class, 'exportPdf']); // Add this
+
+        Route::apiResource('allowances', AllowanceController::class);
     });
 
     // --------------------

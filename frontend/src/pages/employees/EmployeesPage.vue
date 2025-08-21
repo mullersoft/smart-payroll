@@ -115,15 +115,17 @@
       </div>
     </div>
 
-    <EmployeeEditModal
-      :show="showEditModal"
-      :is-editing="isEditing"
-      :employee="selectedEmployee"
-      :positions="positions"
-      :employmentTypes="employmentTypes"
-      @save="handleSave"
-      @close="showEditModal = false"
-    />
+<EmployeeEditModal
+  :show="showEditModal"
+  :is-editing="isEditing"
+  :employee="selectedEmployee"
+  :positions="positions"
+  :employmentTypes="employmentTypes"
+  :allowances="allowances"   
+  @save="handleSave"
+  @close="showEditModal = false"
+/>
+
   </div>
 </template>
 
@@ -131,6 +133,13 @@
 import { ref, onMounted, computed, watch } from "vue";
 import api from "@/services/api";
 import EmployeeEditModal from "./EmployeeEditModal.vue";
+const allowances = ref([]);
+
+const fetchAllowances = async () => {
+  const res = await api.get("/allowances");
+  allowances.value = res.data;
+};
+
 
 const employees = ref([]);
 const positions = ref([]);
@@ -181,10 +190,12 @@ const openEditModal = (emp) => {
     ...emp,
     position_id: emp.position?.id,
     employment_type_id: emp.employment_type?.id,
+    allowances: emp.allowances ? emp.allowances.map((a) => a.id) : [], // ✅ added
   };
   showEditModal.value = true;
   openDropdownId.value = null;
 };
+
 
 const handleSave = async (data) => {
   if (isEditing.value) {
@@ -209,5 +220,7 @@ onMounted(() => {
   fetchEmployees();
   fetchPositions();
   fetchEmploymentTypes();
+  fetchAllowances(); // ✅ added
 });
+
 </script>

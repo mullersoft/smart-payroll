@@ -11,7 +11,7 @@ class PositionSeeder extends Seeder
     public function run()
     {
         $positions = [
-            ['name' => 'CEO', 'description' => 'Chief Executive Officer', 'allowance' => 0],
+            ['name' => 'CEO', 'description' => 'Chief Executive Officer', 'allowance' => 0], // 10% of base salary, non-taxable
             ['name' => 'COO', 'description' => 'Chief Operating Officer', 'allowance' => 2015.38],
             ['name' => 'CTO', 'description' => 'Chief Technology Officer', 'allowance' => 2615.38],
             ['name' => 'CISO', 'description' => 'Chief Information Security Officer', 'allowance' => 1574.14],

@@ -127,27 +127,26 @@
         </tbody>
     </table>
 
-    <!-- Footer -->
-    <br><br>
-    <table class="no-border" style="width:100%; border:none;">
-        <tr>
-            <td style="width:50%; text-align:center; border:none;">
-                Prepared By:<br>
-                {{ $prepared_by }}<br><br>
-                __________________<br>
-                Signature<br>
-                Date: {{ $report_date }}
-            </td>
-            <td style="width:50%; text-align:center; border:none;">
-                Approved By:<br>
-                {{ $approved_by }}<br><br>
-                __________________<br>
-                Signature<br>
-                Date: {{ $report_date }}
-            </td>
-        </tr>
-    </table>
-
+   <!-- Footer -->
+<br><br>
+<table class="no-border" style="width:100%; border:none;">
+    <tr>
+        <td style="width:50%; text-align:center; border:none;">
+            Prepared By:<br>
+            {{ $prepared_by }}<br><br>
+            __________________<br>
+            Signature<br>
+            Date: {{ $report_date }}
+        </td>
+        <td style="width:50%; text-align:center; border:none;">
+            Approved By:<br>
+            {{ $approved_by }}<br><br>
+            __________________<br>
+            Signature<br>
+            Date: {{ $report_date }}
+        </td>
+    </tr>
+</table>
 </body>
 
 </html>

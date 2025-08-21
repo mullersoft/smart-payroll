@@ -19,7 +19,7 @@ class PayrollController extends Controller
     public function index()
     {
         // return response()->json(Payroll::with('employee')->get());// to display the name on the position in payroll
-        return response()->json(Payroll::with('employee.position')->get());
+        return response()->json(Payroll::with(['employee', 'preparedBy', 'approvedBy'])->get());
     }
 
     /**

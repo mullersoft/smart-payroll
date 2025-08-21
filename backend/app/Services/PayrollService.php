@@ -6,6 +6,7 @@ use App\Models\Payroll;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\EmploymentType;
+use App\Models\Allowance;
 
 class PayrollService
 {
@@ -26,7 +27,13 @@ class PayrollService
         }
 
         // ---- Transport Allowance ----
-        $transport_allowance = ($employee->position->name === 'Normal Employee') ? 600 : 2200;
+        // $transport_allowance = ($employee->position->name === 'Normal Employee') ? 600 : 2200;
+        // ---- Transport Allowance ----
+        if ($employee->position && strtolower($employee->position->name) === 'normal employee') {
+            $transport_allowance = 600;
+        } else {
+            $transport_allowance = 2200;
+        }
 
 
         // ---- Other commissions ----

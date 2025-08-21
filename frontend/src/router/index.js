@@ -7,12 +7,9 @@ import ResetPassword from "@/pages/auth/ResetPassword.vue";
 import AdminDashboard from "@/pages/dashboard/AdminDashboard.vue";
 import PreparerDashboard from "@/pages/dashboard/PreparerDashboard.vue";
 import ApproverDashboard from "@/pages/dashboard/ApproverDashboard.vue";
-import EmployeesPage from "@/pages/employees/EmployeesPage.vue";
 import BankAccountsPage from "@/pages/bank-accounts/BankAccountsPage.vue";
 import PayrollsPage from "@/pages/payrolls/PayrollsPage.vue";
-// import MonthlyReports from "@/pages/reports/MonthlyReports.vue";
 import TransactionsPage from "@/pages/transactions/TransactionsPage.vue";
-// import PendingPayrollsPage from "@/pages/approver/PendingPayrollsPage.vue";
 import EmployeesSection from "@/pages/employees/EmployeesSection.vue";
 
 const routes = [
@@ -21,7 +18,19 @@ const routes = [
     component: () => import("@/pages/admin/UsersPage.vue"),
     meta: { requiresAuth: true, role: "admin" },
   },
-  ,
+  {
+    path: "/profile",
+    name: "Profile",
+    component: () => import("@/pages/auth/Profile.vue"),
+    meta: { requiresAuth: true },
+  },
+
+  {
+    path: "/chapa/callback",
+    name: "ChapaCallback",
+    component: () => import("@/pages/payments/ChapaCallback.vue"),
+  },
+
   {
     path: "/auth/callback",
     name: "GoogleCallback",
@@ -40,12 +49,6 @@ const routes = [
     component: TransactionsPage,
     meta: { requiresAuth: true, role: ["admin", "preparer", "approver"] },
   },
-  //   {
-
-  //   path: "/reports/monthly",
-  //   component: MonthlyReports,
-  //   meta: { requiresAuth: true, role: "preparer" },
-  // },
 
   {
     path: "/login",

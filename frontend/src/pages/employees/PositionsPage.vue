@@ -25,7 +25,7 @@
               Description
             </th>
               <th class="px-6 py-3 text-left text-xs font-medium uppercase">
-              Allowance
+              Value
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase">
               Actions
@@ -43,7 +43,6 @@
             <td class="px-6 py-4">{{ pos.description }}</td>
             <td class="px-6 py-4">{{ pos.allowance }}</td>
 
-            <td class="px-6 py-4">{{ pos.all }}</td>
 
             <td class="px-6 py-4 space-x-2">
               <button
@@ -95,7 +94,7 @@
          <input
           v-model="form.allowance"
           type="number"
-          placeholder="Allowance"
+          placeholder="Value"
           class="w-full border rounded px-3 py-2 mb-4 dark:bg-gray-700"
         />
         <div class="flex justify-end space-x-2">

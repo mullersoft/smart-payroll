@@ -66,28 +66,65 @@ public function toggleStatus($id)
     {
         return Socialite::driver('google')->stateless()->redirect();
     }
-
     public function handleGoogleCallback()
     {
+        try {
         $googleUser = Socialite::driver('google')->stateless()->user();
 
-        $user = User::firstOrCreate(
+            // First or create user
+            $user = User::firstOrCreate(
             ['email' => $googleUser->getEmail()],
             [
                 'name' => $googleUser->getName(),
-                'password' => bcrypt(str()->random(16)), // random placeholder
-                'role' => 'preparer', // default role (change as needed)
-            ]
+                    'password' => bcrypt(str()->random(16)),
+                    'role' => 'pending', // 👈 default = pending until admin approves
+                ]
         );
 
-        Auth::login($user);
+            // Issue Sanctum token
+            $token = $user->createToken('api-token')->plainTextToken;
 
-        $token = $user->createToken('api-token')->plainTextToken;
+            // Redirect to frontend with token
+            $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
 
+            return redirect()->away($frontendUrl . '/auth/callback?token=' . $token);
+        } catch (\Exception $e) {
         return response()->json([
-            'message' => 'Google login successful',
-            'user' => $user,
-            'token' => $token
+                'error' => 'Google login failed',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'role' => 'required|in:admin,preparer,approver',
+            'password' => 'nullable|string|min:6',
         ]);
+
+        if (!empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']); // don’t overwrite with null
+        }
+
+        $user->update($data);
+
+        return response()->json(['message' => 'User updated', 'user' => $user]);
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted']);
     }
 }

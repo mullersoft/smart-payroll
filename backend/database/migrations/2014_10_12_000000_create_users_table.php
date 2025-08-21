@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
 
-            $table->enum('role', ['preparer', 'approver', 'admin'])->default('preparer');
+            $table->enum('role', ['preparer', 'approver', 'admin', 'pending'])->default('pending');
             $table->foreignId('employee_id')->nullable()->constrained('employees')->nullOnDelete();
 
 

@@ -15,8 +15,7 @@
         <p><strong>Pay Month:</strong> {{ payroll?.pay_month }}</p>
         <p><strong>Employment Date:</strong>{{ payroll?.employee?.employment_date || payroll?.employment_date }}</p>
         <!-- to display the name of the position on payroll table -->
-        <!-- <p><strong>Position:</strong>{{ payroll?.employee?.position || payroll?.position }}</p> -->
-        <p><strong>Position:</strong>{{ payroll?.employee?.position.name || payroll?.position }}</p>
+        <!-- <p><strong>Position:</strong>{{ payroll?.employee?.position.name || payroll?.position }}</p> -->
         <p><strong>Base Salary:</strong> Birr{{ formatNumber(payroll?.base_salary) }}</p>
         <p><strong>Working Days:</strong> {{ payroll?.working_days }}</p>
         <p><strong>Earned Salary:</strong> Birr{{ formatNumber(payroll?.earned_salary) }} </p>
@@ -32,7 +31,9 @@
         <p><strong>Total Pension Contribution:</strong> Birr  {{ formatNumber(payroll?.pension_contribution) }}</p>
         <p><strong>Total Deduction:</strong> Birr{{ formatNumber(payroll?.total_deduction) }}</p>
         <p><strong>Net Payment:</strong> Birr{{ formatNumber(payroll?.net_payment) }}</p>
-        <p><strong>Status:</strong> {{ payroll?.status }}</p>
+        <p><strong>Prepared By:</strong> {{ payroll?.prepared_by.name || 'Unknown' }}</p>
+        <p><strong>Approved By:</strong> {{ payroll?.approved_by?.name || 'Not Approved' }}</p>
+        <!-- <p><strong>Status:</strong> {{ payroll?.status }}</p> -->
 
         <p v-if="payroll?.rejection_reason">
           <strong>Reason:</strong> {{ payroll?.rejection_reason }}

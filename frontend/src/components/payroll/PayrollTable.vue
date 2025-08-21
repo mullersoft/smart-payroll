@@ -169,7 +169,6 @@
                     >
                       Edit
                     </button>
-
                     <button
                       @click="
                         $emit('delete-payroll', payroll.id);
@@ -179,7 +178,6 @@
                     >
                       Delete
                     </button>
-
                     <button
                       v-if="payroll.status === 'approved'"
                       @click="
@@ -189,6 +187,17 @@
                       class="block w-full text-left px-4 py-2 text-sm hover:bg-purple-100 dark:hover:bg-purple-700 text-purple-700 dark:text-purple-300"
                     >
                       Process
+                    </button>
+                    <!-- Inside Actions Dropdown (only if payroll is approved) -->
+                    <button
+                      v-if="payroll.status === 'approved'"
+                      @click="
+                        $emit('payroll-pay', payroll);
+                        toggleDropdown(payroll.id);
+                      "
+                      class="block w-full text-left px-4 py-2 text-sm hover:bg-green-100 dark:hover:bg-green-700 text-green-700 dark:text-green-300"
+                    >
+                      💳 Pay with Chapa
                     </button>
                   </template>
                 </div>
