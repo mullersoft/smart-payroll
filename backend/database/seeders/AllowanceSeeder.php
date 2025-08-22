@@ -9,15 +9,7 @@ class AllowanceSeeder extends Seeder
 {
     public function run()
     {
-        // Position allowance (CEO = 10% of base salary, non-taxable)
-        Allowance::create([
-            'name' => 'Position Allowance',
-            'description' => 'Allowance for office responsibility (CEO)',
-            'type' => 'percent',
-            'value' => 10, // 10%
-            'is_taxable' => false,
-            'position_id' => 1, // CEO
-        ]);
+
 
         // Housing allowance (fixed, taxable)
         Allowance::create([

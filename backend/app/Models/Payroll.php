@@ -33,7 +33,7 @@ class Payroll extends Model
         'prepared_by',
         'approved_by',
     ];
-    // This defines a relationship between 
+    // This defines a relationship between
     // the Payroll model and the Employee model.
     // It tells Laravel:
     // “Each payroll record belongs to one employee.”
@@ -62,4 +62,8 @@ class Payroll extends Model
     return $this->belongsTo(User::class, 'approved_by');
 }
 
+    public function allowances()
+    {
+        return $this->hasMany(\App\Models\PayrollAllowance::class);
+    }
 }

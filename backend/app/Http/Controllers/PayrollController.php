@@ -88,10 +88,49 @@ class PayrollController extends Controller
      * @param Payroll $payroll
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Payroll $payroll)
+    // public function show(Payroll $payroll)
+    // {
+    //     return response()->json($payroll->load('transactions'));
+    // }
+    // public function show(Payroll $payroll)
+    // {
+    //     $payroll->load([
+    //         'employee.position',
+    //         'employee.employmentType',
+    //         'allowances',       // detailed allowances with pivot data
+    //         'preparedBy',
+    //         'approvedBy',
+    //         'transactions'
+    //     ]);
+
+    //     return response()->json($payroll);
+    // }
+    // public function show($id)
+    // {
+    //     $payroll = Payroll::with([
+    //         'employee.position',
+    //         'employee.employmentType',
+    //         'allowances',
+    //         'preparedBy',
+    //         'approvedBy'
+    //     ])->findOrFail($id);
+
+    //     return response()->json($payroll);
+    // }
+    public function show($id)
     {
-        return response()->json($payroll->load('transactions'));
+        $payroll = Payroll::with([
+            'employee.position',
+            'employee.employmentType',
+            'allowances',
+            'preparedBy',
+            'approvedBy',
+        ])->findOrFail($id);
+
+        return response()->json($payroll);
     }
+
+
 
     /**
      * Update the specified resource in storage.

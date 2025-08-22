@@ -25,4 +25,10 @@ class Allowance extends Model
     {
         return $this->belongsToMany(Employee::class, 'employee_allowance');
     }
+    public function payrolls()
+    {
+        return $this->belongsToMany(Payroll::class, 'payroll_allowance')
+            ->withPivot(['value', 'is_taxable'])
+            ->withTimestamps();
+    }
 }
