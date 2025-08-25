@@ -12,11 +12,15 @@ class CreateEmployeesTable extends Migration
             $table->id();
             $table->string('full_name');
             $table->string('employee_id')->unique();
-            $table->string('email')->nullable()->after('employee_id');
+            $table->string('email')->nullable();
 
 
             // Foreign keys instead of ENUM
             $table->foreignId('position_id')->constrained('positions')->cascadeOnUpdate()->restrictOnDelete();
+            // $table->foreignId('position_allowance_position_id')
+            //     ->nullable()
+            //     ->constrained('positions')
+            //     ->nullOnDelete();
             $table->foreignId('employment_type_id')->constrained('employment_types')->cascadeOnUpdate()->restrictOnDelete();
 
             $table->decimal('base_salary', 10, 2);

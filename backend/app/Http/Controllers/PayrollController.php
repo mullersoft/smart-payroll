@@ -6,8 +6,8 @@ use App\Models\Payroll;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Services\PayrollService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use App\Services\BankService;
 
 class PayrollController extends Controller
 {
@@ -18,19 +18,23 @@ class PayrollController extends Controller
      */
     public function index()
     {
-        // return response()->json(Payroll::with('employee')->get());// to display the name on the position in payroll
-        return response()->json(Payroll::with(['employee', 'preparedBy', 'approvedBy'])->get());
+        return response()->json(
+            Payroll::with([
+                'employee.position',
+                'employee.employmentType',
+                'allowances',
+                'overtimes',
+                'preparedBy',
+                'approvedBy'
+            ])->get()
+        );
     }
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
-     * @param PayrollService $payrollService
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request, PayrollService $payrollService)
     {
-        // Only users with the 'preparer' role can create payrolls
         if ($request->user()->role !== 'preparer') {
             return response()->json(['error' => 'Only preparers can create payrolls.'], 403);
         }
@@ -40,24 +44,26 @@ class PayrollController extends Controller
             'pay_month' => 'required|date',
             'working_days' => 'required|numeric|min:0|max:30',
             'other_commission' => 'nullable|numeric|min:0',
+            'overtimes' => 'array',
+            'overtimes.*.rate_type' => 'required|in:weekday_evening,night,rest_day,holiday',
+            'overtimes.*.hours' => 'required|numeric|min:0',
         ]);
 
         $data['prepared_by'] = $request->user()->id;
 
         $payroll = $payrollService->generatePayroll($data);
 
-        return response()->json($payroll, 201);
+        return response()->json(
+            $payroll->load(['employee.position', 'employee.employmentType', 'allowances', 'overtimes', 'preparedBy']),
+            201
+        );
     }
 
     /**
      * Bulk payroll creation
-     * @param Request $request
-     * @param PayrollService $payrollService
-     * @return \Illuminate\Http\JsonResponse
      */
     public function bulkStore(Request $request, PayrollService $payrollService)
     {
-        // Only users with the 'preparer' role can bulk create payrolls
         if ($request->user()->role !== 'preparer') {
             return response()->json(['error' => 'Only preparers can create payrolls.'], 403);
         }
@@ -68,13 +74,18 @@ class PayrollController extends Controller
             'payrolls.*.pay_month' => 'required|date',
             'payrolls.*.working_days' => 'required|numeric|min:0|max:30',
             'payrolls.*.other_commission' => 'nullable|numeric|min:0',
+            'payrolls.*.overtimes' => 'array',
+            'payrolls.*.overtimes.*.rate_type' => 'required|in:weekday_evening,night,rest_day,holiday',
+            'payrolls.*.overtimes.*.hours' => 'required|numeric|min:0',
         ]);
 
         $createdPayrolls = [];
 
         foreach ($data['payrolls'] as $payrollData) {
             $payrollData['prepared_by'] = $request->user()->id;
-            $createdPayrolls[] = $payrollService->generatePayroll($payrollData);
+
+            $createdPayrolls[] = $payrollService->generatePayroll($payrollData)
+                ->load(['employee.position', 'employee.employmentType', 'allowances', 'overtimes', 'preparedBy']);
         }
 
         return response()->json([
@@ -84,69 +95,32 @@ class PayrollController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     * @param Payroll $payroll
-     * @return \Illuminate\Http\JsonResponse
+     * Display a payroll.
      */
-    // public function show(Payroll $payroll)
-    // {
-    //     return response()->json($payroll->load('transactions'));
-    // }
-    // public function show(Payroll $payroll)
-    // {
-    //     $payroll->load([
-    //         'employee.position',
-    //         'employee.employmentType',
-    //         'allowances',       // detailed allowances with pivot data
-    //         'preparedBy',
-    //         'approvedBy',
-    //         'transactions'
-    //     ]);
-
-    //     return response()->json($payroll);
-    // }
-    // public function show($id)
-    // {
-    //     $payroll = Payroll::with([
-    //         'employee.position',
-    //         'employee.employmentType',
-    //         'allowances',
-    //         'preparedBy',
-    //         'approvedBy'
-    //     ])->findOrFail($id);
-
-    //     return response()->json($payroll);
-    // }
-    public function show($id)
+    public function show(Payroll $payroll)
     {
-        $payroll = Payroll::with([
-            'employee.position',
-            'employee.employmentType',
-            'allowances',
-            'preparedBy',
-            'approvedBy',
-        ])->findOrFail($id);
-
-        return response()->json($payroll);
+        return response()->json(
+            $payroll->load([
+                'employee.position',
+                'employee.employmentType',
+                'allowances',
+                'overtimes',
+                'transactions',
+                'preparedBy',
+                'approvedBy'
+            ])
+        );
     }
 
-
-
     /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param Payroll $payroll
-     * @param PayrollService $payrollService
-     * @return \Illuminate\Http\JsonResponse
+     * Update payroll.
      */
     public function update(Request $request, Payroll $payroll, PayrollService $payrollService)
     {
-        // Only users with the 'preparer' role can update payrolls
         if ($request->user()->role !== 'preparer') {
             return response()->json(['error' => 'Only preparers can update payrolls.'], 403);
         }
 
-        // Only payrolls with 'prepared' or 'rejected' status can be updated
         if ($payroll->status !== 'prepared' && $payroll->status !== 'rejected') {
             return response()->json(['error' => 'Only prepared or rejected payrolls can be updated.'], 400);
         }
@@ -154,36 +128,36 @@ class PayrollController extends Controller
         $data = $request->validate([
             'working_days' => 'required|numeric|min:0|max:30',
             'other_commission' => 'nullable|numeric|min:0',
+            'overtimes' => 'array',
+            'overtimes.*.rate_type' => 'required|in:weekday_evening,night,rest_day,holiday',
+            'overtimes.*.hours' => 'required|numeric|min:0',
         ]);
 
-        // Update the payroll data and regenerate the payroll
         $payroll->fill([
             'working_days' => $data['working_days'],
             'other_commission' => $data['other_commission'] ?? 0,
-            'status' => 'prepared', // Reset status to prepared after modification
-            'rejection_reason' => null, // Clear rejection reason if updated
+            'status' => 'prepared',
+            'rejection_reason' => null,
             'prepared_by' => $request->user()->id,
         ]);
 
-        $payroll = $payrollService->regeneratePayroll($payroll);
+        $payroll = $payrollService->regeneratePayroll($payroll, $data['overtimes'] ?? []);
 
-        return response()->json(['message' => 'Payroll updated successfully.', 'payroll' => $payroll]);
+        return response()->json([
+            'message' => 'Payroll updated successfully.',
+            'payroll' => $payroll->load(['employee.position', 'employee.employmentType', 'allowances', 'overtimes', 'preparedBy'])
+        ]);
     }
 
     /**
-     * Remove the specified resource from storage.
-     * @param Request $request
-     * @param Payroll $payroll
-     * @return \Illuminate\Http\JsonResponse
+     * Delete payroll.
      */
     public function destroy(Request $request, Payroll $payroll)
     {
-        // Only users with the 'preparer' role can delete payrolls
         if ($request->user()->role !== 'preparer') {
             return response()->json(['error' => 'Only preparers can delete payrolls.'], 403);
         }
 
-        // Prevent deletion of approved payrolls
         if ($payroll->status === 'approved') {
             return response()->json(['error' => 'Approved payrolls cannot be deleted.'], 400);
         }
@@ -194,17 +168,12 @@ class PayrollController extends Controller
     }
 
     /**
-     * Process a payroll transaction.
-     * @param Payroll $payroll
-     * @param \App\Services\BankService $bankService
-     * @return \Illuminate\Http\JsonResponse
+     * Process payroll transaction.
      */
-    public function processTransaction(Payroll $payroll, \App\Services\BankService $bankService)
+    public function processTransaction(Payroll $payroll, BankService $bankService)
     {
         if ($payroll->status !== 'approved') {
-            return response()->json([
-                'error' => 'Payroll must be approved before processing.'
-            ], 403);
+            return response()->json(['error' => 'Payroll must be approved before processing.'], 403);
         }
 
         try {
@@ -217,14 +186,10 @@ class PayrollController extends Controller
     }
 
     /**
-     * Approve a payroll.
-     * @param Payroll $payroll
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Approve payroll.
      */
     public function approve(Payroll $payroll, Request $request)
     {
-        // Only users with the 'approver' role can approve payrolls
         if ($request->user()->role !== 'approver') {
             return response()->json(['error' => 'Only approvers can approve payrolls.'], 403);
         }
@@ -241,28 +206,10 @@ class PayrollController extends Controller
     }
 
     /**
-     * Get pending payrolls.
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function pending()
-    {
-        $pendingPayrolls = Payroll::where('status', 'prepared')->with('employee')->get();
-
-        return response()->json([
-            'count' => $pendingPayrolls->count(),
-            'payrolls' => $pendingPayrolls
-        ]);
-    }
-
-    /**
-     * Reject a payroll.
-     * @param Payroll $payroll
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Reject payroll.
      */
     public function reject(Payroll $payroll, Request $request)
     {
-        // Only users with the 'approver' role can reject payrolls
         if ($request->user()->role !== 'approver') {
             return response()->json(['error' => 'Only approvers can reject payrolls.'], 403);
         }
@@ -278,20 +225,32 @@ class PayrollController extends Controller
         $payroll->status = 'rejected';
         $payroll->rejection_reason = $request->rejection_reason;
         $payroll->rejected_at = Carbon::now();
-        // Keep approved_by unchanged or null; rejection is not an approval
         $payroll->save();
 
         return response()->json(['message' => 'Payroll rejected successfully.']);
     }
 
     /**
-     * Get a list of payrolls with optional filters.
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Pending payrolls.
+     */
+    public function pending()
+    {
+        $pendingPayrolls = Payroll::where('status', 'prepared')
+            ->with(['employee.position', 'employee.employmentType', 'allowances', 'overtimes'])
+            ->get();
+
+        return response()->json([
+            'count' => $pendingPayrolls->count(),
+            'payrolls' => $pendingPayrolls
+        ]);
+    }
+
+    /**
+     * List payrolls with filters.
      */
     public function list(Request $request)
     {
-        $query = Payroll::with('employee');
+        $query = Payroll::with(['employee.position', 'employee.employmentType', 'allowances', 'overtimes']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -304,6 +263,10 @@ class PayrollController extends Controller
             'payrolls' => $query->orderBy('pay_month', 'desc')->get()
         ]);
     }
+
+    /**
+     * Summary of approved payrolls.
+     */
     public function summary(Request $request)
     {
         $query = Payroll::where('status', 'approved');
@@ -317,14 +280,13 @@ class PayrollController extends Controller
         }
 
         if ($request->filled('employment_type')) {
-            $query->whereHas('employee', function ($q) use ($request) {
-                $q->where('employment_type', $request->employment_type);
+            $query->whereHas('employee.employmentType', function ($q) use ($request) {
+                $q->where('name', $request->employment_type);
             });
         }
 
-        $payrolls = $query->get();
+        $payrolls = $query->with('employee')->get();
 
-        // Group by month
         $grouped = $payrolls->groupBy(function ($item) {
             return $item->pay_month->format('Y-m');
         });
@@ -342,43 +304,30 @@ class PayrollController extends Controller
 
         return response()->json($result);
     }
-    // D:\qelem meda\smart-payroll\backend\app\Http\Controllers\PayrollController.php
-
-    // ... other methods ...
 
     /**
-     * Get summary statistics for the dashboard.
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Dashboard summary.
      */
     public function getDashboardSummary(Request $request)
     {
-        // Fetch all approved payrolls
         $approvedPayrolls = Payroll::with('employee')
             ->where('status', 'approved')
             ->get();
 
-        // Get total expenditure (sum of net_payment for approved payrolls)
         $totalExpenditure = $approvedPayrolls->sum('net_payment');
-
-        // Get total number of employees
         $totalEmployees = Employee::count();
 
-        // Calculate gender statistics from employee data
         $genderStats = Employee::selectRaw('gender, count(*) as count')
             ->groupBy('gender')
             ->pluck('count', 'gender');
 
-        // Calculate employment type statistics from employee data
-        $employmentTypeStats = Employee::selectRaw('employment_type, count(*) as count')
-            ->groupBy('employment_type')
-            ->pluck('count', 'employment_type');
+        $employmentTypeStats = Employee::selectRaw('employment_type_id, count(*) as count')
+            ->groupBy('employment_type_id')
+            ->pluck('count', 'employment_type_id');
 
-        // Calculate position statistics from employee data
-        $positionStats = Employee::selectRaw('position, count(*) as count')
-            ->groupBy('position')
-            ->pluck('count', 'position');
-
+        $positionStats = Employee::selectRaw('position_id, count(*) as count')
+            ->groupBy('position_id')
+            ->pluck('count', 'position_id');
 
         return response()->json([
             'totalExpenditure' => $totalExpenditure,
@@ -389,6 +338,4 @@ class PayrollController extends Controller
             'positionStats' => $positionStats,
         ]);
     }
-
-    // ... other methods ...
 }

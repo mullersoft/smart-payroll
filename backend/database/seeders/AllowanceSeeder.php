@@ -40,10 +40,17 @@ class AllowanceSeeder extends Seeder
 
         // Transport (fuel) allowance
         Allowance::create([
-            'name' => 'Transportation Allowance',
+            'name' => 'Transportation Allowance(Positioned employee)',
             'description' => 'Fuel/transportation costs to workplace',
             'type' => 'fixed',
             'value' => 2200,
+            'is_taxable' => false,
+        ]);
+        Allowance::create([
+            'name' => 'Transportation Allowance(Normal  Employee)',
+            'description' => 'Fuel/transportation costs to workplace',
+            'type' => 'fixed',
+            'value' => 600,
             'is_taxable' => false,
         ]);
     }

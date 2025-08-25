@@ -41,7 +41,7 @@ class EmployeesSeeder extends Seeder
             [
                 'full_name' => 'Alemitu Gemeda',
                 'employee_id' => 'emp4',
-                'position_id' => 5,
+                'position_id' => 1,
                 'employment_type_id' => 1,
                 'base_salary' => 50000,
                 'gender' => 'Female',

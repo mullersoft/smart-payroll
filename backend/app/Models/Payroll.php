@@ -15,10 +15,8 @@ class Payroll extends Model
         'working_days',
         'base_salary',
         'earned_salary',
-        // 'position_allowance',
         'position_allowance_taxable',
         'position_allowance_non_tax',
-
         'transport_allowance',
         'other_commission',
         'gross_pay',
@@ -33,10 +31,7 @@ class Payroll extends Model
         'prepared_by',
         'approved_by',
     ];
-    // This defines a relationship between
-    // the Payroll model and the Employee model.
-    // It tells Laravel:
-    // “Each payroll record belongs to one employee.”
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);
@@ -57,13 +52,14 @@ class Payroll extends Model
         return $this->hasMany(Transaction::class);
     }
 
-    public function approver()
-{
-    return $this->belongsTo(User::class, 'approved_by');
-}
-
     public function allowances()
     {
-        return $this->hasMany(\App\Models\PayrollAllowance::class);
+        return $this->hasMany(PayrollAllowance::class);
+    }
+
+    // ✅ FIX: must be declared at top-level, not nested
+    public function overtimes()
+    {
+        return $this->hasMany(Overtime::class);
     }
 }

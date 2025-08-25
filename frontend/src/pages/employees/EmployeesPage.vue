@@ -121,7 +121,7 @@
   :employee="selectedEmployee"
   :positions="positions"
   :employmentTypes="employmentTypes"
-  :allowances="allowances"   
+  :allowances="allowances"
   @save="handleSave"
   @close="showEditModal = false"
 />
@@ -130,8 +130,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
 import api from "@/services/api";
+import { computed, onMounted, ref, watch } from "vue";
 import EmployeeEditModal from "./EmployeeEditModal.vue";
 const allowances = ref([]);
 

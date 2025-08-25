@@ -34,7 +34,7 @@
               </label>
               <input
                 v-model="form.full_name"
-                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 
+                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3
                       bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
                       placeholder-gray-400 dark:placeholder-gray-500
                       focus:ring-2 focus:ring-indigo-500 focus:border-transparent
@@ -53,7 +53,7 @@
               <input
                 type="email"
                 v-model="form.email"
-                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 
+                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3
                       bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
                       placeholder-gray-400 dark:placeholder-gray-500
                       focus:ring-2 focus:ring-indigo-500 focus:border-transparent
@@ -97,7 +97,7 @@
               <input
                 type="date"
                 v-model="form.employment_date"
-                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 
+                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3
                       bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
                       focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                       transition-colors duration-200"
@@ -112,7 +112,7 @@
               </label>
               <select
                 v-model="form.position_id"
-                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 
+                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3
                       bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
                       focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                       transition-colors duration-200"
@@ -132,7 +132,7 @@
               </label>
               <select
                 v-model="form.employment_type_id"
-                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 
+                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3
                       bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
                       focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                       transition-colors duration-200"
@@ -165,7 +165,7 @@
                   step="0.01"
                   min="0"
                   v-model="form.base_salary"
-                  class="w-full border border-gray-300 dark:border-gray-700 rounded-lg pl-12 pr-4 py-3 
+                  class="w-full border border-gray-300 dark:border-gray-700 rounded-lg pl-12 pr-4 py-3
                         bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
                         placeholder-gray-400 dark:placeholder-gray-500
                         focus:ring-2 focus:ring-indigo-500 focus:border-transparent
@@ -183,8 +183,8 @@
               </label>
               <div
                 @click="toggleAllowanceDropdown"
-                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 
-                      bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 
+                class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3
+                      bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
                       cursor-pointer flex justify-between items-center hover:border-gray-400 dark:hover:border-gray-600
                       transition-colors duration-200"
                 :class="{'border-indigo-500 ring-2 ring-indigo-500/20': allowanceDropdownOpen}"
@@ -215,11 +215,11 @@
                     :key="a.id"
                     class="px-4 py-3 flex items-center hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                   >
-                    <input 
-                      type="checkbox" 
-                      :id="'allowance-' + a.id" 
-                      :value="a.id" 
-                      v-model="form.allowances" 
+                    <input
+                      type="checkbox"
+                      :id="'allowance-' + a.id"
+                      :value="a.id"
+                      v-model="form.allowances"
                       class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                     />
                     <label :for="'allowance-' + a.id" class="ml-3 text-sm text-gray-700 dark:text-gray-300">
@@ -237,20 +237,20 @@
       <div
         class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-900 z-10"
       >
-        <button 
-          type="button" 
+        <button
+          type="button"
           @click="$emit('close')"
-          class="px-6 py-2.5 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg 
+          class="px-6 py-2.5 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg
                 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200
                 font-medium"
         >
           Cancel
         </button>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           @click="save"
           :disabled="!isFormValid"
-          class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg 
+          class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg
                 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed
                 transition-colors duration-200 font-medium
                 flex items-center gap-2"
@@ -322,9 +322,9 @@ const selectedAllowancesText = computed(() => {
 });
 
 const isFormValid = computed(() => {
-  return form.full_name.trim() && 
-         form.position_id && 
-         form.employment_type_id && 
+  return form.full_name.trim() &&
+         form.position_id &&
+         form.employment_type_id &&
          form.base_salary > 0 &&
          form.employment_date;
 });

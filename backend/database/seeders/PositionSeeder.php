@@ -18,12 +18,7 @@ class PositionSeeder extends Seeder
             ['name' => 'Director', 'description' => 'Department Director', 'allowance' => 982.76],
             ['name' => 'Dept Lead', 'description' => 'Department Lead', 'allowance' => 982.76],
             ['name' => 'Normal Employee', 'description' => 'Regular employee', 'allowance' => 982.76],
-            // ['name' => 'Intern', 'description' => 'Intern', 'allowance' => 0],
-            // ['name' => 'Contractor', 'description' => 'Contractor', 'allowance' => 0],
-            // ['name' => 'Freelancer', 'description' => 'Freelancer', 'allowance' => 0],
-            // ['name' => 'Part-time', 'description' => 'Part-time employee', 'allowance' => 0],
-            // ['name' => 'Consultant', 'description' => 'Consultant', 'allowance' => 0],
-            // ['name' => 'Advisor', 'description' => 'Advisor', 'allowance' => 0],
+
 
         ];
 

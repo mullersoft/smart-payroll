@@ -5,14 +5,18 @@ namespace App\Services;
 use App\Models\Payroll;
 use App\Models\Employee;
 use App\Models\Allowance;
+use App\Services\OvertimeService;
+use App\Services\TaxService;
 
 class PayrollService
 {
     protected $taxService;
+    protected $overtimeService;
 
-    public function __construct(TaxService $taxService)
+    public function __construct(TaxService $taxService, OvertimeService $overtimeService)
     {
         $this->taxService = $taxService;
+        $this->overtimeService = $overtimeService;
     }
 
     /**
@@ -54,15 +58,21 @@ class PayrollService
         // ---- Other commissions ----
         $other = $data['other_commission'] ?? 0;
 
+        // ---- Overtime ----
+        $overtimeResult = $this->overtimeService->calculate($employee, $data['overtimes'] ?? []);
+        $overtimeTotal = $overtimeResult['total'];
+
         // ---- Gross & Taxable Income ----
         $gross = $earned_salary
             + $position_allowance_taxable
             + $position_allowance_non_tax
             + $taxable_allowances
             + $non_taxable_allowances
-            + $other; // transport_allowance excluded intentionally
+            + $other
+            // + $transport_allowance
+            + $overtimeTotal;
 
-        $taxable_income = $earned_salary + $other + $position_allowance_taxable + $taxable_allowances;
+        $taxable_income = $earned_salary + $other + $position_allowance_taxable + $taxable_allowances + $overtimeTotal;
 
         // ---- Income Tax ----
         $income_tax = $this->taxService->calculateIncomeTax($taxable_income);
@@ -110,7 +120,15 @@ class PayrollService
             ]);
         }
 
-        return $payroll->load('allowances', 'employee.position', 'employee.employmentType');
+        // ✅ Save overtime snapshot
+        foreach ($overtimeResult['records'] as $ot) {
+            $payroll->overtimes()->create(array_merge($ot, [
+                'payroll_id'  => $payroll->id,
+                'employee_id' => $employee->id,
+            ]));
+        }
+
+        return $payroll->load('allowances', 'overtimes', 'employee.position', 'employee.employmentType');
     }
 
     /**
@@ -151,6 +169,10 @@ class PayrollService
         // ---- Other commissions ----
         $other = $payroll->other_commission ?? 0;
 
+        // ---- Overtime ---- (recalculate from DB records)
+        $overtimeResult = $this->overtimeService->calculate($employee, $payroll->overtimes()->get()->toArray());
+        $overtimeTotal = $overtimeResult['total'];
+
         // ---- Gross & Taxable Income ----
         $gross = $earned_salary
             + $position_allowance_taxable
@@ -158,9 +180,10 @@ class PayrollService
             + $taxable_allowances
             + $non_taxable_allowances
             + $transport_allowance
-            + $other;
+            + $other
+            + $overtimeTotal;
 
-        $taxable_income = $earned_salary + $other + $position_allowance_taxable + $taxable_allowances;
+        $taxable_income = $earned_salary + $other + $position_allowance_taxable + $taxable_allowances + $overtimeTotal;
 
         // ---- Income Tax ----
         $income_tax = $this->taxService->calculateIncomeTax($taxable_income);
@@ -195,7 +218,7 @@ class PayrollService
         ])->save();
 
         // ✅ Refresh allowances snapshot
-        $payroll->allowances()->delete(); // clear old ones
+        $payroll->allowances()->delete();
         foreach ($employee->allowances as $allowance) {
             $payroll->allowances()->create([
                 'name'       => $allowance->name,
@@ -204,6 +227,15 @@ class PayrollService
             ]);
         }
 
-        return $payroll->load('allowances', 'employee.position', 'employee.employmentType');
+        // ✅ Refresh overtime snapshot
+        $payroll->overtimes()->delete();
+        foreach ($overtimeResult['records'] as $ot) {
+            $payroll->overtimes()->create(array_merge($ot, [
+                'payroll_id'  => $payroll->id,
+                'employee_id' => $employee->id,
+            ]));
+        }
+
+        return $payroll->load('allowances', 'overtimes', 'employee.position', 'employee.employmentType');
     }
 }

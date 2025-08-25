@@ -12,15 +12,19 @@ class CreateTransactionsTable extends Migration
             $table->id();
             $table->foreignId('payroll_id')->constrained()->onDelete('cascade');
             $table->string('transaction_type'); // salary, tax, pension
+            $table->string('provider')->nullable();
             $table->decimal('amount', 10, 2);
-
             $table->string('from_account'); // Qelem Meda's account
             $table->string('to_account');   // employee or tax authority
-
             $table->dateTime('transaction_date');
             $table->string('processed_by')->nullable();
             $table->string('status')->default('completed');
+            $table->timestamp('verified_at')->nullable();
             $table->text('failure_reason')->nullable();
+            $table->string('tx_ref')->nullable()->index();
+            $table->string('checkout_url')->nullable();
+            $table->json('provider_meta')->nullable();
+            $table->text('failure_reason')->nullable()->change(); // if not already text
 
             $table->timestamps();
         });

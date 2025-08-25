@@ -15,7 +15,6 @@ return new class extends Migration {
             $table->enum('type', ['fixed', 'percent']); // fixed = 1000 ETB, percent = % of base salary
             $table->decimal('value', 10, 2); // amount or % value
             $table->boolean('is_taxable')->default(true);
-
             // Scope allowance
             $table->foreignId('position_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('employee_id')->nullable()->constrained()->onDelete('cascade');
@@ -26,6 +25,10 @@ return new class extends Migration {
 
     public function down()
     {
+        schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('employee_allowance');
+        Schema::dropIfExists('payroll_allowance');
         Schema::dropIfExists('allowances');
+        schema::enableForeignKeyConstraints();
     }
 };
