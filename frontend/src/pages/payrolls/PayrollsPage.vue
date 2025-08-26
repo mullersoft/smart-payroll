@@ -214,14 +214,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
 import MainLayout from "@/components/layout/MainLayout.vue";
+import PayrollDetailsModal from "@/components/payroll/PayrollDetailsModal.vue";
 import PayrollTable from "@/components/payroll/PayrollTable.vue";
 import PreparePayrollModal from "@/components/payroll/PreparePayrollModal.vue";
-import PayrollDetailsModal from "@/components/payroll/PayrollDetailsModal.vue";
 import ExportButtons from "@/components/reports/ExportButtons.vue";
 import api from "@/services/api";
 import { payWithChapa } from "@/services/chapa";
+import { computed, onMounted, ref } from "vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 // State
 
@@ -258,6 +260,7 @@ const fetchPayrolls = async () => {
     }));
   } catch (error) {
     console.error("Error loading payrolls", error);
+    toast.error("Error loading payrolls")
   } finally {
     loading.value = false;
   }
@@ -287,23 +290,31 @@ const viewPayroll = (payroll) => {
 
 // Edit payroll
 const editPayroll = (payroll) => {
-  editPayrollData.value = { ...payroll };
-  showEditModal.value = true;
+try {
+    editPayrollData.value = { ...payroll };
+    showEditModal.value = true;
+  } catch (error) {
+    console.error("Error preparing edit modal:", error);
+    toast.error("❌ Failed to open edit modal.");
+  }
+  /*  editPayrollData.value = { ...payroll };
+  showEditModal.value = true;*/
 };
 
 const submitEdit = async () => {
   try {
     await api.put(`/payrolls/${editPayrollData.value.id}`, {
       working_days: editPayrollData.value.working_days,
-
       other_commission: editPayrollData.value.other_commission,
     });
+    toast.success("✅ Payroll updated successfully.");
 
     await fetchPayrolls();
 
     showEditModal.value = false;
   } catch (error) {
     console.error("Error updating payroll:", error);
+    toast.error("❌ Failed to update payroll.");
   }
 };
 
@@ -324,6 +335,7 @@ const confirmDelete = async () => {
     showDeleteModal.value = false;
   } catch (error) {
     console.error("Error deleting payroll:", error);
+    toast.error("❌ Failed to delete payroll.");
   }
 };
 
@@ -347,11 +359,16 @@ const processPayroll = async (id) => {
     await api.post(`/payrolls/${id}/process`);
     await fetchPayrolls();
   } catch (error) {
-    console.error("Error processing payroll:", error?.response?.data || error);
-    alert(
+console.error("Error processing payroll:", error?.response?.data || error);
+    // toast.error("❌ Failed to process payroll.");
+toast.error(
       error?.response?.data?.error ||
-        "Failed to process payroll. Ensure it's approved and accounts exist."
+        "❌ Failed to process payroll. Ensure it's approved and accounts exist."
     );
+    // alert(
+    //   error?.response?.data?.error ||
+    //     "Failed to process payroll. Ensure it's approved and accounts exist."
+    // );
   }
 };
 // Payment with Chapa
@@ -360,7 +377,8 @@ const payPayroll = async (payroll) => {
     await payWithChapa(payroll); // just pass payroll object
   } catch (error) {
     console.error("Error processing payroll via Chapa:", error);
-    alert("Payment initialization failed.");
+    toast.error("❌ Payment initialization failed.");
+    // alert("Payment initialization failed.");
   }
 };
 

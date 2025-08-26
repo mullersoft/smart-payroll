@@ -56,6 +56,8 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "@/services/api";
 import AuthLayout from "@/components/layout/AuthLayout.vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 const email = ref("");
 const password = ref("");
@@ -88,6 +90,7 @@ const handleReset = async () => {
     setTimeout(() => router.push("/login"), 3000);
   } catch (err) {
     error.value = err.response?.data?.message || "Password reset failed.";
+    toast.error(`❌ ${error.value}`);
   }
 };
 </script>

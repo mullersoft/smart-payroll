@@ -140,8 +140,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
 import api from "@/services/api";
+import { onMounted, ref } from "vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 const positions = ref([]);
 const showModal = ref(false);
@@ -151,8 +153,18 @@ const form = ref({ name: "", description: "" });
 const selectedPosition = ref(null);
 
 const fetchPositions = async () => {
-  const res = await api.get("/positions");
+  try {
+/*
+ const res = await api.get("/positions");
   positions.value = res.data;
+*/
+
+    const res = await api.get("/positions");
+    positions.value = res.data;
+  } catch (error) {
+    console.error("Failed to fetch positions:", error);
+    toast.error("❌ Failed to load positions data.");
+  }
 };
 
 const openAddModal = () => {
@@ -169,6 +181,24 @@ const openEditModal = (pos) => {
 };
 
 const savePosition = async () => {
+  try {
+    if (isEditing.value) {
+      // Update existing position
+      await api.put(`/positions/${selectedPosition.value.id}`, form.value);
+      toast.success("✅ Position updated successfully.");
+    } else {
+      // Create new position
+      await api.post("/positions", form.value);
+      toast.success("✅ Position created successfully.");
+    }
+    showModal.value = false;
+    fetchPositions();
+  } catch (error) {
+    console.error("Failed to save position:", error);
+    toast.error("❌ Failed to save position.");
+  }
+
+/*
   if (isEditing.value) {
     await api.put(`/positions/${selectedPosition.value.id}`, form.value);
   } else {
@@ -176,6 +206,9 @@ const savePosition = async () => {
   }
   showModal.value = false;
   fetchPositions();
+*/
+
+
 };
 
 const confirmDelete = (pos) => {
@@ -184,9 +217,19 @@ const confirmDelete = (pos) => {
 };
 
 const deletePosition = async () => {
-  await api.delete(`/positions/${selectedPosition.value.id}`);
+try {
+    await api.delete(`/positions/${selectedPosition.value.id}`);
+    toast.success("✅ Position deleted successfully.");
+    showDeleteModal.value = false;
+    fetchPositions();
+  } catch (error) {
+    console.error("Failed to delete position:", error);
+    toast.error("❌ Failed to delete position.");
+  }
+/*  await api.delete(`/positions/${selectedPosition.value.id}`);
   showDeleteModal.value = false;
-  fetchPositions();
+  fetchPositions();*/
+
 };
 
 const closeModal = () => {

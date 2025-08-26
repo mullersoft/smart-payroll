@@ -101,7 +101,8 @@ import api from "@/services/api";
 import MainLayout from "@/components/layout/MainLayout.vue";
 import PayrollTable from "@/components/payroll/PayrollTable.vue";
 import PayrollDetailsModal from "@/components/payroll/PayrollDetailsModal.vue";
-
+import { useToast } from "vue-toastification";
+const toast = useToast();
 const payrolls = ref([]);
 const loading = ref(true);
 const filters = ref({ month: "", status: "prepared" });
@@ -132,7 +133,8 @@ const fetchPayrolls = async () => {
     payrolls.value = res.data.payrolls || [];
   } catch (error) {
     console.error("Error loading payrolls:", error);
-    alert("❌ Failed to load payrolls.");
+    toast.error("❌ Failed to load payrolls.");
+    // alert("❌ Failed to load payrolls.");
   } finally {
     loading.value = false;
   }
@@ -145,7 +147,8 @@ const approvePayroll = async (payrollId) => {
     fetchPayrolls();
   } catch (error) {
     console.error("Error approving payroll:", error);
-    alert("❌ Failed to approve payroll.");
+    // alert("❌ Failed to approve payroll.");
+    toast.error("❌ Failed to approve payroll.");
   }
 };
 
@@ -162,12 +165,14 @@ const confirmReject = async () => {
     await api.post(`/payrolls/${payrollToRejectId.value}/reject`, {
       rejection_reason: rejectionReason.value,
     });
-    alert("✅ Payroll rejected successfully.");
+    toast.success("✅ Payroll rejected successfully!");
+    // alert("✅ Payroll rejected successfully.");
     showRejectModal.value = false; // Close the modal
     fetchPayrolls(); // Refresh the payroll list
   } catch (error) {
     console.error("Error rejecting payroll:", error);
-    alert("❌ Failed to reject payroll.");
+    // alert("❌ Failed to reject payroll.");
+    toast.error("❌ Failed to reject payroll.");
   }
 };
 

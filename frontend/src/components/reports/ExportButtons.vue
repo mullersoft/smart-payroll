@@ -321,7 +321,7 @@ button[disabled] {
     right: auto;
     transform-origin: top left;
   }
-  
+
   .relative.inline-block.text-left {
     margin-left: 0;
   }

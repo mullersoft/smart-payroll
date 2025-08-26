@@ -47,7 +47,8 @@ import { onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import api from "@/services/api";
 import { useAuthStore } from "@/store/auth";
-
+import { useToast } from "vue-toastification";
+const toast = useToast();
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
@@ -70,6 +71,7 @@ onMounted(async () => {
       else router.push("/profile"); // 👈 pending users land here
     } catch (err) {
       console.error("Google login failed", err);
+      toast.error("❌ Google login failed. Please try again.");
       router.push("/login");
     }
   } else {

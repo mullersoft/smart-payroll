@@ -203,7 +203,8 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/store/auth";
 import { theme, toggleTheme } from "@/store/theme";
 import api from "@/services/api";
-
+import { useToast } from "vue-toastification";
+const toast = useToast();
 const authStore = useAuthStore();
 const router = useRouter();
 const user = authStore.user;
@@ -216,6 +217,7 @@ const dropdownRef = ref(null);
 const handleClickOutside = (event) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
     dropdownOpen.value = false;
+
   }
 };
 
@@ -248,7 +250,8 @@ const updateProfile = async () => {
     activeSection.value = null;
   } catch (err) {
     console.error("Profile update failed:", err);
-    alert("Failed to update profile.");
+    // alert("Failed to update profile.");
+    toast.error("❌ Failed to update profile.");
   }
 };
 
@@ -263,7 +266,8 @@ const changePassword = async () => {
     activeSection.value = null;
   } catch (err) {
     console.error("Password change failed:", err);
-    alert("Failed to update password.");
+    // alert("Failed to update password.");
+    toast.error("❌ Failed to update password.");
   }
 };
 

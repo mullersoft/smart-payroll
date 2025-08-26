@@ -1,19 +1,12 @@
 <template>
-  <div
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  >
-    <div
-      class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-6xl shadow-xl transition-colors duration-300 flex flex-col max-h-[90vh]"
-    >
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-6xl shadow-xl transition-colors duration-300 flex flex-col max-h-[90vh]">
       <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
         Prepare Payroll (Bulk or Single)
       </h2>
 
-      <!-- Pay Month -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-          >Pay Month</label
-        >
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pay Month</label>
         <input
           v-model="bulkPayMonth"
           type="month"
@@ -21,7 +14,6 @@
         />
       </div>
 
-      <!-- Employee Table -->
       <div class="flex-grow overflow-y-auto mb-4">
         <table
           class="min-w-full border border-gray-300 dark:border-gray-600 text-sm text-gray-900 dark:text-gray-100"
@@ -39,10 +31,11 @@
               <th class="px-3 py-2">Full Name</th>
               <th class="px-3 py-2">Working Days</th>
               <th class="px-3 py-2">Other Commission</th>
+              <th class="px-3 py-2">Loan/Penalty</th>
               <th class="px-3 py-2 text-center" colspan="4">Overtime (hours)</th>
             </tr>
             <tr class="bg-gray-50 dark:bg-gray-600">
-              <th colspan="4"></th>
+              <th colspan="5"></th>
               <th class="px-2 py-1 text-xs font-medium">Weekday Evening</th>
               <th class="px-2 py-1 text-xs font-medium">Night</th>
               <th class="px-2 py-1 text-xs font-medium">Rest Day</th>
@@ -78,6 +71,15 @@
                   type="number"
                   step="0.01"
                   v-model.number="emp.other_commission"
+                  class="w-24 border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
+                />
+              </td>
+              <td class="px-3 py-2">
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  v-model.number="emp.loan_penalty"
                   class="w-24 border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
                 />
               </td>
@@ -122,7 +124,6 @@
         </table>
       </div>
 
-      <!-- Footer -->
       <div class="flex justify-end space-x-3 mt-auto">
         <button
           @click="$emit('close')"
@@ -146,12 +147,13 @@
 <script setup>
 import api from "@/services/api";
 import { computed, onMounted, ref } from "vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 const emit = defineEmits(["close", "payroll-created"]);
 
 const employees = ref([]);
- const bulkPayMonth = ref("");
-// const bulkPayMonth = new Date().toISOString().slice(0, 7)
+const bulkPayMonth = ref("");
 const selectedEmployees = ref([]);
 
 const allSelected = computed(() => {
@@ -168,6 +170,7 @@ const fetchEmployees = async () => {
       ...emp,
       working_days: 30,
       other_commission: 0,
+      loan_penalty: 0, // ✅ Added loan_penalty field
       overtime_weekday_evening: 0,
       overtime_night: 0,
       overtime_rest_day: 0,
@@ -175,6 +178,7 @@ const fetchEmployees = async () => {
     }));
   } catch (err) {
     console.error("Failed to fetch employees", err);
+    toast.error("❌ Failed to load employees.");
   }
 };
 
@@ -195,6 +199,7 @@ const createBulkPayroll = async () => {
         pay_month: bulkPayMonth.value + "-01",
         working_days: emp.working_days,
         other_commission: emp.other_commission,
+        loan_penalty: emp.loan_penalty, // ✅ Added to payload
         prepared_by: JSON.parse(localStorage.getItem("user"))?.id,
         overtimes: [
           { rate_type: "weekday_evening", hours: emp.overtime_weekday_evening },
@@ -206,12 +211,21 @@ const createBulkPayroll = async () => {
     });
 
     await api.post("/payrolls/bulk", { payrolls: payload });
-    alert("✅ Payrolls prepared successfully!");
+    toast.success("✅ Payrolls prepared successfully!");
+
     emit("payroll-created");
     emit("close");
   } catch (error) {
     console.error("Error creating payrolls", error);
-    alert("❌ Failed to prepare payrolls.");
+    toast.error("❌ Failed to prepare payrolls.");
+    if (error.response?.data?.errors) {
+      const errs = error.response.data.errors;
+      Object.values(errs).forEach((msgArr) => {
+        toast.error(msgArr[0]);
+      });
+    } else {
+      toast.error("❌ Failed to prepare payrolls.");
+    }
   }
 };
 

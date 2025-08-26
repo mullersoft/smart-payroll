@@ -128,9 +128,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
 import api from "@/services/api";
-
+import { onMounted, ref } from "vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 const types = ref([]);
 const showModal = ref(false);
 const showDeleteModal = ref(false);
@@ -139,8 +140,16 @@ const form = ref({ name: "", description: "" });
 const selectedType = ref(null);
 
 const fetchTypes = async () => {
-  const res = await api.get("/employment-types");
-  types.value = res.data;
+  try {
+    const res = await api.get("/employment-types");
+    types.value = res.data;
+  } catch (error) {
+    console.error("Failed to fetch employment types:", error);
+    toast.error("❌ Failed to load employment types data.");
+  }
+/*  const res = await api.get("/employment-types");
+  types.value = res.data;*/
+
 };
 
 const openAddModal = () => {
@@ -158,12 +167,35 @@ const openEditModal = (type) => {
 
 const saveType = async () => {
   if (isEditing.value) {
+    // Update existing type
+    try {
+      await api.put(`/employment-types/${selectedType.value.id}`, form.value);
+      toast.success("✅ Employment type updated successfully.");
+      fetchTypes();
+      closeModal();
+    } catch (error) {
+      console.error("Failed to update employment type:", error);
+      toast.error("❌ Failed to update employment type.");
+    }
+  } else {
+    // Create new type
+    try {
+      await api.post("/employment-types", form.value);
+      toast.success("✅ Employment type created successfully.");
+      fetchTypes();
+      closeModal();
+    } catch (error) {
+      console.error("Failed to create employment type:", error);
+      toast.error("❌ Failed to create employment type.");
+    }
+  }
+  /*  if (isEditing.value) {
     await api.put(`/employment-types/${selectedType.value.id}`, form.value);
   } else {
     await api.post("/employment-types", form.value);
   }
   showModal.value = false;
-  fetchTypes();
+  fetchTypes();*/
 };
 
 const confirmDelete = (type) => {
@@ -172,9 +204,19 @@ const confirmDelete = (type) => {
 };
 
 const deleteType = async () => {
-  await api.delete(`/employment-types/${selectedType.value.id}`);
+  try {
+    await api.delete(`/employment-types/${selectedType.value.id}`);
+    toast.success("✅ Employment type deleted successfully.");
+    fetchTypes();
+    showDeleteModal.value = false;
+  } catch (error) {
+    console.error("Failed to delete employment type:", error);
+    toast.error("❌ Failed to delete employment type.");
+  }
+
+  /*  await api.delete(`/employment-types/${selectedType.value.id}`);
   showDeleteModal.value = false;
-  fetchTypes();
+  fetchTypes();*/
 };
 
 const closeModal = () => {

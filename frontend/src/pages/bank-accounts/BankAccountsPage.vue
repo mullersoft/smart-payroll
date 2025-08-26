@@ -177,6 +177,8 @@
 import { ref, onMounted } from "vue";
 import api from "@/services/api";
 import MainLayout from "@/components/layout/MainLayout.vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 const bankAccounts = ref([]);
 const employees = ref([]);
@@ -241,6 +243,7 @@ const fetchBankAccounts = async () => {
     bankAccounts.value = response.data;
   } catch (error) {
     console.error("Failed to fetch bank accounts", error);
+    toast.error("❌ Failed to load bank accounts data.");
   }
 };
 
@@ -250,6 +253,7 @@ const fetchEmployees = async () => {
     employees.value = res.data;
   } catch (error) {
     console.error("Failed to fetch employees", error);
+    toast.error("❌ Failed to load employees data.");
   }
 };
 
@@ -278,13 +282,16 @@ const submitBankAccount = async () => {
       if (index !== -1) {
         bankAccounts.value[index] = res.data;
       }
+      toast.success("✅ Bank account updated successfully!");
     } else {
       const res = await api.post("/bank-accounts", newAccount.value);
       bankAccounts.value.push(res.data);
+      toast.success("✅ Bank account added successfully!");
     }
     closeModal();
   } catch (error) {
     console.error("Failed to submit bank account", error);
+    toast.error("❌ Failed to save bank account.");
   }
 };
 
@@ -298,8 +305,10 @@ const deleteBankAccount = async (id) => {
     await api.delete(`/bank-accounts/${id}`);
     bankAccounts.value = bankAccounts.value.filter((acc) => acc.id !== id);
     openDropdownId.value = null; // Close the dropdown after deletion
+    toast.success("✅ Bank account deleted successfully!");
   } catch (error) {
     console.error("Failed to delete bank account", error);
+    toast.error("❌ Failed to delete bank account.");
   }
 };
 

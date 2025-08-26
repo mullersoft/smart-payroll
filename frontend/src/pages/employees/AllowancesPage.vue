@@ -214,8 +214,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
 import api from "@/services/api";
+import { onMounted, ref } from "vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 const allowances = ref([]);
 const showModal = ref(false);
@@ -257,13 +259,30 @@ const openEditModal = (allowance) => {
 };
 
 const saveAllowance = async () => {
-  if (isEditing.value) {
+try {
+    if (isEditing.value) {
+      // Update existing allowance
+      await api.put(`/allowances/${selectedAllowance.value.id}`, form.value);
+      toast.success("✅ Allowance updated successfully.");
+    } else {
+      // Create new allowance
+      await api.post("/allowances", form.value);
+      toast.success("✅ Allowance created successfully.");
+    }
+    showModal.value = false;
+    fetchAllowances();
+  } catch (error) {
+    console.error("Failed to save allowance:", error);
+    toast.error("❌ Failed to save allowance. Please try again.");
+  }
+/*   if (isEditing.value) {
     await api.put(`/allowances/${selectedAllowance.value.id}`, form.value);
   } else {
     await api.post("/allowances", form.value);
   }
   showModal.value = false;
-  fetchAllowances();
+  fetchAllowances();*/
+
 };
 
 const confirmDelete = (allowance) => {
@@ -273,9 +292,19 @@ const confirmDelete = (allowance) => {
 };
 
 const deleteAllowance = async () => {
-  await api.delete(`/allowances/${selectedAllowance.value.id}`);
+try {
+    await api.delete(`/allowances/${selectedAllowance.value.id}`);
+    toast.success("✅ Allowance deleted successfully.");
+    showDeleteModal.value = false;
+    fetchAllowances();
+  } catch (error) {
+    console.error("Failed to delete allowance:", error);
+    toast.error("❌ Failed to delete allowance. Please try again.");
+  }
+
+  /*  await api.delete(`/allowances/${selectedAllowance.value.id}`);
   showDeleteModal.value = false;
-  fetchAllowances();
+  fetchAllowances();*/
 };
 
 const closeModal = () => {

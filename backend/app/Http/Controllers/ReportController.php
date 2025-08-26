@@ -11,53 +11,53 @@ use \App\Models\User;
 
 class ReportController extends Controller
 {
-    public function monthlyPayroll(Request $request, $month)
-    {
-        // Get the status from the request, defaulting to 'all' if not provided
-        $status = $request->query('status');
+    // public function monthlyPayroll(Request $request, $month)
+    // {
+    //     // Get the status from the request, defaulting to 'all' if not provided
+    //     $status = $request->query('status');
 
-        $query = Payroll::with('employee')
-            ->whereRaw("DATE_FORMAT(pay_month, '%Y-%m') = ?", [$month]);
+    //     $query = Payroll::with('employee')
+    //         ->whereRaw("DATE_FORMAT(pay_month, '%Y-%m') = ?", [$month]);
 
-        // Add a conditional where clause to filter by status
-        if ($status && $status !== 'all') {
-            $query->where('status', $status);
-        }
+    //     // Add a conditional where clause to filter by status
+    //     if ($status && $status !== 'all') {
+    //         $query->where('status', $status);
+    //     }
 
-        $records = $query->get();
+    //     $records = $query->get();
 
-        $report = $records->map(function ($payroll) {
-            return [
-                'id'                          => $payroll->id,
-                'pay_month'                   => $payroll->pay_month,
-                'status'                      => $payroll->status,
-                'employee_name'               => $payroll->employee->full_name,
-                'employment_date'             => $payroll->employee->employment_date,
-                'position'                    => $payroll->employee->position,
-                'base_salary'                 => $payroll->base_salary,
-                'working_days'                => $payroll->working_days,
-                'earned_salary'               => $payroll->earned_salary,
-                'position_allowance_non_tax'  => $payroll->position_allowance_non_tax,
-                'position_allowance_taxable'  => $payroll->position_allowance_taxable,
-                'transport_allowance'         => $payroll->transport_allowance,
-                'other_commission'            => $payroll->other_commission,
-                'gross_pay'                   => $payroll->gross_pay,
-                'taxable_income'              => $payroll->taxable_income,
-                'income_tax'                  => $payroll->income_tax,
-                'employee_pension'            => $payroll->employee_pension,
-                'employer_pension'            => $payroll->employer_pension,
-                'total_deduction'             => $payroll->total_deduction,
-                'net_payment'                 => $payroll->net_payment,
-            ];
-        });
+    //     $report = $records->map(function ($payroll) {
+    //         return [
+    //             'id'                          => $payroll->id,
+    //             'pay_month'                   => $payroll->pay_month,
+    //             'status'                      => $payroll->status,
+    //             'employee_name'               => $payroll->employee->full_name,
+    //             'employment_date'             => $payroll->employee->employment_date,
+    //             'position'                    => $payroll->employee->position,
+    //             'base_salary'                 => $payroll->base_salary,
+    //             'working_days'                => $payroll->working_days,
+    //             'earned_salary'               => $payroll->earned_salary,
+    //             'position_allowance_non_tax'  => $payroll->position_allowance_non_tax,
+    //             'position_allowance_taxable'  => $payroll->position_allowance_taxable,
+    //             'transport_allowance'         => $payroll->transport_allowance,
+    //             'other_commission'            => $payroll->other_commission,
+    //             'gross_pay'                   => $payroll->gross_pay,
+    //             'taxable_income'              => $payroll->taxable_income,
+    //             'income_tax'                  => $payroll->income_tax,
+    //             'employee_pension'            => $payroll->employee_pension,
+    //             'employer_pension'            => $payroll->employer_pension,
+    //             'total_deduction'             => $payroll->total_deduction,
+    //             'net_payment'                 => $payroll->net_payment,
+    //         ];
+    //     });
 
-        return response()->json([
-            'month' => $month,
-            'total_employees' => $records->count(),
-            'total_net_payment' => $records->sum('net_payment'),
-            'records' => $report,
-        ]);
-    }
+    //     return response()->json([
+    //         'month' => $month,
+    //         'total_employees' => $records->count(),
+    //         'total_net_payment' => $records->sum('net_payment'),
+    //         'records' => $report,
+    //     ]);
+    // }
 
     public function exportExcel(Request $request, $month)
     {
@@ -68,7 +68,7 @@ class ReportController extends Controller
     {
         $status = $request->query('status', 'approved');
 
-        $query = Payroll::with(['employee'])
+        $query = Payroll::with(['employee','overtimes'])
             ->whereRaw("DATE_FORMAT(pay_month, '%Y-%m') = ?", [$month]);
 
         if ($status && $status !== 'all') {
@@ -100,17 +100,19 @@ class ReportController extends Controller
         }
 
         $records = $recordsRaw->map(function ($payroll) {
+                $totalOvertime = $payroll->overtimes->sum('amount');
+
             return [
                 'employee_name'       => $payroll->employee->full_name,
-                'employment_date'     => $payroll->employee->employment_date,
+                'employment_date'     =>$payroll->employee->employment_date,
                 'base_salary'         => $payroll->base_salary,
                 'working_days'        => $payroll->working_days,
                 'earned_salary'       => $payroll->earned_salary,
-                'position_non_tax'    => $payroll->position_allowance_non_tax ?? 0,
-                'position_taxable'    => $payroll->position_allowance_taxable ?? 0,
+                'position_non_tax'    => $payroll->position_allowance_non_tax ?? 0, 'position_taxable'    => $payroll->position_allowance_taxable ?? 0,
                 'transport_non_tax'   => $payroll->transport_allowance ?? 0,
                 'transport_taxable'   => $payroll->transport_taxable ?? 0,
                 'other_commission'    => $payroll->other_commission ?? 0,
+                'overtime'            => $totalOvertime, // calculated total
                 'gross_pay'           => $payroll->gross_pay,
                 'taxable_income'      => $payroll->taxable_income,
                 'income_tax'          => $payroll->income_tax,
@@ -131,6 +133,8 @@ class ReportController extends Controller
             'total_pos_taxable'  => $records->sum('position_taxable'),
             'total_trans_non'    => $records->sum('transport_non_tax'),
             'total_trans_tax'    => $records->sum('transport_taxable'),
+            'total_commission'   => $records->sum('other_commission'),
+            'total_overtime' => $recordsRaw->map(function($payroll) {return $payroll->overtimes->sum('amount');})->sum(),
             'total_gross'        => $recordsRaw->sum('gross_pay'),
             'total_taxable'      => $recordsRaw->sum('taxable_income'),
             'total_income_tax'   => $recordsRaw->sum('income_tax'),

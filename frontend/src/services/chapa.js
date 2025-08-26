@@ -1,4 +1,6 @@
+import { useToast } from "vue-toastification";
 import api from "./api";
+const toast = useToast();
 
 export const payWithChapa = async (payroll) => {
   try {
@@ -11,6 +13,7 @@ export const payWithChapa = async (payroll) => {
     }
   } catch (error) {
     console.error("Chapa payment init failed:", error);
-    alert("Failed to initialize Chapa payment");
+    toast.error("❌ Failed to initialize Chapa payment");
+    // alert("Failed to initialize Chapa payment");
   }
 };

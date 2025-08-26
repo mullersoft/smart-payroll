@@ -167,7 +167,8 @@
 import { ref, onMounted } from "vue";
 import MainLayout from "@/components/layout/MainLayout.vue";
 import api from "@/services/api";
-
+import { useToast } from "vue-toastification";
+const toast = useToast();
 const users = ref([]);
 const loading = ref(true);
 const showModal = ref(false);
@@ -188,6 +189,7 @@ const fetchUsers = async () => {
     users.value = res.data;
   } catch (err) {
     console.error("Failed to fetch users:", err);
+    toast.error("❌ Failed to load users data.");
   } finally {
     loading.value = false;
   }
@@ -219,14 +221,19 @@ const handleSubmit = async () => {
         name: form.value.name, // Added name for updating
         email: form.value.email,
         role: form.value.role,
+
       });
+
     } else {
       await api.post("/register", form.value);
+
     }
+    toast.success(`✅ User ${isEditing.value ? "updated" : "created"} successfully.`);
     showModal.value = false;
     fetchUsers();
   } catch (err) {
     console.error("Failed to save user:", err);
+    toast.error("❌ Failed to save user.");
   }
 };
 
@@ -236,17 +243,19 @@ const toggleStatus = async (user) => {
     fetchUsers();
   } catch (err) {
     console.error("Failed to toggle user status:", err);
+    toast.error("❌ Failed to toggle user status.");
   }
 };
 
 const deleteUser = async (id) => {
   // Using a custom modal is recommended for production, but using confirm() for a quick example
-  if (!confirm("Are you sure you want to delete this user?")) return; 
+  if (!confirm("Are you sure you want to delete this user?")) return;
   try {
     await api.delete(`/users/${id}`);
     fetchUsers();
   } catch (err) {
     console.error("Failed to delete user:", err);
+    toast.error("❌ Failed to delete user.");
   }
 };
 

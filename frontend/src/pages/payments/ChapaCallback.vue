@@ -26,6 +26,8 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import api from "@/services/api";
 import MainLayout from "@/components/layout/MainLayout.vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 const route = useRoute();
 const ok = ref(false);
@@ -48,6 +50,7 @@ onMounted(async () => {
   } catch (e) {
     ok.value = false;
     errorMessage.value = e.response?.data?.error || "Verification failed";
+toast.error(`❌ ${errorMessage.value}`);
   } finally {
     loading.value = false;
   }

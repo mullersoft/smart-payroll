@@ -266,8 +266,10 @@
 </template>
 
 <script setup>
-import { reactive, watch, ref, computed, onMounted, onUnmounted } from "vue";
-
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+// // toastification
+import { useToast } from "vue-toastification";
+const toast = useToast();
 const props = defineProps({
   show: Boolean,
   isEditing: Boolean,
@@ -371,7 +373,10 @@ watch(
 
 // Save with validation
 const save = () => {
-  if (!isFormValid.value) return;
+  if (!isFormValid.value) {
+    toast.error("❌ Please fill in all required fields.");
+    return;
+  }
   emit("save", { ...form });
 };
 

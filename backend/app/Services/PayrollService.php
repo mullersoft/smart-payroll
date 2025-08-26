@@ -57,6 +57,7 @@ class PayrollService
 
         // ---- Other commissions ----
         $other = $data['other_commission'] ?? 0;
+        $loan_penalty = $data['loan_penalty'] ?? 0;
 
         // ---- Overtime ----
         $overtimeResult = $this->overtimeService->calculate($employee, $data['overtimes'] ?? []);
@@ -85,7 +86,7 @@ class PayrollService
 
         // ---- Total deduction & Net Pay ----
         $total_deduction = $income_tax + $employee_pension;
-        $net_payment = $gross - $total_deduction;
+        $net_payment = $gross - $total_deduction-$loan_penalty;
 
         // ✅ Create payroll record
         $payroll = Payroll::create([
@@ -98,6 +99,7 @@ class PayrollService
             'position_allowance_non_tax' => $position_allowance_non_tax,
             'transport_allowance'        => $transport_allowance,
             'other_commission'           => $other,
+            'loan_penalty'               => $loan_penalty,
             'gross_pay'                  => $gross,
             'taxable_income'             => $taxable_income,
             'income_tax'                 => $income_tax,
@@ -111,7 +113,7 @@ class PayrollService
             'approved_by'                => null,
         ]);
 
-        // ✅ Save allowances snapshot
+        // Save allowances snapshot
         foreach ($employee->allowances as $allowance) {
             $payroll->allowances()->create([
                 'name'       => $allowance->name,
@@ -120,7 +122,7 @@ class PayrollService
             ]);
         }
 
-        // ✅ Save overtime snapshot
+        //  Save overtime snapshot
         foreach ($overtimeResult['records'] as $ot) {
             $payroll->overtimes()->create(array_merge($ot, [
                 'payroll_id'  => $payroll->id,
@@ -168,6 +170,7 @@ class PayrollService
 
         // ---- Other commissions ----
         $other = $payroll->other_commission ?? 0;
+        $loan_penalty = $payroll->loan_penalty ?? 0;
 
         // ---- Overtime ---- (recalculate from DB records)
         $overtimeResult = $this->overtimeService->calculate($employee, $payroll->overtimes()->get()->toArray());
@@ -195,7 +198,7 @@ class PayrollService
         $pension_contribution = $isPermanent ? $employee_pension + $employer_pension : 0;
 
         $total_deduction = $income_tax + $employee_pension;
-        $net_payment = $gross - $total_deduction;
+        $net_payment = $gross - $total_deduction-$loan_penalty;
 
         // ✅ Update payroll record
         $payroll->fill([
@@ -203,6 +206,8 @@ class PayrollService
             'position_allowance_taxable' => $position_allowance_taxable,
             'position_allowance_non_tax' => $position_allowance_non_tax,
             'transport_allowance'        => $transport_allowance,
+            'other_commission'           => $other,
+            'loan_penalty'               => $loan_penalty,
             'gross_pay'                  => $gross,
             'taxable_income'             => $taxable_income,
             'income_tax'                 => $income_tax,

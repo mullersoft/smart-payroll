@@ -19,6 +19,7 @@ class Payroll extends Model
         'position_allowance_non_tax',
         'transport_allowance',
         'other_commission',
+        'loan_penalty',
         'gross_pay',
         'taxable_income',
         'income_tax',

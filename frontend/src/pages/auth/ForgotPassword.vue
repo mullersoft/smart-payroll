@@ -38,6 +38,8 @@
 import { ref } from "vue";
 import axios from "@/services/api";
 import AuthLayout from "@/components/layout/AuthLayout.vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 const email = ref("");
 const message = ref(null);
@@ -50,8 +52,10 @@ const handleSubmit = async () => {
   try {
     const res = await axios.post("/forgot-password", { email: email.value });
     message.value = res.data.message || "Password reset link sent!";
+    toast.success(`✅ ${message.value}`);
   } catch (err) {
     error.value = err.response?.data?.message || "Failed to send reset link.";
+    toast.error(`❌ ${error.value}`);
   }
 };
 </script>

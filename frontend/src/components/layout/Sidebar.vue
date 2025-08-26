@@ -1,7 +1,7 @@
 <!-- frontend/src/components/layout/Sidebar.vue -->
 <script setup>
-import { isSidebarOpen, toggleSidebar, closeSidebar } from "@/store/sidebar";
 import { useAuthStore } from "@/store/auth";
+import { closeSidebar, isSidebarOpen, toggleSidebar } from "@/store/sidebar";
 import { theme, toggleTheme } from "@/store/theme";
 import { onMounted, onUnmounted } from "vue";
 
@@ -34,13 +34,13 @@ const allLinks = [
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   },
   {
-    path: "/employees-section",
+    path: "/employees",
     label: "Employees",
     roles: ["preparer"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   },
   {
-    path: "/bank-accounts",
+    path: "/accounts",
     label: "Accounts",
     roles: ["preparer"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><rect width="20" height="12" x="2" y="6" rx="2"/><path d="M6 12h4m2 0h-2m2 0v4m0-4h-2"/></svg>`,

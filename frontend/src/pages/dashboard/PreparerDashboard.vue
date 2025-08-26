@@ -111,7 +111,8 @@
 import { ref, onMounted } from "vue";
 import MainLayout from "@/components/layout/MainLayout.vue";
 import api from "@/services/api";
-
+import { useToast } from "vue-toastification";
+const toast = useToast();
 // Import components for charts
 import { Bar, Pie } from "vue-chartjs";
 import {
@@ -206,6 +207,7 @@ const fetchData = async () => {
     };
   } catch (err) {
     console.error("Failed to fetch preparer dashboard data", err);
+    toast.error("❌ Failed to load dashboard data.");
   }
 };
 

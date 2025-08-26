@@ -44,12 +44,14 @@ class PayrollController extends Controller
             'pay_month' => 'required|date',
             'working_days' => 'required|numeric|min:0|max:30',
             'other_commission' => 'nullable|numeric|min:0',
+            'loan_penalty' => 'nullable|numeric|min:0',
             'overtimes' => 'array',
             'overtimes.*.rate_type' => 'required|in:weekday_evening,night,rest_day,holiday',
             'overtimes.*.hours' => 'required|numeric|min:0',
         ]);
 
         $data['prepared_by'] = $request->user()->id;
+        $data['loan_penalty'] = $request->input('loan_penalty', 0);
 
         $payroll = $payrollService->generatePayroll($data);
 
@@ -74,6 +76,7 @@ class PayrollController extends Controller
             'payrolls.*.pay_month' => 'required|date',
             'payrolls.*.working_days' => 'required|numeric|min:0|max:30',
             'payrolls.*.other_commission' => 'nullable|numeric|min:0',
+            'payrolls.*.loan_penalty' => 'nullable|numeric|min:0',
             'payrolls.*.overtimes' => 'array',
             'payrolls.*.overtimes.*.rate_type' => 'required|in:weekday_evening,night,rest_day,holiday',
             'payrolls.*.overtimes.*.hours' => 'required|numeric|min:0',
@@ -128,6 +131,7 @@ class PayrollController extends Controller
         $data = $request->validate([
             'working_days' => 'required|numeric|min:0|max:30',
             'other_commission' => 'nullable|numeric|min:0',
+            'loan_penalty' => 'nullable|numeric|min:0', // ✅ Added validation rule
             'overtimes' => 'array',
             'overtimes.*.rate_type' => 'required|in:weekday_evening,night,rest_day,holiday',
             'overtimes.*.hours' => 'required|numeric|min:0',
@@ -136,6 +140,7 @@ class PayrollController extends Controller
         $payroll->fill([
             'working_days' => $data['working_days'],
             'other_commission' => $data['other_commission'] ?? 0,
+            'loan_penalty' => $data['loan_penalty'] ?? 0,
             'status' => 'prepared',
             'rejection_reason' => null,
             'prepared_by' => $request->user()->id,

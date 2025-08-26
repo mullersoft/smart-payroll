@@ -1,16 +1,15 @@
-import { createRouter, createWebHistory } from "vue-router";
+import ForgotPassword from "@/pages/auth/ForgotPassword.vue";
 import Login from "@/pages/auth/Login.vue";
 import Register from "@/pages/auth/Register.vue";
-import ForgotPassword from "@/pages/auth/ForgotPassword.vue";
 import ResetPassword from "@/pages/auth/ResetPassword.vue";
-
-import AdminDashboard from "@/pages/dashboard/AdminDashboard.vue";
-import PreparerDashboard from "@/pages/dashboard/PreparerDashboard.vue";
-import ApproverDashboard from "@/pages/dashboard/ApproverDashboard.vue";
+import { createRouter, createWebHistory } from "vue-router";
 import BankAccountsPage from "@/pages/bank-accounts/BankAccountsPage.vue";
+import AdminDashboard from "@/pages/dashboard/AdminDashboard.vue";
+import ApproverDashboard from "@/pages/dashboard/ApproverDashboard.vue";
+import PreparerDashboard from "@/pages/dashboard/PreparerDashboard.vue";
+import EmployeesSection from "@/pages/employees/EmployeesSection.vue";
 import PayrollsPage from "@/pages/payrolls/PayrollsPage.vue";
 import TransactionsPage from "@/pages/transactions/TransactionsPage.vue";
-import EmployeesSection from "@/pages/employees/EmployeesSection.vue";
 
 const routes = [
   {
@@ -38,7 +37,7 @@ const routes = [
   },
 
   {
-    path: "/employees-section",
+    path: "/employees",
     name: "EmployeesSection",
     component: EmployeesSection,
     meta: { requiresAuth: true, roles: ["preparer"] },
@@ -94,7 +93,7 @@ const routes = [
   },
 
   {
-    path: "/bank-accounts",
+    path: "/accounts",
     component: BankAccountsPage,
     meta: { requiresAuth: true, role: "preparer" },
   },
@@ -128,10 +127,25 @@ router.beforeEach((to, from, next) => {
 
   const isAuth = !!auth && !!token;
 
-  // Block logged-in users from visiting guest-only pages
+  // Block logged-in users from visiting guest-only pages(vs code recompensation)
   if (to.meta.guestOnly && isAuth) {
     return next("/");
   }
+  // try {
+  //   // Refresh token expiration on each navigation
+  //   const tokenData = JSON.parse(atob(token.split(".")[1]));
+  //   const exp = tokenData.exp * 1000; // Convert to milliseconds
+  //   const now = Date.now();
+  //   if (exp > now) {
+  //     // Token is still valid, refresh it by updating the timestamp
+  //     localStorage.setItem("token", token);
+  //   }
+  // } catch (error) {
+  //   // Invalid token, log out the user
+  //   localStorage.removeItem("user");
+  //   localStorage.removeItem("token");
+  //   return next("/login");
+  // }
 
   // Block non-authenticated users from protected pages
   if (to.meta.requiresAuth && !isAuth) {

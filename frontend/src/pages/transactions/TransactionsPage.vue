@@ -156,6 +156,8 @@
 import { ref, onMounted, onBeforeUnmount, inject } from "vue";
 import MainLayout from "@/components/layout/MainLayout.vue";
 import api from "@/services/api";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 const transactions = ref([]);
 const loading = ref(true);
@@ -201,6 +203,7 @@ const fetchTransactions = async () => {
     }));
   } catch (error) {
     console.error("Failed to load transactions:", error);
+toast.error("❌ Failed to load transactions.");
   } finally {
     loading.value = false;
     setTimeout(checkScroll, 0);

@@ -107,6 +107,8 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import AuthLayout from "@/components/layout/AuthLayout.vue";
 import api from "@/services/api";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 
 const name = ref("");
 const email = ref("");
@@ -128,10 +130,12 @@ const handleRegister = async () => {
     router.push("/login");
   } catch (err) {
     error.value = err.response?.data?.message || "Registration failed";
+    toast.error(`❌ ${error.value}`);
   }
 };
 
 const registerWithGoogle = () => {
   window.location.href = `${api.defaults.baseURL}/auth/google/redirect`;
+
 };
 </script>

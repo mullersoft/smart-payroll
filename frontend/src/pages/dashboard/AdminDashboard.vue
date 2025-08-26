@@ -51,7 +51,8 @@
 import { ref, onMounted } from "vue";
 import MainLayout from "@/components/layout/MainLayout.vue";
 import api from "@/services/api";
-
+import { useToast } from "vue-toastification";
+const toast = useToast();
 const usersCount = ref(0);
 const payrollsCount = ref(0);
 const pendingApprovals = ref(0);
@@ -68,6 +69,8 @@ const fetchDashboardData = async () => {
     pendingApprovals.value = pendingRes.data.count;
   } catch (error) {
     console.error("Dashboard fetch error:", error);
+    toast.error("❌ Failed to load dashboard data.");
+
   }
 };
 
