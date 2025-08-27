@@ -2,68 +2,37 @@
 
 namespace App\Exports;
 
-use App\Models\Payroll;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\FromView;
+use Illuminate\Contracts\View\View;
 
-class PayrollReportExport implements FromCollection, WithHeadings, WithMapping
+/**
+ * Exports payroll data to an Excel file using a Blade view.
+ * This class uses Maatwebsite\Excel's FromView concern.
+ */
+class PayrollReportExport implements FromView
 {
-    protected $month;
+    protected $data;
 
-    public function __construct($month)
+    /**
+     * Initializes the export with the payroll data.
+     *
+     * @param array $data The data array prepared by the ReportController.
+     */
+    public function __construct(array $data)
     {
-        $this->month = $month;
+        $this->data = $data;
     }
 
-    public function collection()
+    /**
+     * Returns the Blade view to be used for the Excel export.
+     *
+     * @return View
+     */
+    public function view(): View
     {
-        return Payroll::with('employee')
-            ->whereRaw("DATE_FORMAT(pay_month, '%Y-%m') = ?", [$this->month])
-            ->get();
-    }
-
-    public function headings(): array
-    {
-        return [
-            'Employee Name',
-            'Position',
-            'Employment Date',
-            'Base Salary',
-            'Working Days',
-            'Earned Salary',
-            'Position Allowance',
-            'Transport Allowance',
-            'Other',
-            'Gross Pay',
-            'Taxable Income',
-            'Income Tax',
-            'Pension (Employee)',
-            'Pension (Employer)',
-            'Total Deduction',
-            'Net Pay'
-        ];
-    }
-
-    public function map($row): array
-    {
-        return [
-            $row->employee->full_name,
-            $row->employee->position,
-            $row->employee->employment_date,
-            $row->base_salary,
-            $row->working_days,
-            $row->earned_salary,
-            $row->position_allowance,
-            $row->transport_allowance,
-            $row->other_commission,
-            $row->gross_pay,
-            $row->taxable_income,
-            $row->income_tax,
-            $row->employee_pension,
-            $row->employer_pension,
-            $row->total_deduction,
-            $row->net_payment,
-        ];
+        // Use the correct view for the Excel report.
+        // The original code was using 'reports.payroll_pdf'.
+        return view('reports.payroll_excel_report', $this->data);
     }
 }
+
