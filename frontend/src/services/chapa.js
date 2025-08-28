@@ -4,7 +4,6 @@ const toast = useToast();
 
 export const payWithChapa = async (payroll) => {
   try {
-    // Call your backend route and pass the payroll.id only
     const res = await api.post(`/payrolls/${payroll.id}/chapa/pay`);
 
     // Backend will initialize the Chapa transaction and respond with checkout_url
@@ -14,6 +13,5 @@ export const payWithChapa = async (payroll) => {
   } catch (error) {
     console.error("Chapa payment init failed:", error);
     toast.error("❌ Failed to initialize Chapa payment");
-    // alert("Failed to initialize Chapa payment");
   }
 };
