@@ -50,6 +50,6 @@ The system supports **multi-role authentication**, payroll preparation & approva
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/smart-payroll.git
+git clone https://github.com/mullersoft/smart-payroll.git
 cd smart-payroll
 ```
