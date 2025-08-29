@@ -4,5 +4,6 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "18"     # make sure it matches your local node
-  VITE_API_URL = "https://smart-payroll-api.onrender.com"  # 👈 your Render backend URL
+  NODE_VERSION = "22.12.0"     # make sure it matches your local node
+  VITE_API_URL = "https://smart-payroll-backend.onrender.com/api"  # 👈 your Render backend URL
+
