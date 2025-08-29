@@ -1,0 +1,8 @@
+[build]
+  base = "frontend"       # go into frontend folder
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"     # make sure it matches your local node
+  VITE_API_URL = "https://smart-payroll-api.onrender.com"  # 👈 your Render backend URL
