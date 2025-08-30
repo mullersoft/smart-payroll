@@ -189,7 +189,7 @@ const fetchUsers = async () => {
     users.value = res.data;
   } catch (err) {
     console.error("Failed to fetch users:", err);
-    toast.error("❌ Failed to load users data.");
+    toast.error("Failed to load users data.");
   } finally {
     loading.value = false;
   }
@@ -228,12 +228,12 @@ const handleSubmit = async () => {
       await api.post("/register", form.value);
 
     }
-    toast.success(`✅ User ${isEditing.value ? "updated" : "created"} successfully.`);
+    toast.success(`User ${isEditing.value ? "updated" : "created"} successfully.`);
     showModal.value = false;
     fetchUsers();
   } catch (err) {
     console.error("Failed to save user:", err);
-    toast.error("❌ Failed to save user.");
+    toast.error("Failed to save user.");
   }
 };
 
@@ -243,7 +243,7 @@ const toggleStatus = async (user) => {
     fetchUsers();
   } catch (err) {
     console.error("Failed to toggle user status:", err);
-    toast.error("❌ Failed to toggle user status.");
+    toast.error("Failed to toggle user status.");
   }
 };
 
@@ -255,7 +255,7 @@ const deleteUser = async (id) => {
     fetchUsers();
   } catch (err) {
     console.error("Failed to delete user:", err);
-    toast.error("❌ Failed to delete user.");
+    toast.error(" Failed to delete user.");
   }
 };
 

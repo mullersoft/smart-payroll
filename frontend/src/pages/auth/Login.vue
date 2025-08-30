@@ -94,9 +94,13 @@ const handleLogin = async () => {
     if (role === "admin") router.push("/admin");
     else if (role === "preparer") router.push("/preparer");
     else if (role === "approver") router.push("/approver");
+    else if (role === "pending") router.push("/profile");
     else router.push("/");
   } catch (err) {
     error.value = err.response?.data?.error || "Login failed";
+    toast.error(`${error.value}`);
+    console.error("Login error:", err);
+
   }
 };
 
