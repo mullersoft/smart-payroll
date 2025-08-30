@@ -52,10 +52,10 @@ const handleSubmit = async () => {
   try {
     const res = await axios.post("/forgot-password", { email: email.value });
     message.value = res.data.message || "Password reset link sent!";
-    toast.success(`✅ ${message.value}`);
+    toast.success(`${message.value}`);
   } catch (err) {
     error.value = err.response?.data?.message || "Failed to send reset link.";
-    toast.error(`❌ ${error.value}`);
+    toast.error(`${error.value}`);
   }
 };
 </script>

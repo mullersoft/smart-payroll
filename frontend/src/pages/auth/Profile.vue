@@ -198,11 +198,11 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, onBeforeUnmount } from "vue";
-import { useRouter } from "vue-router";
+import api from "@/services/api";
 import { useAuthStore } from "@/store/auth";
 import { theme, toggleTheme } from "@/store/theme";
-import api from "@/services/api";
+import { onBeforeUnmount, onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 const toast = useToast();
 const authStore = useAuthStore();
@@ -251,7 +251,7 @@ const updateProfile = async () => {
   } catch (err) {
     console.error("Profile update failed:", err);
     // alert("Failed to update profile.");
-    toast.error("❌ Failed to update profile.");
+    toast.error("Failed to update profile.");
   }
 };
 
@@ -267,7 +267,7 @@ const changePassword = async () => {
   } catch (err) {
     console.error("Password change failed:", err);
     // alert("Failed to update password.");
-    toast.error("❌ Failed to update password.");
+    toast.error(" Failed to update password.");
   }
 };
 

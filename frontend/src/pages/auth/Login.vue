@@ -72,11 +72,11 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useAuthStore } from "@/store/auth";
 import AuthLayout from "@/components/layout/AuthLayout.vue";
 import api from "@/services/api";
+import { useAuthStore } from "@/store/auth";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 const toast = useToast();
 const email = ref("");

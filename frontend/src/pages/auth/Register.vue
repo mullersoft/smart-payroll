@@ -130,7 +130,7 @@ const handleRegister = async () => {
     router.push("/login");
   } catch (err) {
     error.value = err.response?.data?.message || "Registration failed";
-    toast.error(`❌ ${error.value}`);
+    toast.error(`${error.value}`);
   }
 };
 

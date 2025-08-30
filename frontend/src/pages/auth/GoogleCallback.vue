@@ -64,14 +64,14 @@ onMounted(async () => {
 
       authStore.setAuth(token, data.user);
 
-      // 🚦 Role-based redirects
+      // Role-based redirects
       if (data.user.role === "admin") router.push("/admin");
       else if (data.user.role === "preparer") router.push("/preparer");
       else if (data.user.role === "approver") router.push("/approver");
-      else router.push("/profile"); // 👈 pending users land here
+      else router.push("/profile"); //  pending users land here
     } catch (err) {
       console.error("Google login failed", err);
-      toast.error("❌ Google login failed. Please try again.");
+      toast.error("Google login failed. Please try again.");
       router.push("/login");
     }
   } else {

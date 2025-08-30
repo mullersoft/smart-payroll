@@ -90,7 +90,7 @@ const handleReset = async () => {
     setTimeout(() => router.push("/login"), 3000);
   } catch (err) {
     error.value = err.response?.data?.message || "Password reset failed.";
-    toast.error(`❌ ${error.value}`);
+    toast.error(`${error.value}`);
   }
 };
 </script>
