@@ -2,7 +2,6 @@ import ForgotPassword from "@/pages/auth/ForgotPassword.vue";
 import Login from "@/pages/auth/Login.vue";
 import Register from "@/pages/auth/Register.vue";
 import ResetPassword from "@/pages/auth/ResetPassword.vue";
-import { createRouter, createWebHistory } from "vue-router";
 import BankAccountsPage from "@/pages/bank-accounts/BankAccountsPage.vue";
 import AdminDashboard from "@/pages/dashboard/AdminDashboard.vue";
 import ApproverDashboard from "@/pages/dashboard/ApproverDashboard.vue";
@@ -10,6 +9,8 @@ import PreparerDashboard from "@/pages/dashboard/PreparerDashboard.vue";
 import EmployeesSection from "@/pages/employees/EmployeesSection.vue";
 import PayrollsPage from "@/pages/payrolls/PayrollsPage.vue";
 import TransactionsPage from "@/pages/transactions/TransactionsPage.vue";
+import { createRouter, createWebHistory } from "vue-router";
+// import Profile from "@/pages/auth/Profile.vue";
 
 const routes = [
   {
@@ -103,6 +104,7 @@ const routes = [
     component: PayrollsPage,
     meta: { requiresAuth: true, role: "preparer" },
   },
+
   {
     path: "/",
     redirect: () => {
@@ -111,6 +113,8 @@ const routes = [
       if (storedUser.role === "admin") return "/admin";
       if (storedUser.role === "preparer") return "/preparer";
       if (storedUser.role === "approver") return "/approver";
+      if (storedUser.role === "pending") return "/profile";
+
       return "/login";
     },
   },

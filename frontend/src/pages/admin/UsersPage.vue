@@ -135,9 +135,10 @@
                 v-model="form.role"
                 class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
               >
-                <option value="admin">Admin</option>
+              <!-- preparer,approver,admin,pending -->
                 <option value="preparer">Preparer</option>
                 <option value="approver">Approver</option>
+                <option value="admin">Admin</option>
                 <option value="pending">Pending</option>
               </select>
             </div>
@@ -177,7 +178,7 @@ const isEditing = ref(false);
 const editingUserId = ref(null);
 
 const form = ref({
-  name: "", // Added name field
+  name: "",
   email: "",
   password: "",
   role: "preparer",
@@ -197,7 +198,7 @@ const fetchUsers = async () => {
 };
 
 const openCreateModal = () => {
-  form.value = { name: "", email: "", password: "", role: "preparer" }; // Initialized name
+  form.value = { name: "", email: "", password: "", role: "pending" };
   isEditing.value = false;
   editingUserId.value = null;
   showModal.value = true;
@@ -205,7 +206,7 @@ const openCreateModal = () => {
 
 const editUser = (user) => {
   form.value = {
-    name: user.name, // Set name for editing
+    name: user.name,
     email: user.email,
     role: user.role,
     password: "",

@@ -2,7 +2,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://smart-payroll-api.onrender.com/api" || "http://127.0.0.1:8000/api",
+  // "https://smart-payroll-api.onrender.com/api" ||
+  baseURL:
+    "https://smart-payroll-api.onrender.com/api" || "http://127.0.0.1:8000/api",
   headers: {
     Accept: "application/json",
   },

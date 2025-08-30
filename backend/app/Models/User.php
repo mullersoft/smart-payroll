@@ -17,7 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'employee_id',
+        // 'employee_id',
     ];
 
     protected $hidden = [
@@ -50,6 +50,7 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
     public function preparedPayrolls() {
     return $this->hasMany(Payroll::class, 'prepared_by');
 }

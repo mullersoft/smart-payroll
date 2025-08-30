@@ -17,9 +17,11 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,preparer,approver',
-            'employee_id' => 'nullable|exists:employees,id',
+            'role' => 'required|in:preparer,approver,admin,pending',
+            // 'employee_id' => 'nullable|exists:employees,id',
         ]);
+        $data['role'] = strtolower(trim($data['role']));
+
 
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
@@ -105,14 +107,14 @@ public function toggleStatus($id)
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'role' => 'required|in:admin,preparer,approver',
+            'role' => 'required|in:preparer,approver,admin,pending',
             'password' => 'nullable|string|min:6',
         ]);
 
         if (!empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {
-            unset($data['password']); 
+            unset($data['password']);
         }
 
         $user->update($data);

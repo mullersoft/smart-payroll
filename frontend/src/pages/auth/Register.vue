@@ -60,11 +60,10 @@
                  focus:ring-blue-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
         >
           <option disabled value="">Select role</option>
-          <option value="admin">Admin</option>
           <option value="preparer">Preparer</option>
           <option value="approver">Approver</option>
-          <option value="approver">Pending</option>
-
+          <option value="admin">Admin</option>
+          <option value="pending">Pending</option>
         </select>
       </div>
 
