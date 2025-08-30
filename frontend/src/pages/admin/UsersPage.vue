@@ -138,6 +138,7 @@
                 <option value="admin">Admin</option>
                 <option value="preparer">Preparer</option>
                 <option value="approver">Approver</option>
+                <option value="pending">Pending</option>
               </select>
             </div>
 
@@ -164,9 +165,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
 import MainLayout from "@/components/layout/MainLayout.vue";
 import api from "@/services/api";
+import { onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 const toast = useToast();
 const users = ref([]);

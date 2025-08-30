@@ -69,7 +69,7 @@ const fetchDashboardData = async () => {
     pendingApprovals.value = pendingRes.data.count;
   } catch (error) {
     console.error("Dashboard fetch error:", error);
-    toast.error("❌ Failed to load dashboard data.");
+    toast.error("Failed to load dashboard data.");
 
   }
 };

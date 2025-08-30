@@ -63,6 +63,8 @@
           <option value="admin">Admin</option>
           <option value="preparer">Preparer</option>
           <option value="approver">Approver</option>
+          <option value="approver">Pending</option>
+
         </select>
       </div>
 
@@ -103,10 +105,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
 import AuthLayout from "@/components/layout/AuthLayout.vue";
 import api from "@/services/api";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 const toast = useToast();
 
