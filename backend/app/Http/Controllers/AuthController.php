@@ -77,7 +77,7 @@ public function toggleStatus($id)
             [
                 'name' => $googleUser->getName(),
                     'password' => bcrypt(str()->random(16)),
-                    'role' => 'pending', // 👈 default = pending until admin approves
+                    'role' => 'pending', // default = pending until admin approves
                 ]
         );
 
@@ -112,7 +112,7 @@ public function toggleStatus($id)
         if (!empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {
-            unset($data['password']); // don’t overwrite with null
+            unset($data['password']); 
         }
 
         $user->update($data);
