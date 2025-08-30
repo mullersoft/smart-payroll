@@ -179,7 +179,7 @@
             questions, our support team is ready to assist you.
           </p>
           <a
-            href="mailto:support@smartpayroll.com"
+            href="mailto:mulerselinger@gmail.com"
             class="text-blue-600 dark:text-blue-400 hover:underline text-sm"
           >
             📧 support@smartpayroll.com
