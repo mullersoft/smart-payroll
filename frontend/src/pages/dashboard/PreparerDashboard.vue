@@ -108,23 +108,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
 import MainLayout from "@/components/layout/MainLayout.vue";
 import api from "@/services/api";
+import { onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 const toast = useToast();
 // Import components for charts
-import { Bar, Pie } from "vue-chartjs";
 import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
+  ArcElement,
   BarElement,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
-  ArcElement,
+  Title,
+  Tooltip,
 } from "chart.js";
+import { Bar, Pie } from "vue-chartjs";
 
 ChartJS.register(
   Title,
@@ -155,11 +155,11 @@ const chartOptions = {
 
 const fetchData = async () => {
   try {
-    const [employeeRes, payrollRes, bankRes, summaryRes] = await Promise.all([
+    const [employeeRes, payrollRes, bankRes] = await Promise.all([
       api.get("/employees"),
       api.get("/payrolls"),
       api.get("/bank-accounts"),
-      api.get("/dashboard-summary"), // Call the new endpoint
+      // api.get("/dashboard-summary"), // Call the new endpoint
     ]);
 
     employeeCount.value = employeeRes.data.length ?? 0;
@@ -207,7 +207,7 @@ const fetchData = async () => {
     };
   } catch (err) {
     console.error("Failed to fetch preparer dashboard data", err);
-    toast.error("❌ Failed to load dashboard data.");
+    toast.error("Failed to load dashboard data.");
   }
 };
 

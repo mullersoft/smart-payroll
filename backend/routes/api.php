@@ -18,7 +18,6 @@ use App\Http\Controllers\AllowanceController;
 
 // Initialize a payment for a payroll (approved)
 Route::middleware('auth:sanctum')->post('/payrolls/{payroll}/chapa/pay', [ChapaPaymentController::class, 'pay']);
-// (Optional) public verify endpoint that your front-end can call
 Route::middleware('auth:sanctum')->get('/payments/chapa/verify/{txRef}', [ChapaPaymentController::class, 'verify']);
 // Webhook (must be publicly reachable WITHOUT auth)
 Route::post('/webhooks/chapa', [ChapaPaymentController::class, 'webhook']);
@@ -34,8 +33,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 Route::post('/register', [AuthController::class, 'register']); // Can be admin-only depending on use case -->
-Route::apiResource('positions', PositionController::class)->except(['show']);
-Route::apiResource('employment-types', EmploymentTypeController::class)->except(['show']);
+
 
 // Google OAuth
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
@@ -48,7 +46,7 @@ Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle'])
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
 // Set role after first Google signup
-Route::middleware('auth:sanctum')->post('/auth/set-role', [AuthController::class, 'setRole']);
+// Route::middleware('auth:sanctum')->post('/auth/set-role', [AuthController::class, 'setRole']);
 
 // --------------------
 // 🔐 Protected Routes
@@ -60,7 +58,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Admin-Only Route to get all users (you already have this group)
     Route::middleware('role:admin')->group(function () {
         Route::get('/users', function () {
-            return \App\Models\User::all(); // 👈 Or use a controller if preferred
+            return \App\Models\User::all();
         });
         Route::post('/users/{id}/toggle-status', [AuthController::class, 'toggleStatus']);
     });
@@ -96,7 +94,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // --------------------
-    // 🏗️ Preparer-Only Routes 
+    // 🏗️ Preparer-Only Routes
     // --------------------
     Route::middleware('role:preparer')->group(function () {
         Route::apiResource('employees', EmployeeController::class);
@@ -108,8 +106,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
         Route::get('/reports/monthly/{month}/export-excel', [ReportController::class, 'exportExcel']);
         Route::get('/reports/monthly/{month}/export-pdf', [ReportController::class, 'exportPdf']); // Add this
-
         Route::apiResource('allowances', AllowanceController::class);
+        Route::apiResource('positions', PositionController::class)->except(['show']);
+        Route::apiResource('employment-types', EmploymentTypeController::class)->except(['show']);
     });
 
     // --------------------
