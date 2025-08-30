@@ -18,10 +18,11 @@
         >
           <span class="hidden sm:inline font-medium">{{ user.name }}</span>
           <img
-            src="https://www.svgrepo.com/show/452030/account.svg"
-            alt="Profile"
-            class="w-6 h-6"
-          />
+  src="/icons/account.svg"
+  alt="Profile"
+  class="w-6 h-6"
+/>
+
         </button>
 
         <!-- Dropdown menu -->
