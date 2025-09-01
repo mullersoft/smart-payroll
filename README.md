@@ -4,6 +4,7 @@ A full-stack payroll management system built with **Vue 3 (Vite)** for the front
 
 The system supports **multi-role authentication**, payroll preparation & approval, allowances, overtime, Chapa payment integration, and export to PDF/Excel.
 
+This app is deployed on this link: [Smart Payroll App](https://smart-payroll.netlify.app/)
 ---
 
 ## 🚀 Features
