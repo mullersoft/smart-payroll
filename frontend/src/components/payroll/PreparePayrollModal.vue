@@ -170,7 +170,7 @@ const fetchEmployees = async () => {
       ...emp,
       working_days: 30,
       other_commission: 0,
-      loan_penalty: 0, // ✅ Added loan_penalty field
+      loan_penalty: 0,
       overtime_weekday_evening: 0,
       overtime_night: 0,
       overtime_rest_day: 0,
@@ -178,7 +178,7 @@ const fetchEmployees = async () => {
     }));
   } catch (err) {
     console.error("Failed to fetch employees", err);
-    toast.error("❌ Failed to load employees.");
+    toast.error("Failed to load employees.");
   }
 };
 
@@ -199,7 +199,7 @@ const createBulkPayroll = async () => {
         pay_month: bulkPayMonth.value + "-01",
         working_days: emp.working_days,
         other_commission: emp.other_commission,
-        loan_penalty: emp.loan_penalty, // ✅ Added to payload
+        loan_penalty: emp.loan_penalty,
         prepared_by: JSON.parse(localStorage.getItem("user"))?.id,
         overtimes: [
           { rate_type: "weekday_evening", hours: emp.overtime_weekday_evening },
@@ -211,20 +211,20 @@ const createBulkPayroll = async () => {
     });
 
     await api.post("/payrolls/bulk", { payrolls: payload });
-    toast.success("✅ Payrolls prepared successfully!");
+    toast.success("Payrolls prepared successfully!");
 
     emit("payroll-created");
     emit("close");
   } catch (error) {
     console.error("Error creating payrolls", error);
-    toast.error("❌ Failed to prepare payrolls.");
+    toast.error("Failed to prepare payrolls.");
     if (error.response?.data?.errors) {
       const errs = error.response.data.errors;
       Object.values(errs).forEach((msgArr) => {
         toast.error(msgArr[0]);
       });
     } else {
-      toast.error("❌ Failed to prepare payrolls.");
+      toast.error("Failed to prepare payrolls.");
     }
   }
 };

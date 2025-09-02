@@ -1,55 +1,88 @@
+import { createRouter, createWebHistory } from "vue-router";
+
+// ---- Auth Pages ----
 import ForgotPassword from "@/pages/auth/ForgotPassword.vue";
 import Login from "@/pages/auth/Login.vue";
 import Register from "@/pages/auth/Register.vue";
 import ResetPassword from "@/pages/auth/ResetPassword.vue";
-import BankAccountsPage from "@/pages/bank-accounts/BankAccountsPage.vue";
+
+// ---- Dashboards ----
 import AdminDashboard from "@/pages/dashboard/AdminDashboard.vue";
 import ApproverDashboard from "@/pages/dashboard/ApproverDashboard.vue";
 import PreparerDashboard from "@/pages/dashboard/PreparerDashboard.vue";
+
+// ---- Admin Pages ----
+import BankAccountsPage from "@/pages/bank-accounts/BankAccountsPage.vue";
 import EmployeesSection from "@/pages/employees/EmployeesSection.vue";
+
+// ---- Other Pages ----
 import PayrollsPage from "@/pages/payrolls/PayrollsPage.vue";
 import TransactionsPage from "@/pages/transactions/TransactionsPage.vue";
-import { createRouter, createWebHistory } from "vue-router";
-// import Profile from "@/pages/auth/Profile.vue";
 
 const routes = [
+  // --------------------
+  // Admin
+  // --------------------
+  {
+    path: "/admin",
+    name: "AdminDashboard",
+    component: AdminDashboard,
+    meta: { requiresAuth: true, role: "admin" },
+  },
   {
     path: "/admin/users",
     component: () => import("@/pages/admin/UsersPage.vue"),
     meta: { requiresAuth: true, role: "admin" },
   },
   {
-    path: "/profile",
-    name: "Profile",
-    component: () => import("@/pages/auth/Profile.vue"),
-    meta: { requiresAuth: true },
-  },
-
-  {
-    path: "/chapa/callback",
-    name: "ChapaCallback",
-    component: () => import("@/pages/payments/ChapaCallback.vue"),
-  },
-
-  {
-    path: "/auth/callback",
-    name: "GoogleCallback",
-    component: () => import("@/pages/auth/GoogleCallback.vue"),
-  },
-
-  {
-    path: "/employees",
+    path: "/admin/employees",
     name: "EmployeesSection",
     component: EmployeesSection,
-    meta: { requiresAuth: true, roles: ["preparer"] },
+    meta: { requiresAuth: true, role: "admin" },
+  },
+  {
+    path: "/admin/accounts",
+    component: BankAccountsPage,
+    meta: { requiresAuth: true, role: "admin" },
   },
 
+  // --------------------
+  // Preparer
+  // --------------------
+  {
+    path: "/preparer",
+    name: "PreparerDashboard",
+    component: PreparerDashboard,
+    meta: { requiresAuth: true, role: "preparer" },
+  },
+  {
+    path: "/preparer/payrolls",
+    component: PayrollsPage,
+    meta: { requiresAuth: true, role: "preparer" },
+  },
+
+  // --------------------
+  // Approver
+  // --------------------
+  {
+    path: "/approver",
+    name: "ApproverDashboard",
+    component: ApproverDashboard,
+    meta: { requiresAuth: true, role: "approver" },
+  },
+
+  // --------------------
+  // Shared (Preparer + Approver)
+  // --------------------
   {
     path: "/transactions",
     component: TransactionsPage,
-    meta: { requiresAuth: true, role: ["admin", "preparer", "approver"] },
+    meta: { requiresAuth: true, role: ["preparer", "approver"] },
   },
 
+  // --------------------
+  // Auth Pages (guest only)
+  // --------------------
   {
     path: "/login",
     name: "Login",
@@ -74,37 +107,34 @@ const routes = [
     component: ResetPassword,
     meta: { guestOnly: true },
   },
+
+  // --------------------
+  // User Profile
+  // --------------------
   {
-    path: "/admin",
-    name: "AdminDashboard",
-    component: AdminDashboard,
-    meta: { requiresAuth: true, role: "admin" },
-  },
-  {
-    path: "/preparer",
-    name: "PreparerDashboard",
-    component: PreparerDashboard,
-    meta: { requiresAuth: true, role: "preparer" },
-  },
-  {
-    path: "/approver",
-    name: "ApproverDashboard",
-    component: ApproverDashboard,
-    meta: { requiresAuth: true, role: "approver" },
+    path: "/profile",
+    name: "Profile",
+    component: () => import("@/pages/auth/Profile.vue"),
+    meta: { requiresAuth: true },
   },
 
+  // --------------------
+  // External Callbacks
+  // --------------------
   {
-    path: "/accounts",
-    component: BankAccountsPage,
-    meta: { requiresAuth: true, role: "preparer" },
+    path: "/chapa/callback",
+    name: "ChapaCallback",
+    component: () => import("@/pages/payments/ChapaCallback.vue"),
   },
-  ,
   {
-    path: "/payrolls",
-    component: PayrollsPage,
-    meta: { requiresAuth: true, role: "preparer" },
+    path: "/auth/callback",
+    name: "GoogleCallback",
+    component: () => import("@/pages/auth/GoogleCallback.vue"),
   },
 
+  // --------------------
+  // Root Redirect
+  // --------------------
   {
     path: "/",
     redirect: () => {
@@ -113,8 +143,7 @@ const routes = [
       if (storedUser.role === "admin") return "/admin";
       if (storedUser.role === "preparer") return "/preparer";
       if (storedUser.role === "approver") return "/approver";
-      if (storedUser.role === "pending") return "/profile";
-
+      if (storedUser.status === "pending") return "/profile";
       return "/login";
     },
   },
@@ -125,38 +154,25 @@ const router = createRouter({
   routes,
 });
 
+// --------------------
+// 🔐 Navigation Guards
+// --------------------
 router.beforeEach((to, from, next) => {
   const auth = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
-
   const isAuth = !!auth && !!token;
 
-  // Block logged-in users from visiting guest-only pages(vs code recompensation)
+  // Guest-only pages
   if (to.meta.guestOnly && isAuth) {
     return next("/");
   }
-  // try {
-  //   // Refresh token expiration on each navigation
-  //   const tokenData = JSON.parse(atob(token.split(".")[1]));
-  //   const exp = tokenData.exp * 1000; // Convert to milliseconds
-  //   const now = Date.now();
-  //   if (exp > now) {
-  //     // Token is still valid, refresh it by updating the timestamp
-  //     localStorage.setItem("token", token);
-  //   }
-  // } catch (error) {
-  //   // Invalid token, log out the user
-  //   localStorage.removeItem("user");
-  //   localStorage.removeItem("token");
-  //   return next("/login");
-  // }
 
-  // Block non-authenticated users from protected pages
+  // Auth-required pages
   if (to.meta.requiresAuth && !isAuth) {
     return next("/login");
   }
 
-  // Block users with wrong roles
+  // Role checks
   if (to.meta.role) {
     const allowedRoles = Array.isArray(to.meta.role)
       ? to.meta.role
@@ -166,7 +182,7 @@ router.beforeEach((to, from, next) => {
     }
   }
 
-  return next();
+  next();
 });
 
 export default router;

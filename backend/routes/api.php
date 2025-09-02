@@ -2,117 +2,91 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\PayrollController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\BankAccountController;
-use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\ResetPasswordController;
-use App\Http\Controllers\EmploymentTypeController;
-use App\Http\Controllers\PositionController;
-use App\Http\Controllers\ChapaPaymentController;
-use App\Http\Controllers\AllowanceController;
-
-
-// Initialize a payment for a payroll (approved)
-Route::middleware('auth:sanctum')->post('/payrolls/{payroll}/chapa/pay', [ChapaPaymentController::class, 'pay']);
-Route::middleware('auth:sanctum')->get('/payments/chapa/verify/{txRef}', [ChapaPaymentController::class, 'verify']);
-// Webhook (must be publicly reachable WITHOUT auth)
-Route::post('/webhooks/chapa', [ChapaPaymentController::class, 'webhook']);
-
-Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
-    return response()->json(['user' => $request->user()]);
-});
+use App\Http\Controllers\{
+    AuthController,
+    EmployeeController,
+    PayrollController,
+    TransactionController,
+    ReportController,
+    BankAccountController,
+    ForgotPasswordController,
+    ResetPasswordController,
+    EmploymentTypeController,
+    PositionController,
+    ChapaPaymentController,
+    AllowanceController
+};
 
 // --------------------
 // 📌 Public Routes
 // --------------------
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']); // registers with "pending" status
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
-Route::post('/register', [AuthController::class, 'register']); // Can be admin-only depending on use case -->
-
+Route::get('/profile', fn(Request $request) => $request->user());
 
 // Google OAuth
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
-Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
-    return response()->json(['user' => $request->user()]);
-});
-// Google OAuth
-Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle']);
-Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
-// Set role after first Google signup
-// Route::middleware('auth:sanctum')->post('/auth/set-role', [AuthController::class, 'setRole']);
+// Chapa Webhooks (public)
+Route::post('/webhooks/chapa', [ChapaPaymentController::class, 'webhook']);
 
 // --------------------
 // 🔐 Protected Routes
 // --------------------
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/me', fn(Request $request) => response()->json(['user' => $request->user()]));
 
-    // --------------------
-    // 👤 Authenticated User Routes (Any role)
-    // Admin-Only Route to get all users (you already have this group)
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/users', function () {
-            return \App\Models\User::all();
-        });
-        Route::post('/users/{id}/toggle-status', [AuthController::class, 'toggleStatus']);
-    });
+    // ---- Employees (shared) ----
+    // Preparer can only "index", Admin can do all
+    Route::apiResource('employees', EmployeeController::class);
 
-    // --------------------
-    Route::get('/user', fn(Request $request) => $request->user());
-    Route::get('/profile', fn(Request $request) => $request->user());
-
-    // ...
-    // --------------------
-    // 🛡️ Admin-Only Routes
-    // --------------------
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/users', function () {
-            return \App\Models\User::all();
-        });
-        Route::post('/users/{id}/toggle-status', [AuthController::class, 'toggleStatus']);
-        Route::put('/users/{id}', [AuthController::class, 'updateUser']); // 👈 add this
-        Route::delete('/users/{id}', [AuthController::class, 'deleteUser']); // 👈 optional delete
-    });
-
-
-    // --------------------
-    // 🧾 Approver-Only Routes
-    // --------------------
-    Route::middleware('role:approver,admin')->group(function () {
-        Route::post('/payrolls/{payroll}/approve', [PayrollController::class, 'approve']);
-        Route::get('/payrolls/pending', [PayrollController::class, 'pending']);
-        Route::post('/payrolls/{payroll}/reject', [PayrollController::class, 'reject'])->middleware('role:approver,admin');
-        Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
-        Route::get('/payrolls', [PayrollController::class, 'list']);
-        Route::get('/payrolls/list', [PayrollController::class, 'list']);
-    });
-
-    // --------------------
-    // 🏗️ Preparer-Only Routes
-    // --------------------
+    // ---- Preparer ----
     Route::middleware('role:preparer')->group(function () {
-        Route::apiResource('employees', EmployeeController::class);
-        Route::apiResource('bank-accounts', BankAccountController::class);
-        Route::apiResource('payrolls', PayrollController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
-        Route::post('/payrolls/{payroll}/process', [PayrollController::class, 'processTransaction']); // Transaction execution
-        Route::post('/employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus']);
+        Route::apiResource('payrolls', PayrollController::class)
+            ->only(['index', 'store', 'show', 'update', 'destroy']);
         Route::post('/payrolls/bulk', [PayrollController::class, 'bulkStore']);
+        Route::post('/payrolls/{payroll}/process', [PayrollController::class, 'processTransaction']);
+
         Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
         Route::get('/reports/monthly/{month}/export-excel', [ReportController::class, 'exportExcel']);
-        Route::get('/reports/monthly/{month}/export-pdf', [ReportController::class, 'exportPdf']); // Add this
+        Route::get('/reports/monthly/{month}/export-pdf', [ReportController::class, 'exportPdf']);
+
+        Route::apiResource('transactions', TransactionController::class)->only(['index', 'show']);
+
+        // Payments
+        Route::post('/payrolls/{payroll}/chapa/pay', [ChapaPaymentController::class, 'pay']);
+        Route::get('/payments/chapa/verify/{txRef}', [ChapaPaymentController::class, 'verify']);
+    });
+
+    // ---- Admin ----
+    Route::middleware('role:admin')->group(function () {
+        Route::post('/employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus']);
+         Route::get('/users', [AuthController::class, 'index']); // all users
+         Route::get('/user', [AuthController::class, 'me']);     // current logged-in user
+        // Route::get('/users', fn() => \App\Models\User::all());
+        // Route::get('/user', fn(Request $request) => $request->user());
+        Route::post('/users/{id}/toggle-status', [AuthController::class, 'toggleStatus']);
+        Route::put('/users/{id}', [AuthController::class, 'updateUser']);
+        Route::delete('/users/{id}', [AuthController::class, 'deleteUser']);
+
+        Route::apiResource('bank-accounts', BankAccountController::class);
         Route::apiResource('allowances', AllowanceController::class);
         Route::apiResource('positions', PositionController::class)->except(['show']);
         Route::apiResource('employment-types', EmploymentTypeController::class)->except(['show']);
     });
 
-    // --------------------
-    // 💳 Transactions: All roles can view (view-only access)
-    // --------------------
-    Route::apiResource('transactions', TransactionController::class)->only(['index', 'show']);
+    // ---- Approver ----
+    Route::middleware('role:approver')->group(function () {
+        Route::post('/payrolls/{payroll}/approve', [PayrollController::class, 'approve']);
+        Route::post('/payrolls/{payroll}/reject', [PayrollController::class, 'reject']);
+        Route::get('/payrolls/pending', [PayrollController::class, 'pending']);
+        Route::get('/payrolls', [PayrollController::class, 'list']);
+        Route::get('/payrolls/list', [PayrollController::class, 'list']);
+
+        Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
+        Route::apiResource('transactions', TransactionController::class)->only(['index', 'show']);
+    });
 });

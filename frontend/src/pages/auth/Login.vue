@@ -78,6 +78,7 @@ import { useAuthStore } from "@/store/auth";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
+
 const toast = useToast();
 const email = ref("");
 const password = ref("");
@@ -91,16 +92,26 @@ const handleLogin = async () => {
   try {
     await authStore.login(email.value, password.value);
     const role = authStore.user?.role;
-    if (role === "admin") router.push("/admin");
-    else if (role === "preparer") router.push("/preparer");
-    else if (role === "approver") router.push("/approver");
-    else if (role === "pending") router.push("/profile");
-    else router.push("/");
+    const status = authStore.user?.status;
+
+    if (status === "deactivated") {
+      toast.error("Your account is deactivated. Contact admin.");
+      authStore.logout(); // log out immediately
+    } else if (status === "pending") {
+      router.push("/profile"); // pending users go to profile
+    } else if (status === "active" && !role) {
+      router.push("/profile"); // active users without a role go to profile
+    } else {
+      // active users with assigned roles
+      if (role === "admin") router.push("/admin");
+      else if (role === "preparer") router.push("/preparer");
+      else if (role === "approver") router.push("/approver");
+      else router.push("/"); // fallback for unexpected role
+    }
   } catch (err) {
     error.value = err.response?.data?.error || "Login failed";
-    toast.error(`${error.value}`);
+    toast.error(error.value);
     console.error("Login error:", err);
-
   }
 };
 

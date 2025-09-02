@@ -9,7 +9,9 @@ class PositionController extends Controller
 {
     public function index()
     {
-        return response()->json(Position::all());
+        // return response()->json(Position::all());
+        $positions = Position::select('id', 'name', 'description', 'allowance')->get();
+        return response()->json($positions);
     }
 
     public function store(Request $request)
@@ -22,7 +24,13 @@ class PositionController extends Controller
         ]);
         $position = Position::create($data);
 
-        return response()->json($position, 201);
+        // return response()->json($position, 201);
+        return response()->json($position->only([
+            'id',
+            'name',
+            'description',
+            'allowance'
+        ]), 201);
     }
 
     public function update(Request $request, Position $position)
@@ -33,7 +41,14 @@ class PositionController extends Controller
             'allowance' => 'required|number',
         ]);
         $position->update($data);
-        return response()->json($position);
+        // return response()->json($position);
+        // use  Laravel’s only() method to filter none relevant fields
+        return response()->json($position->only([
+            'id',
+            'name',
+            'description',
+            'allowance'
+        ]));
     }
 
     public function destroy(Position $position)

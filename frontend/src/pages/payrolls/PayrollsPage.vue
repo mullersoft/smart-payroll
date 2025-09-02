@@ -6,7 +6,7 @@
 
       <div class="flex flex-wrap justify-between items-center gap-4">
         <h1 class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">
-          💰 Payrolls
+          Payrolls
         </h1>
 
         <div class="flex gap-4 items-end">
@@ -295,7 +295,7 @@ try {
     showEditModal.value = true;
   } catch (error) {
     console.error("Error preparing edit modal:", error);
-    toast.error("❌ Failed to open edit modal.");
+    toast.error("Failed to open edit modal.");
   }
   /*  editPayrollData.value = { ...payroll };
   showEditModal.value = true;*/
@@ -307,14 +307,14 @@ const submitEdit = async () => {
       working_days: editPayrollData.value.working_days,
       other_commission: editPayrollData.value.other_commission,
     });
-    toast.success("✅ Payroll updated successfully.");
+    toast.success("Payroll updated successfully.");
 
     await fetchPayrolls();
 
     showEditModal.value = false;
   } catch (error) {
     console.error("Error updating payroll:", error);
-    toast.error("❌ Failed to update payroll.");
+    toast.error("Failed to update payroll.");
   }
 };
 
@@ -335,18 +335,18 @@ const confirmDelete = async () => {
     showDeleteModal.value = false;
   } catch (error) {
     console.error("Error deleting payroll:", error);
-    toast.error("❌ Failed to delete payroll.");
+    toast.error("Failed to delete payroll.");
   }
 };
 
 const handleExportSuccess = (data) => {
   console.log(
-    `✅ ${data.type.toUpperCase()} export successful for ${data.month}`
+    `${data.type.toUpperCase()} export successful for ${data.month}`
   );
 };
 
 const handleExportError = (data) => {
-  console.error(`❌ ${data.type.toUpperCase()} export failed:`, data.error);
+  console.error(`${data.type.toUpperCase()} export failed:`, data.error);
 };
 
 onMounted(() => {
@@ -360,15 +360,11 @@ const processPayroll = async (id) => {
     await fetchPayrolls();
   } catch (error) {
 console.error("Error processing payroll:", error?.response?.data || error);
-    // toast.error("❌ Failed to process payroll.");
 toast.error(
       error?.response?.data?.error ||
-        "❌ Failed to process payroll. Ensure it's approved and accounts exist."
+        "Failed to process payroll. Ensure it's approved and accounts exist."
     );
-    // alert(
-    //   error?.response?.data?.error ||
-    //     "Failed to process payroll. Ensure it's approved and accounts exist."
-    // );
+
   }
 };
 // Payment with Chapa
@@ -377,8 +373,7 @@ const payPayroll = async (payroll) => {
     await payWithChapa(payroll); // just pass payroll object
   } catch (error) {
     console.error("Error processing payroll via Chapa:", error);
-    toast.error("❌ Payment initialization failed.");
-    // alert("Payment initialization failed.");
+    toast.error("Payment initialization failed.");
   }
 };
 

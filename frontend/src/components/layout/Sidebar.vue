@@ -7,11 +7,10 @@ import { onMounted, onUnmounted } from "vue";
 
 const auth = useAuthStore();
 
-// Updated allLinks array to include an 'icon' for each link
 const allLinks = [
   {
     path: "/admin",
-    label: "Dashboard",
+    label: "Admin Dashboard",
     roles: ["admin"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   },
@@ -22,39 +21,41 @@ const allLinks = [
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   },
   {
-    path: "/preparer",
-    label: "Dashboard",
-    roles: ["preparer"],
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-  },
-  {
-    path: "/approver",
-    label: "Dashboard",
-    roles: ["approver"],
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-  },
-  {
-    path: "/employees",
-    label: "Employees",
-    roles: ["preparer"],
+    path: "/admin/employees",
+    label: "Manage Employees",
+    roles: ["admin"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   },
   {
-    path: "/accounts",
-    label: "Accounts",
-    roles: ["preparer"],
+    path: "/admin/accounts",
+    label: "Manage Accounts",
+    roles: ["admin"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><rect width="20" height="12" x="2" y="6" rx="2"/><path d="M6 12h4m2 0h-2m2 0v4m0-4h-2"/></svg>`,
   },
+
   {
-    path: "/payrolls",
-    label: "Payrolls",
+    path: "/preparer",
+    label: "Preparer Dashboard",
+    roles: ["preparer"],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  },
+    {
+    path: "/preparer/payrolls",
+    label: "Manage Payrolls",
     roles: ["preparer"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M2 16h20"/><path d="M2 12h20"/><path d="M2 8h20"/><path d="M2 4h20"/><path d="M2 20h20"/><path d="M10 2v20"/><path d="M14 2v20"/></svg>`,
   },
   {
+    path: "/approver",
+    label: "Approver Dashboard",
+    roles: ["approver"],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  },
+
+  {
     path: "/transactions",
     label: "Transactions",
-    roles: ["preparer", "approver", "admin"],
+    roles: ["preparer", "approver"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 12H3"/><path d="M3 6h18"/><path d="M3 18h18"/><path d="M9 12l-6-6"/><path d="M9 12l-6 6"/></svg>`,
   },
 ];

@@ -9,7 +9,9 @@ class EmploymentTypeController extends Controller
 {
     public function index()
     {
-        return response()->json(EmploymentType::all());
+        // return response()->json(EmploymentType::all());
+        $employmentTypes = EmploymentType::select('id', 'name', 'description')->get();
+        return response()->json($employmentTypes);
     }
 
     public function store(Request $request)
@@ -19,7 +21,12 @@ class EmploymentTypeController extends Controller
             'description' => 'nullable|string',
         ]);
         $type = EmploymentType::create($data);
-        return response()->json($type, 201);
+        // return response()->json($type, 201);
+        return response()->json($type->only([
+            'id',
+            'name',
+            'description'
+        ]), 201);
     }
 
     public function update(Request $request, EmploymentType $employmentType)
@@ -29,7 +36,13 @@ class EmploymentTypeController extends Controller
             'description' => 'nullable|string',
         ]);
         $employmentType->update($data);
-        return response()->json($employmentType);
+        // return response()->json($employmentType);
+        // use  Laravel’s only() method to filter none relevant fields
+        return response()->json($employmentType->only([
+            'id',
+            'name',
+            'description'
+        ]));
     }
 
     public function destroy(EmploymentType $employmentType)

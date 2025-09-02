@@ -10,7 +10,14 @@ class BankAccountController extends Controller
 {
     public function index()
     {
-        return response()->json(BankAccount::all());
+        // return response()->json(BankAccount::all());
+         $accounts = BankAccount::select(
+          'account_number',
+          'owner_name',
+          'balance',
+           'bank_name')->get();
+
+    return response()->json($accounts);
     }
 
     public function store(Request $request)
@@ -32,7 +39,15 @@ class BankAccountController extends Controller
 
         $account = BankAccount::create($data);
 
-        return response()->json($account, 201);
+        // return response()->json($account, 201);
+    return response()->json($account->only([
+    'account_number',
+    'owner_name',
+    'balance',
+    'bank_name'
+]), 201);
+
+
     }
 
     public function update(Request $request, BankAccount $bankAccount)
@@ -51,7 +66,14 @@ class BankAccountController extends Controller
         }
 
         $bankAccount->update($validated);
-        return response()->json($bankAccount);
+        // return response()->json($bankAccount);
+        // use  Laravel’s only() method to filter none relevant fields
+        return response()->json($bankAccount->only([
+            'account_number',
+            'owner_name',
+            'balance',
+            'bank_name'
+        ]));
     }
 
     public function destroy(BankAccount $bankAccount)

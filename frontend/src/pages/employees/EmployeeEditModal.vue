@@ -374,7 +374,7 @@ watch(
 // Save with validation
 const save = () => {
   if (!isFormValid.value) {
-    toast.error("❌ Please fill in all required fields.");
+    toast.error("Please fill in all required fields.");
     return;
   }
   emit("save", { ...form });

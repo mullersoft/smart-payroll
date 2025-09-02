@@ -12,7 +12,9 @@ class AllowanceController extends Controller
      */
     public function index()
     {
-        return response()->json(Allowance::all());
+        // return response()->json(Allowance::all());
+        $allowances = Allowance::select('id', 'name', 'type', 'value', 'is_taxable', 'description')->get();
+        return response()->json($allowances);
     }
 
     /**
@@ -30,7 +32,15 @@ class AllowanceController extends Controller
 
         $allowance = Allowance::create($data);
 
-        return response()->json($allowance, 201);
+        // return response()->json($allowance, 201);
+        return response()->json($allowance->only([
+            'id',
+            'name',
+            'type',
+            'value',
+            'is_taxable',
+            'description'
+        ]), 201);
     }
 
     /**
@@ -56,7 +66,17 @@ class AllowanceController extends Controller
 
         $allowance->update($data);
 
-        return response()->json($allowance);
+
+        // return response()->json($allowance);
+        // use  Laravel’s only() method to filter none relevant fields
+        return response()->json($allowance->only([
+            'id',
+            'name',
+            'type',
+            'value',
+            'is_taxable',
+            'description'
+        ]));
     }
 
     /**

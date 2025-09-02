@@ -17,7 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        // 'employee_id',
+        'status',
     ];
 
     protected $hidden = [
@@ -50,6 +50,18 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+    public function isPending() {
+    return $this->status === 'pending';
+}
+
+public function isActive() {
+    return $this->status === 'active';
+}
+
+public function isDeactivated() {
+    return $this->status === 'deactivated';
+}
+
 
     public function preparedPayrolls() {
     return $this->hasMany(Payroll::class, 'prepared_by');

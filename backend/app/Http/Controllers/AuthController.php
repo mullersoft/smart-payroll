@@ -11,26 +11,45 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
+    public function index()
+    {
+        // return User::all(); // return all users
+         return User::select('id', 'name', 'email', 'role', 'status')->get();
+
+    }
+
+    public function me(Request $request)
+    {
+        // return $request->user(); // return current logged-in user
+        return $request->user()->only(['id', 'name', 'email', 'role', 'status']);
+
+    }
     public function register(Request $request)
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:preparer,approver,admin,pending',
-            // 'employee_id' => 'nullable|exists:employees,id',
+            'role' => 'nullable|in:preparer,approver,admin',
         ]);
-        $data['role'] = strtolower(trim($data['role']));
 
 
         $data['password'] = Hash::make($data['password']);
+        $data['status'] = 'pending'; // default status
         $user = User::create($data);
 
-        return response()->json(['user' => $user], 201);
+        return response()->json([
+            // 'user' => $user
+            'user' => [
+            'id'     => $user->id,
+            'name'   => $user->name,
+            'email'  => $user->email,
+            'status' => $user->status,
+        ]
+        ], 201);
     }
 
-
-    public function login(Request $request)
+public function login(Request $request)
 {
     $credentials = $request->only('email', 'password');
 
@@ -39,16 +58,32 @@ class AuthController extends Controller
     }
 
     $user = Auth::user();
+
+    // Check user status
+    if ($user->status === 'deactivated') {
+        // Log out immediately
+        Auth::logout();
+
+        return response()->json([
+            'error' => 'Your account is deactivated. Contact admin.'
+        ], 403);
+    }
+
     $token = $user->createToken('api-token')->plainTextToken;
 
     return response()->json([
         'message' => 'Login successful',
-        'user' => $user,
+        // 'user' => $user,
+        'user' => [
+        'id'     => $user->id,
+        'name'   => $user->name,
+        'email'  => $user->email,
+        'status' => $user->status,
+        'role'   => $user->role,
+    ],
         'token' => $token
     ]);
 }
-
-
    public function logout(Request $request)
 {
     $request->user()->currentAccessToken()->delete();
@@ -59,11 +94,18 @@ class AuthController extends Controller
 public function toggleStatus($id)
 {
     $user = User::findOrFail($id);
-    $user->is_active = !$user->is_active;
+
+    if ($user->status === 'active') {
+        $user->status = 'deactivated';
+    } else {
+        $user->status = 'active';
+    }
+
     $user->save();
 
     return response()->json(['message' => 'User status updated', 'user' => $user]);
 }
+
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->stateless()->redirect();
@@ -97,8 +139,6 @@ public function toggleStatus($id)
             ], 500);
         }
     }
-
-
 
     public function updateUser(Request $request, $id)
     {

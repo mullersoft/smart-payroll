@@ -48,27 +48,6 @@
         />
       </div>
 
-      <div>
-        <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Role
-        </label>
-        <select
-          v-model="role"
-          id="role"
-          required
-          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none
-                 focus:ring-blue-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-        >
-          <option disabled value="">Select role</option>
-          <option value="preparer">Preparer</option>
-          <option value="approver">Approver</option>
-          <option value="admin">Admin</option>
-          <option value="pending">Pending</option>
-        </select>
-      </div>
-
-
-
       <div v-if="error" class="text-red-500 text-sm">{{ error }}</div>
 
       <button
@@ -109,13 +88,11 @@ import api from "@/services/api";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-const toast = useToast();
 
+const toast = useToast();
 const name = ref("");
 const email = ref("");
 const password = ref("");
-const role = ref("");
-const employee_id = ref("");
 const error = ref(null);
 const router = useRouter();
 
@@ -126,8 +103,10 @@ const handleRegister = async () => {
       name: name.value,
       email: email.value,
       password: password.value,
-      role: role.value,
+      // role: "pending",    //  New users default to pending
+      status: "pending",  //  Default status
     });
+    toast.success("Registration successful! Your account is pending approval.");
     router.push("/login");
   } catch (err) {
     error.value = err.response?.data?.message || "Registration failed";
@@ -137,6 +116,5 @@ const handleRegister = async () => {
 
 const registerWithGoogle = () => {
   window.location.href = `${api.defaults.baseURL}/auth/google/redirect`;
-
 };
 </script>
