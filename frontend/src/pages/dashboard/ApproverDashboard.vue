@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="space-y-6">
       <h1 class="text-2xl font-bold text-yellow-700 dark:text-yellow-400">
-        🕒 Approver Payrolls
+        Approver Payrolls
       </h1>
 
       <div class="flex flex-col md:flex-row md:items-center gap-4">
@@ -96,11 +96,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import api from "@/services/api";
 import MainLayout from "@/components/layout/MainLayout.vue";
-import PayrollTable from "@/components/payroll/PayrollTable.vue";
 import PayrollDetailsModal from "@/components/payroll/PayrollDetailsModal.vue";
+import PayrollTable from "@/components/payroll/PayrollTable.vue";
+import api from "@/services/api";
+import { onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 const toast = useToast();
 const payrolls = ref([]);
@@ -124,7 +124,8 @@ const getCurrentMonth = () => {
 const fetchPayrolls = async () => {
   loading.value = true;
   try {
-    const res = await api.get("/payrolls/list", {
+    // const res = await api.get("/payrolls/list", {
+    const res = await api.get("/payrolls", {
       params: {
         month: filters.value.month,
         status: filters.value.status,
@@ -143,12 +144,12 @@ const fetchPayrolls = async () => {
 const approvePayroll = async (payrollId) => {
   try {
     await api.post(`/payrolls/${payrollId}/approve`);
-    alert("✅ Payroll approved successfully.");
+    alert("Payroll approved successfully.");
     fetchPayrolls();
   } catch (error) {
     console.error("Error approving payroll:", error);
     // alert("❌ Failed to approve payroll.");
-    toast.error("❌ Failed to approve payroll.");
+    toast.error("Failed to approve payroll.");
   }
 };
 
@@ -172,7 +173,7 @@ const confirmReject = async () => {
   } catch (error) {
     console.error("Error rejecting payroll:", error);
     // alert("❌ Failed to reject payroll.");
-    toast.error("❌ Failed to reject payroll.");
+    toast.error("Failed to reject payroll.");
   }
 };
 

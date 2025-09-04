@@ -62,7 +62,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // ---- Admin ----
-    Route::middleware('role:admin')->group(function () {
+    Route::middleware('role:admin,preparer')->group(function () {
         Route::post('/employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus']);
          Route::get('/users', [AuthController::class, 'index']); // all users
          Route::get('/user', [AuthController::class, 'me']);     // current logged-in user
@@ -79,12 +79,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // ---- Approver ----
-    Route::middleware('role:approver')->group(function () {
+    Route::middleware('role:approver,preparer')->group(function () {
         Route::post('/payrolls/{payroll}/approve', [PayrollController::class, 'approve']);
         Route::post('/payrolls/{payroll}/reject', [PayrollController::class, 'reject']);
         Route::get('/payrolls/pending', [PayrollController::class, 'pending']);
         Route::get('/payrolls', [PayrollController::class, 'list']);
-        Route::get('/payrolls/list', [PayrollController::class, 'list']);
+        // Route::get('/payrolls/list', [PayrollController::class, 'list']);
 
         Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyPayroll']);
         Route::apiResource('transactions', TransactionController::class)->only(['index', 'show']);

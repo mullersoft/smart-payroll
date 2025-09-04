@@ -38,6 +38,8 @@ class BankService
                 // Get account numbers from .env
                 // $companyAccNo = env('COMPANY_ACCOUNT', 'QM-COMPANY-001');
                 // $taxAccNo = env('TAX_ACCOUNT', 'TAX-AUTH-001');
+                // $pensionAccNo = env('PENSION_ACCOUNT','PENSION-AUTH-001');
+
                 $companyAccNo = env('COMPANY_ACCOUNT');
                 $taxAccNo = env('TAX_ACCOUNT');
                 $pensionAccNo = env('PENSION_ACCOUNT');

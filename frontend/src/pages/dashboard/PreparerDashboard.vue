@@ -167,10 +167,10 @@ const fetchData = async () => {
     bankAccountCount.value = bankRes.data.length ?? 0;
 
     // Update new dashboard data
-    totalExpenditure.value = summaryRes.data.totalExpenditure;
-    genderStats.value = summaryRes.data.genderStats;
-    employmentTypeStats.value = summaryRes.data.employmentTypeStats;
-    positionStats.value = summaryRes.data.positionStats;
+    // totalExpenditure.value = summaryRes.data.totalExpenditure;
+    // genderStats.value = summaryRes.data.genderStats;
+    // employmentTypeStats.value = summaryRes.data.employmentTypeStats;
+    // positionStats.value = summaryRes.data.positionStats;
 
     // Prepare chart data
     genderChartData.value = {
