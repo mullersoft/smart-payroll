@@ -31,9 +31,14 @@ class User extends Authenticatable
 
     // Relationships
     public function employee()
-    {
-        return $this->belongsTo(Employee::class);
-    }
+{
+    return $this->hasOne(Employee::class, 'user_id');
+}
+
+    // public function employee()
+    // {
+    //     return $this->belongsTo(Employee::class);
+    // }
 
     // Helper
     public function isApprover()

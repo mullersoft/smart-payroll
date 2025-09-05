@@ -343,4 +343,23 @@ class PayrollController extends Controller
             'positionStats' => $positionStats,
         ]);
     }
+    public function myPayrolls(Request $request)
+{
+    $user = $request->user();
+
+    // ensure this user is linked to an employee
+ $employee = $user->employee;
+if (!$employee) {
+    return response()->json(['error' => 'Not linked to an employee'], 403);
+}
+
+$payrolls = Payroll::where('employee_id', $employee->id)
+
+        ->with(['employee.position', 'employee.employmentType', 'allowances', 'overtimes', 'transactions'])
+        ->orderBy('pay_month', 'desc')
+        ->get();
+
+    return response()->json($payrolls);
+}
+
 }

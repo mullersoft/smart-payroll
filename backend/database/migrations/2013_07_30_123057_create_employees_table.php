@@ -13,20 +13,17 @@ class CreateEmployeesTable extends Migration
             $table->string('full_name');
             $table->string('employee_id')->unique();
             $table->string('email')->nullable();
+            // $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            // $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
 
 
-            // Foreign keys instead of ENUM
             $table->foreignId('position_id')->constrained('positions')->cascadeOnUpdate()->restrictOnDelete();
-            // $table->foreignId('position_allowance_position_id')
-            //     ->nullable()
-            //     ->constrained('positions')
-            //     ->nullOnDelete();
             $table->foreignId('employment_type_id')->constrained('employment_types')->cascadeOnUpdate()->restrictOnDelete();
-
             $table->decimal('base_salary', 10, 2);
             $table->string('gender');
             $table->date('employment_date');
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
         });
     }

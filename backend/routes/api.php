@@ -30,14 +30,16 @@ Route::get('/profile', fn(Request $request) => $request->user());
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
-// Chapa Webhooks (public)
-Route::post('/webhooks/chapa', [ChapaPaymentController::class, 'webhook']);
+
 
 // --------------------
 // 🔐 Protected Routes
 // --------------------
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/me', fn(Request $request) => response()->json(['user' => $request->user()]));
+Route::get('/me', fn(Request $request) => response()->json(['user' => $request->user()]));
+Route::get('/my/payrolls', [PayrollController::class, 'myPayrolls']);
+Route::get('/my/transactions', [TransactionController::class, 'myTransactions']);
+Route::post('/webhooks/chapa', [ChapaPaymentController::class, 'webhook']);
 
     // ---- Employees (shared) ----
     // Preparer can only "index", Admin can do all
@@ -63,6 +65,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // ---- Admin ----
     Route::middleware('role:admin,preparer')->group(function () {
+        Route::post('/employees/{id}/activate', [EmployeeController::class, 'activate']);
         Route::post('/employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus']);
          Route::get('/users', [AuthController::class, 'index']); // all users
          Route::get('/user', [AuthController::class, 'me']);     // current logged-in user

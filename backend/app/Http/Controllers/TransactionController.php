@@ -32,4 +32,24 @@ class TransactionController extends Controller
     {
         return response()->json(Transaction::with('payroll')->findOrFail($id));
     }
+    public function myTransactions(Request $request)
+{
+    $user = $request->user();
+
+$employee = $user->employee;
+if (!$employee) {
+    return response()->json(['error' => 'Not linked to an employee'], 403);
+}
+
+$transactions = Transaction::whereHas('payroll', function ($q) use ($employee) {
+    $q->where('employee_id', $employee->id);
+})
+
+        ->with(['payroll'])
+        ->orderBy('transaction_date', 'desc')
+        ->get();
+
+    return response()->json($transactions);
+}
+
 }

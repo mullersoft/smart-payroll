@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmployeeCreatedMail;
 
 class EmployeeController extends Controller
 {
@@ -64,10 +69,29 @@ public function store(Request $request)
         $data['employment_date'] = now()->toDateString();
     }
 
-    // Create employee
+// Create employee
     $employee = Employee::create($data);
+    $password = Str::random(10);
+    $newUser = User::create([
+        'name' => $data['full_name'],
+        'email' => $data['email'],
+        'password' => Hash::make($password),
+        'role' => null, // not admin/preparer/approver
+        'status' => 'deactivated',
+    ]);
 
-    // Filter and attach allowances
+    // link user to employee
+    $employee->update(['user_id' => $newUser->id]);
+
+    // send email to employee
+    Mail::to($newUser->email)->send(new EmployeeCreatedMail($newUser, $password));
+
+
+
+
+
+
+// Filter and attach allowances
     if (!empty($data['allowances'])) {
         $allowances = array_filter($data['allowances'], fn($a) => !empty($a));
         $employee->allowances()->sync($allowances);
@@ -82,6 +106,21 @@ public function store(Request $request)
 
     return response()->json($employee, 201);
 }
+public function activate($id)
+{
+    $employee = Employee::findOrFail($id);
+    $user = $employee->user;
+
+    $user->status = 'active';
+    $user->save();
+
+    return response()->json(['message' => 'Employee activated successfully']);
+}
+
+
+
+
+
 
 // Update an existing employee
 public function update(Request $request, $id)
