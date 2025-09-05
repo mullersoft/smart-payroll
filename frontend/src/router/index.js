@@ -9,6 +9,7 @@ import ResetPassword from "@/pages/auth/ResetPassword.vue";
 // ---- Dashboards ----
 import AdminDashboard from "@/pages/dashboard/AdminDashboard.vue";
 import ApproverDashboard from "@/pages/dashboard/ApproverDashboard.vue";
+import EmployeeDashboard from "@/pages/dashboard/EmployeeDashboard.vue";
 import PreparerDashboard from "@/pages/dashboard/PreparerDashboard.vue";
 
 // ---- Admin Pages ----
@@ -16,10 +17,23 @@ import BankAccountsPage from "@/pages/bank-accounts/BankAccountsPage.vue";
 import EmployeesSection from "@/pages/employees/EmployeesSection.vue";
 
 // ---- Other Pages ----
+// import EmployeeProfile from "@/pages/employees/EmployeeProfile.vue";
 import PayrollsPage from "@/pages/payrolls/PayrollsPage.vue";
 import TransactionsPage from "@/pages/transactions/TransactionsPage.vue";
 
 const routes = [
+  // {
+  //   path: "/employee/profile",
+  //   component: EmployeeProfile,
+  //   meta: { requiresAuth: true },
+  // },
+
+  {
+    path: "/employee-dashboard",
+    component: EmployeeDashboard,
+    meta: { requiresAuth: true, role: null },
+  },
+
   // --------------------
   // Admin
   // --------------------

@@ -100,7 +100,7 @@ const handleLogin = async () => {
     } else if (status === "pending") {
       router.push("/profile"); // pending users go to profile
     } else if (status === "active" && !role) {
-      router.push("/profile"); // active users without a role go to profile
+      router.push("/employee-dashboard"); // active users without a role go to profile
     } else {
       // active users with assigned roles
       if (role === "admin") router.push("/admin");
