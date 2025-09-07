@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-
+// Layouts
+import MainLayout from '@/components/layout/MainLayout.vue';
 // ---- Auth Pages ----
 import ForgotPassword from "@/pages/auth/ForgotPassword.vue";
 import Login from "@/pages/auth/Login.vue";
@@ -13,25 +14,45 @@ import EmployeeDashboard from "@/pages/dashboard/EmployeeDashboard.vue";
 import PreparerDashboard from "@/pages/dashboard/PreparerDashboard.vue";
 
 // ---- Admin Pages ----
-import BankAccountsPage from "@/pages/bank-accounts/BankAccountsPage.vue";
-import EmployeesSection from "@/pages/employees/EmployeesSection.vue";
+import BankAccountsPage from "@/pages/admin/bank-accounts/BankAccountsPage.vue";
+import EmployeesSection from "@/pages/admin/employees/EmployeesSection.vue";
 
 // ---- Other Pages ----
 // import EmployeeProfile from "@/pages/employees/EmployeeProfile.vue";
 import PayrollsPage from "@/pages/payrolls/PayrollsPage.vue";
 import TransactionsPage from "@/pages/transactions/TransactionsPage.vue";
+// Employee Pages
+import PayrollHistory from '@/pages/payrolls/PayrollHistory.vue';
+import EmployeeProfile from '@/pages/profile/EmployeeProfile.vue';
+import PayrollTransactions from '@/pages/transactions/PayrollTransactions.vue';
+
 
 const routes = [
-  // {
-  //   path: "/employee/profile",
-  //   component: EmployeeProfile,
-  //   meta: { requiresAuth: true },
-  // },
 
+  // Employee routes (accessible to all authenticated users)
   {
     path: "/employee-dashboard",
+    name: "EmployeeDashboard",
     component: EmployeeDashboard,
-    meta: { requiresAuth: true, role: null },
+    meta: { layout: MainLayout, requiresAuth: true },
+  },
+  {
+    path: "/payroll-history",
+    name: "PayrollHistory",
+    component: PayrollHistory,
+    meta: { layout: MainLayout, requiresAuth: true },
+  },
+  {
+    path: "/payroll-transactions",
+    name: "PayrollTransactions",
+    component: PayrollTransactions,
+    meta: { layout: MainLayout, requiresAuth: true },
+  },
+  {
+    path: "/employee-profile",
+    name: "EmployeeProfile",
+    component: EmployeeProfile,
+    meta: { layout: MainLayout, requiresAuth: true },
   },
 
   // --------------------
@@ -45,7 +66,7 @@ const routes = [
   },
   {
     path: "/admin/users",
-    component: () => import("@/pages/admin/UsersPage.vue"),
+    component: () => import("@/pages/admin/users/UsersPage.vue"),
     meta: { requiresAuth: true, role: "admin" },
   },
   {
@@ -145,7 +166,10 @@ const routes = [
     name: "GoogleCallback",
     component: () => import("@/pages/auth/GoogleCallback.vue"),
   },
-
+{
+    path: '/:pathMatch(.*)*',
+    redirect: '/employee-dashboard'
+  },
   // --------------------
   // Root Redirect
   // --------------------

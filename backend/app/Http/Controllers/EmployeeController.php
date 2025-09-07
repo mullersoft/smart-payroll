@@ -208,4 +208,20 @@ public function update(Request $request, $id)
             'is_active' => $employee->is_active
         ]);
     }
+    // Add this method to your EmployeeController class
+public function myProfile(Request $request)
+{
+    $user = auth()->user();
+
+    // Find employee by user_id
+    $employee = Employee::with(['bankAccount', 'position', 'employmentType', 'allowances'])
+        ->where('user_id', $user->id)
+        ->first();
+
+    if (!$employee) {
+        return response()->json(['message' => 'Employee profile not found'], 404);
+    }
+
+    return response()->json($employee);
+}
 }

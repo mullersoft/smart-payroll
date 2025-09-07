@@ -37,10 +37,10 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 // --------------------
 Route::middleware(['auth:sanctum'])->group(function () {
 Route::get('/me', fn(Request $request) => response()->json(['user' => $request->user()]));
+Route::get('/my/profile', [EmployeeController::class, 'myProfile']);
 Route::get('/my/payrolls', [PayrollController::class, 'myPayrolls']);
 Route::get('/my/transactions', [TransactionController::class, 'myTransactions']);
 Route::post('/webhooks/chapa', [ChapaPaymentController::class, 'webhook']);
-
     // ---- Employees (shared) ----
     // Preparer can only "index", Admin can do all
     Route::apiResource('employees', EmployeeController::class);

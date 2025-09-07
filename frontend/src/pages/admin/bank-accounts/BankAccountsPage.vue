@@ -1,6 +1,7 @@
 <template>
   <MainLayout>
     <div class="space-y-6">
+      <!-- Header Section -->
       <div class="flex justify-between items-center">
         <h1 class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">
           🏦 Bank Accounts
@@ -13,6 +14,7 @@
         </button>
       </div>
 
+      <!-- Table Section -->
       <div
         class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-300"
       >
@@ -44,6 +46,7 @@
               <td class="px-4 py-2">{{ account.account_number }}</td>
               <td class="px-4 py-2">{{ formatCurrency(account.balance) }}</td>
               <td class="px-4 py-2 relative">
+                <!-- Actions Dropdown -->
                 <button
                   @click="toggleDropdown(account.id)"
                   class="px-2 py-1 rounded-md text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
@@ -81,112 +84,35 @@
         </table>
       </div>
 
-      <div
+      <!-- Reusable Modal Component -->
+      <CreateAndEditModal
         v-if="showModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      >
-        <div
-          class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-xl relative transition-colors duration-300"
-        >
-          <button
-            @click="closeModal"
-            class="absolute top-2 right-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100"
-          >
-            ✖
-          </button>
-          <h2
-            class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100"
-          >
-            {{ isEditMode ? "Edit Bank Account" : "Add Bank Account" }}
-          </h2>
-          <form @submit.prevent="submitBankAccount" class="space-y-4">
-            <div>
-              <label
-                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Bank Name
-              </label>
-              <input
-                v-model="newAccount.bank_name"
-                type="text"
-                required
-                class="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:outline-none focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              />
-            </div>
-
-            <div>
-              <label
-                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Owner Name (select employee or type manually)
-              </label>
-              <input
-                list="employeeList"
-                v-model="newAccount.owner_name"
-                @input="onOwnerNameInput"
-                type="text"
-                class="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:outline-none focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                placeholder="Start typing to search employee"
-              />
-              <datalist id="employeeList">
-                <option
-                  v-for="emp in employees"
-                  :key="emp.id"
-                  :value="emp.full_name"
-                ></option>
-              </datalist>
-            </div>
-
-            <div>
-              <label
-                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Account Number
-              </label>
-              <input
-                v-model="newAccount.account_number"
-                type="text"
-                required
-                class="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:outline-none focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              />
-            </div>
-
-            <div class="flex justify-end space-x-3">
-              <button
-                type="button"
-                @click="closeModal"
-                class="px-4 py-2 text-gray-600 dark:text-gray-300"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-semibold"
-              >
-                {{ isEditMode ? "Save Changes" : "Add Account" }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+        :is-edit-mode="isEditMode"
+        :editing-account-id="editingAccountId"
+        :new-account="newAccount"
+        :employees="employees"
+        @close="closeModal"
+        @save="submitBankAccount"
+      />
     </div>
   </MainLayout>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import api from "@/services/api";
 import MainLayout from "@/components/layout/MainLayout.vue";
+import api from "@/services/api";
+import { onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
-const toast = useToast();
+import CreateAndEditModal from "./createAndEditModal.vue";
 
+const toast = useToast();
 const bankAccounts = ref([]);
 const employees = ref([]);
 
 const showModal = ref(false);
 const isEditMode = ref(false);
 const editingAccountId = ref(null);
-const openDropdownId = ref(null); // New state to manage dropdown
+const openDropdownId = ref(null);
 
 const newAccount = ref({
   bank_name: "",
@@ -216,14 +142,13 @@ const openModal = (account = null) => {
     };
   }
   showModal.value = true;
-  openDropdownId.value = null; // Close any open dropdown
+  openDropdownId.value = null;
 };
 
 const closeModal = () => {
   showModal.value = false;
   isEditMode.value = false;
   editingAccountId.value = null;
-  // Reset newAccount form
   newAccount.value = {
     bank_name: "",
     owner_name: "",
@@ -232,7 +157,6 @@ const closeModal = () => {
   };
 };
 
-// Function to toggle the dropdown
 const toggleDropdown = (id) => {
   openDropdownId.value = openDropdownId.value === id ? null : id;
 };
@@ -241,8 +165,7 @@ const fetchBankAccounts = async () => {
   try {
     const response = await api.get("/bank-accounts");
     bankAccounts.value = response.data;
-  } catch (error) {
-    console.error("Failed to fetch bank accounts", error);
+  } catch {
     toast.error("❌ Failed to load bank accounts data.");
   }
 };
@@ -251,21 +174,8 @@ const fetchEmployees = async () => {
   try {
     const res = await api.get("/employees");
     employees.value = res.data;
-  } catch (error) {
-    console.error("Failed to fetch employees", error);
+  } catch {
     toast.error("❌ Failed to load employees data.");
-  }
-};
-
-const onOwnerNameInput = () => {
-  const inputName = newAccount.value.owner_name.trim().toLowerCase();
-  const selected = employees.value.find(
-    (emp) => emp.full_name.toLowerCase() === inputName
-  );
-  if (selected) {
-    newAccount.value.employee_id = selected.id;
-  } else {
-    newAccount.value.employee_id = null;
   }
 };
 
@@ -279,9 +189,7 @@ const submitBankAccount = async () => {
       const index = bankAccounts.value.findIndex(
         (acc) => acc.id === editingAccountId.value
       );
-      if (index !== -1) {
-        bankAccounts.value[index] = res.data;
-      }
+      if (index !== -1) bankAccounts.value[index] = res.data;
       toast.success("✅ Bank account updated successfully!");
     } else {
       const res = await api.post("/bank-accounts", newAccount.value);
@@ -289,36 +197,31 @@ const submitBankAccount = async () => {
       toast.success("✅ Bank account added successfully!");
     }
     closeModal();
-  } catch (error) {
-    console.error("Failed to submit bank account", error);
+  } catch {
     toast.error("❌ Failed to save bank account.");
   }
 };
 
 const deleteBankAccount = async (id) => {
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this bank account?"
-  );
-  if (!confirmed) return;
-
+  if (!window.confirm("Are you sure you want to delete this bank account?"))
+    return;
   try {
     await api.delete(`/bank-accounts/${id}`);
     bankAccounts.value = bankAccounts.value.filter((acc) => acc.id !== id);
-    openDropdownId.value = null; // Close the dropdown after deletion
+    openDropdownId.value = null;
     toast.success("✅ Bank account deleted successfully!");
-  } catch (error) {
-    console.error("Failed to delete bank account", error);
+  } catch {
     toast.error("❌ Failed to delete bank account.");
   }
 };
 
-const formatCurrency = (value) => {
-  if (typeof value !== "number") return value;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(value);
-};
+const formatCurrency = (value) =>
+  typeof value === "number"
+    ? new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(value)
+    : value;
 
 onMounted(() => {
   fetchBankAccounts();

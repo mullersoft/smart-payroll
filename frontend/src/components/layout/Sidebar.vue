@@ -1,4 +1,4 @@
-<!-- frontend/src/components/layout/Sidebar.vue -->
+<!-- D:\qelem meda\smart-payroll\frontend\src\components\layout\Sidebar.vue -->
 <script setup>
 import { useAuthStore } from "@/store/auth";
 import { closeSidebar, isSidebarOpen, toggleSidebar } from "@/store/sidebar";
@@ -8,6 +8,7 @@ import { onMounted, onUnmounted } from "vue";
 const auth = useAuthStore();
 
 const allLinks = [
+  // Admin Dashboard
   {
     path: "/admin",
     label: "Admin Dashboard",
@@ -18,7 +19,7 @@ const allLinks = [
     path: "/admin/users",
     label: "Manage Users",
     roles: ["admin"],
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   },
   {
     path: "/admin/employees",
@@ -33,18 +34,21 @@ const allLinks = [
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><rect width="20" height="12" x="2" y="6" rx="2"/><path d="M6 12h4m2 0h-2m2 0v4m0-4h-2"/></svg>`,
   },
 
+  // Preparer Dashboard
   {
     path: "/preparer",
     label: "Preparer Dashboard",
     roles: ["preparer"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   },
-    {
+  {
     path: "/preparer/payrolls",
     label: "Manage Payrolls",
     roles: ["preparer"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M2 16h20"/><path d="M2 12h20"/><path d="M2 8h20"/><path d="M2 4h20"/><path d="M2 20h20"/><path d="M10 2v20"/><path d="M14 2v20"/></svg>`,
   },
+
+  // Approver Dashboard
   {
     path: "/approver",
     label: "Approver Dashboard",
@@ -52,41 +56,71 @@ const allLinks = [
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   },
 
+  // Employee Dashboard and Pages
+  {
+    path: "/employee-dashboard",
+    label: "Dashboard",
+    roles: [ "preparer", "approver", "employee"],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  },
+  {
+    path: "/payroll-history",
+    label: "Payroll History",
+    roles: ["preparer", "approver", "employee"],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M2 16h20"/><path d="M2 12h20"/><path d="M2 8h20"/><path d="M2 4h20"/><path d="M2 20h20"/><path d="M10 2v20"/><path d="M14 2v20"/></svg>`,
+  },
+  {
+    path: "/payroll-transactions",
+    label: "Payroll Transactions",
+    roles: ["preparer", "approver", "employee"],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 12H3"/><path d="M3 6h18"/><path d="M3 18h18"/><path d="M9 12l-6-6"/><path d="M9 12l-6 6"/></svg>`,
+  },
+  {
+    path: "/employee-profile",
+    label: "My Profile",
+    roles: ["preparer", "approver", "employee"],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`,
+  },
+
+  // Shared Pages
   {
     path: "/transactions",
-    label: "Transactions",
+    label: "All Transactions",
     roles: ["preparer", "approver"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 12H3"/><path d="M3 6h18"/><path d="M3 18h18"/><path d="M9 12l-6-6"/><path d="M9 12l-6 6"/></svg>`,
   },
 ];
 
+// Determine user role for filtering
+const getUserRole = () => {
+  if (auth.user?.role) return auth.user.role;
+  // If user has no role but is authenticated, treat as employee
+  if (auth.user) return "employee";
+  return null;
+};
+
+const userRole = getUserRole();
 const filteredLinks = allLinks.filter((link) =>
-  link.roles.includes(auth.user?.role)
+  link.roles.includes(userRole)
 );
 
 const handleLinkClick = () => {
-  // Close sidebar on all screen sizes after clicking a link
   closeSidebar();
 };
 
-// New function to check the screen size and set default state
 const checkScreenSize = () => {
   if (window.innerWidth >= 1024) {
-    // On large screens, default to icon view (closed state)
     isSidebarOpen.value = false;
   } else {
-    // On small screens, default to closed
     isSidebarOpen.value = false;
   }
 };
 
-// Add a resize event listener when the component is mounted
 onMounted(() => {
-  checkScreenSize(); // Initial check on load
+  checkScreenSize();
   window.addEventListener("resize", checkScreenSize);
 });
 
-// Remove the event listener when the component is unmounted
 onUnmounted(() => {
   window.removeEventListener("resize", checkScreenSize);
 });

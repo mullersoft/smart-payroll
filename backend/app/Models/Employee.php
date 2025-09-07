@@ -13,6 +13,7 @@ class Employee extends Model
         'full_name',
         'employee_id',
         'email',
+        'user_id',
         'position_id',
         'employment_type_id',
         'base_salary',
@@ -30,11 +31,15 @@ class Employee extends Model
     {
         return $this->hasOne(BankAccount::class, 'employee_id');
     }
+public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 
-    public function user()
-    {
-        return $this->hasOne(User::class);
-    }
+    // public function user()
+    // {
+    //     return $this->hasOne(User::class);
+    // }
 
     public function position()
     {

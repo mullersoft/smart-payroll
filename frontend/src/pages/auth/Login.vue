@@ -97,9 +97,11 @@ const handleLogin = async () => {
     if (status === "deactivated") {
       toast.error("Your account is deactivated. Contact admin.");
       authStore.logout(); // log out immediately
-    } else if (status === "pending") {
+    }
+    else if (status === "pending") {
       router.push("/profile"); // pending users go to profile
-    } else if (status === "active" && !role) {
+    }
+    else if (status === "active" && !role) {
       router.push("/employee-dashboard"); // active users without a role go to profile
     } else {
       // active users with assigned roles
