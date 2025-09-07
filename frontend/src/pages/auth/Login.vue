@@ -99,16 +99,14 @@ const handleLogin = async () => {
       authStore.logout(); // log out immediately
     }
     else if (status === "pending") {
-      router.push("/profile"); // pending users go to profile
+      router.push("/PendingProfile"); // pending users go to profile
     }
-    else if (status === "active" && !role) {
-      router.push("/employee-dashboard"); // active users without a role go to profile
-    } else {
+     else {
       // active users with assigned roles
       if (role === "admin") router.push("/admin");
       else if (role === "preparer") router.push("/preparer");
       else if (role === "approver") router.push("/approver");
-      else router.push("/"); // fallback for unexpected role
+      else router.push("/employee-dashboard");
     }
   } catch (err) {
     error.value = err.response?.data?.error || "Login failed";

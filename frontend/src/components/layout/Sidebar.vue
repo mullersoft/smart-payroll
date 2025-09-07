@@ -55,40 +55,40 @@ const allLinks = [
     roles: ["approver"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   },
-
-  // Employee Dashboard and Pages
-  {
-    path: "/employee-dashboard",
-    label: "Dashboard",
-    roles: [ "preparer", "approver", "employee"],
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-  },
-  {
-    path: "/payroll-history",
-    label: "Payroll History",
-    roles: ["preparer", "approver", "employee"],
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M2 16h20"/><path d="M2 12h20"/><path d="M2 8h20"/><path d="M2 4h20"/><path d="M2 20h20"/><path d="M10 2v20"/><path d="M14 2v20"/></svg>`,
-  },
-  {
-    path: "/payroll-transactions",
-    label: "Payroll Transactions",
-    roles: ["preparer", "approver", "employee"],
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 12H3"/><path d="M3 6h18"/><path d="M3 18h18"/><path d="M9 12l-6-6"/><path d="M9 12l-6 6"/></svg>`,
-  },
-  {
-    path: "/employee-profile",
-    label: "My Profile",
-    roles: ["preparer", "approver", "employee"],
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`,
-  },
-
-  // Shared Pages
+ // Shared Pages
   {
     path: "/transactions",
     label: "All Transactions",
     roles: ["preparer", "approver"],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 12H3"/><path d="M3 6h18"/><path d="M3 18h18"/><path d="M9 12l-6-6"/><path d="M9 12l-6 6"/></svg>`,
   },
+  // Employee Dashboard and Pages
+  {
+    path: "/employee-dashboard",
+    label: "Dashboard",
+    roles: [ "employee"],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  },
+  {
+    path: "/payroll-history",
+    label: "Payroll History",
+    roles: [ "employee"],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M2 16h20"/><path d="M2 12h20"/><path d="M2 8h20"/><path d="M2 4h20"/><path d="M2 20h20"/><path d="M10 2v20"/><path d="M14 2v20"/></svg>`,
+  },
+  {
+    path: "/payroll-transactions",
+    label: "Payroll Transactions",
+    roles: [  "employee"],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 12H3"/><path d="M3 6h18"/><path d="M3 18h18"/><path d="M9 12l-6-6"/><path d="M9 12l-6 6"/></svg>`,
+  },
+  {
+    path: "/userProfile",
+    label: "My Profile",
+    roles: [ "admin","preparer","approver","employee"],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`,
+  },
+
+
 ];
 
 // Determine user role for filtering
@@ -177,12 +177,13 @@ onUnmounted(() => {
         >
           <span v-html="link.icon" class="text-white"></span>
           <span v-if="isSidebarOpen">{{ link.label }}</span>
-          <span
-            v-if="!isSidebarOpen"
-            class="absolute left-full ml-4 w-auto p-2 bg-gray-900 text-yellow-400 text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50"
-          >
-            {{ link.label }}
-          </span>
+         <span
+  v-if="!isSidebarOpen"
+  class="absolute left-full ml-4 w-auto p-2 bg-gray-900 text-yellow-400 text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50 pointer-events-none"
+>
+  {{ link.label }}
+</span>
+
         </router-link>
       </nav>
 

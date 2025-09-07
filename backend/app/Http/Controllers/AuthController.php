@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmployeeCreatedMail;
+use App\Constants\UserRoles;
+
 
 
 class AuthController extends Controller
@@ -22,31 +27,38 @@ class AuthController extends Controller
     {
         // return $request->user(); // return current logged-in user
         return $request->user()->only(['id', 'name', 'email', 'role', 'status']);
-
     }
+
     public function register(Request $request)
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6',
-            'role' => 'nullable|in:preparer,approver,admin',
+            'password' => 'nullable|string|min:6',
+    'role' => 'nullable|in:' . implode(',', UserRoles::ROLES),
+            'status' => 'nullable|in:pending,active,deactivated',
+
         ]);
+$plainPassword = $data['password'] ?? Str::random(10);
+$data['password'] = Hash::make($plainPassword);
 
+// If role not provided, default to pending
+$data['role'] = $data['role'] ?? UserRoles::PENDING;
+$data['status'] = $data['status'] ?? 'pending';
 
-        $data['password'] = Hash::make($data['password']);
-        $data['status'] = 'pending'; // default status
-        $user = User::create($data);
+$user = User::create($data);
+    Mail::to($user->email)->send(new EmployeeCreatedMail($user, $plainPassword));
 
-        return response()->json([
-            // 'user' => $user
-            'user' => [
+       return response()->json([
+        'message' => 'User created and credentials sent via email.',
+        'user' => [
             'id'     => $user->id,
             'name'   => $user->name,
             'email'  => $user->email,
             'status' => $user->status,
+            'role'   => $user->role,
         ]
-        ], 201);
+    ], 201);
     }
 
 public function login(Request $request)
@@ -147,7 +159,7 @@ public function toggleStatus($id)
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'role' => 'required|in:preparer,approver,admin,pending',
+    'role' => 'nullable|in:' . implode(',', UserRoles::ROLES),
             'password' => 'nullable|string|min:6',
         ]);
 

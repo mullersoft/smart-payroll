@@ -28,7 +28,6 @@ import PayrollTransactions from '@/pages/transactions/PayrollTransactions.vue';
 
 
 const routes = [
-
   // Employee routes (accessible to all authenticated users)
   {
     path: "/employee-dashboard",
@@ -49,7 +48,7 @@ const routes = [
     meta: { layout: MainLayout, requiresAuth: true },
   },
   {
-    path: "/employee-profile",
+    path: "/userProfile",
     name: "EmployeeProfile",
     component: EmployeeProfile,
     meta: { layout: MainLayout, requiresAuth: true },
@@ -146,10 +145,11 @@ const routes = [
   // --------------------
   // User Profile
   // --------------------
+  // D:\qelem meda\smart-payroll\frontend\src\pages\profile\Profile.vue
   {
-    path: "/profile",
-    name: "Profile",
-    component: () => import("@/pages/auth/Profile.vue"),
+    path: "/PendingProfile",
+    name: "PendingProfile",
+    component: () => import("@/pages/profile/PendingProfile.vue"),
     meta: { requiresAuth: true },
   },
 
@@ -166,9 +166,9 @@ const routes = [
     name: "GoogleCallback",
     component: () => import("@/pages/auth/GoogleCallback.vue"),
   },
-{
-    path: '/:pathMatch(.*)*',
-    redirect: '/employee-dashboard'
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: "/employee-dashboard",
   },
   // --------------------
   // Root Redirect
@@ -181,7 +181,7 @@ const routes = [
       if (storedUser.role === "admin") return "/admin";
       if (storedUser.role === "preparer") return "/preparer";
       if (storedUser.role === "approver") return "/approver";
-      if (storedUser.status === "pending") return "/profile";
+      if (storedUser.status === "pending") return "/PendingProfile.vue";
       return "/login";
     },
   },

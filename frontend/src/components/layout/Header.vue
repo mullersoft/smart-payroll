@@ -30,7 +30,7 @@
           class="flex items-center space-x-2 text-gray-700 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
         >
           <span class="text-sm sm:text-base font-medium">{{
-            auth.user?.role || auth.user?.email
+            auth.user?.name
           }}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -62,7 +62,7 @@
             class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-xl z-50 py-1"
           >
             <router-link
-              to="/profile"
+              to="/userProfile"
               @click="closeProfileDropdown"
               class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
             >
@@ -83,9 +83,9 @@
 
 <script setup>
 import { useAuthStore } from "@/store/auth";
-import { useRouter } from "vue-router";
-import { ref, onMounted, onUnmounted } from "vue";
 import { toggleSidebar } from "@/store/sidebar"; // Import toggleSidebar
+import { onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const auth = useAuthStore();
 const router = useRouter();

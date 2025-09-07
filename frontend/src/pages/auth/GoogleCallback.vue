@@ -33,7 +33,7 @@ onMounted(async () => {
     // 🔑 Check status first
     if (data.user.status === "pending") {
       toast.info("Your account is pending approval.");
-      router.push("/profile");
+      router.push("/PendingProfile");
       return;
     }
 
@@ -47,7 +47,7 @@ onMounted(async () => {
     if (data.user.role === "admin") router.push("/admin");
     else if (data.user.role === "preparer") router.push("/preparer");
     else if (data.user.role === "approver") router.push("/approver");
-    else router.push("/profile"); // fallback
+    else  router.push("/employee-dashboard");
   } catch (err) {
     console.error("Google login failed", err);
     toast.error("Google login failed. Please try again.");

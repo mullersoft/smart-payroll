@@ -85,7 +85,7 @@
       </div>
 
       <!-- Reusable Modal Component -->
-      <CreateAndEditModal
+      <CreateAccountModal
         v-if="showModal"
         :is-edit-mode="isEditMode"
         :editing-account-id="editingAccountId"
@@ -103,7 +103,7 @@ import MainLayout from "@/components/layout/MainLayout.vue";
 import api from "@/services/api";
 import { onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
-import CreateAndEditModal from "./createAndEditModal.vue";
+import CreateAccountModal from "./createAndEditModal.vue";
 
 const toast = useToast();
 const bankAccounts = ref([]);

@@ -1,19 +1,33 @@
 @component('mail::message')
-    # Welcome, {{ $user->name }}
+# 🎉 Welcome to Smart Payroll, {{ $user->name }}!
 
-    Your account has been created in **Smart Payroll System**.
+We’re excited to let you know that your account has been successfully created in the **Smart Payroll System**.
 
-    Here are your login details:
+You can now access your profile, view your payroll history, and manage your information online.
 
-    - **Email:** {{ $user->email }}
-    - **Temporary Password:** {{ $password }}
+---
 
-    @component('mail::button', ['url' => $loginUrl])
-        Login to Smart Payroll
-    @endcomponent
+### 🔑 Your Login Credentials
+- **Email:** {{ $user->email }}
+- **Temporary Password:** {{ $password }}
 
-    ⚠️ Please change your password after logging in.
+---
 
-    Thanks,<br>
-    {{ config('app.name') }}
+@component('mail::button', ['url' => $loginUrl])
+👉 Log in to Your Account
+@endcomponent
+
+---
+
+### ⚠️ Important Next Step
+For your security, please change your password immediately after your first login.
+
+This ensures that only you have access to your account.
+
+If you have any issues signing in, kindly contact the HR or Payroll Department for assistance.
+
+---
+
+Thanks,
+**The {{ config('app.name') }} Team**
 @endcomponent

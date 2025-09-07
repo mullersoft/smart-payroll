@@ -33,7 +33,7 @@
         </div>
 
         <!-- Password (only for new users) -->
-        <div class="mb-4" v-if="!isEditing">
+        <!-- <div class="mb-4" v-if="!isEditing">
           <label class="block text-sm font-medium">Password</label>
           <input
             v-model="localForm.password"
@@ -41,7 +41,7 @@
             required
             class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
           />
-        </div>
+        </div> -->
 
         <!-- Role -->
         <div class="mb-4">
@@ -54,6 +54,8 @@
             <option value="preparer">Preparer</option>
             <option value="approver">Approver</option>
             <option value="admin">Admin</option>
+            <option value="pending">Pending</option>
+
           </select>
         </div>
 
@@ -113,6 +115,13 @@ watch(
 );
 
 const handleSubmit = () => {
-  emit("submit", { ...localForm });
+  const payload = {
+    name: localForm.name,
+    email: localForm.email,
+    role: localForm.role,
+    status: localForm.status,
+  };
+  emit("submit", payload);
 };
+
 </script>

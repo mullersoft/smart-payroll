@@ -46,7 +46,7 @@ Route::post('/webhooks/chapa', [ChapaPaymentController::class, 'webhook']);
     Route::apiResource('employees', EmployeeController::class);
 
     // ---- Preparer ----
-    Route::middleware('role:preparer')->group(function () {
+    Route::middleware('role:admin,preparer,approver')->group(function () {
         Route::apiResource('payrolls', PayrollController::class)
             ->only(['index', 'store', 'show', 'update', 'destroy']);
         Route::post('/payrolls/bulk', [PayrollController::class, 'bulkStore']);
@@ -64,7 +64,7 @@ Route::post('/webhooks/chapa', [ChapaPaymentController::class, 'webhook']);
     });
 
     // ---- Admin ----
-    Route::middleware('role:admin,preparer')->group(function () {
+    Route::middleware('role:admin,preparer,approver')->group(function () {
         Route::post('/employees/{id}/activate', [EmployeeController::class, 'activate']);
         Route::post('/employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus']);
          Route::get('/users', [AuthController::class, 'index']); // all users
@@ -82,7 +82,7 @@ Route::post('/webhooks/chapa', [ChapaPaymentController::class, 'webhook']);
     });
 
     // ---- Approver ----
-    Route::middleware('role:approver,preparer')->group(function () {
+    Route::middleware('role:admin,preparer,approver')->group(function () {
         Route::post('/payrolls/{payroll}/approve', [PayrollController::class, 'approve']);
         Route::post('/payrolls/{payroll}/reject', [PayrollController::class, 'reject']);
         Route::get('/payrolls/pending', [PayrollController::class, 'pending']);
