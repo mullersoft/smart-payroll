@@ -23,9 +23,7 @@ import PayrollsPage from "@/pages/payrolls/PayrollsPage.vue";
 import TransactionsPage from "@/pages/transactions/TransactionsPage.vue";
 // Employee Pages
 import PayrollHistory from '@/pages/payrolls/PayrollHistory.vue';
-import EmployeeProfile from '@/pages/profile/EmployeeProfile.vue';
-import PayrollTransactions from '@/pages/transactions/PayrollTransactions.vue';
-
+import EmployeeProfile from "@/pages/profile/EmployeeProfile.vue";
 
 const routes = [
   // Employee routes (accessible to all authenticated users)
@@ -41,12 +39,12 @@ const routes = [
     component: PayrollHistory,
     meta: { layout: MainLayout, requiresAuth: true },
   },
-  {
-    path: "/payroll-transactions",
-    name: "PayrollTransactions",
-    component: PayrollTransactions,
-    meta: { layout: MainLayout, requiresAuth: true },
-  },
+  // {
+  //   path: "/payroll-transactions",
+  //   name: "PayrollTransactions",
+  //   component: PayrollTransactions,
+  //   meta: { layout: MainLayout, requiresAuth: true },
+  // },
   {
     path: "/userProfile",
     name: "EmployeeProfile",

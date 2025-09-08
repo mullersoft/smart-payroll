@@ -105,8 +105,11 @@
             >
               <option value="">All Types</option>
               <option value="salary">Salary</option>
-              <option value="bonus">Bonus</option>
-              <option value="allowance">Allowance</option>
+              <!-- <option value="bonus">Bonus</option> -->
+              <!-- <option value="allowance">Allowance</option> -->
+              <option value="tax">Tax</option>
+              <option value="pension">Pension</option>
+
             </select>
           </div>
 
@@ -573,9 +576,9 @@ const typeBadgeClass = (type) => {
   switch (type) {
     case 'salary':
       return `${baseClasses} bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200`;
-    case 'bonus':
+    case 'tax':
       return `${baseClasses} bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200`;
-    case 'allowance':
+    case 'pension':
       return `${baseClasses} bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200`;
     default:
       return `${baseClasses} bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200`;
