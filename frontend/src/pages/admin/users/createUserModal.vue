@@ -17,7 +17,8 @@
             v-model="localForm.name"
             type="text"
             required
-            class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+            :disabled="loading"
+            class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50"
           />
         </div>
 
@@ -28,7 +29,8 @@
             v-model="localForm.email"
             type="email"
             required
-            class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+            :disabled="loading"
+            class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50"
           />
         </div>
 
@@ -39,7 +41,8 @@
             v-model="localForm.password"
             type="password"
             required
-            class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+            :disabled="loading"
+            class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50"
           />
         </div> -->
 
@@ -48,14 +51,14 @@
           <label class="block text-sm font-medium">Role</label>
           <select
             v-model="localForm.role"
-            class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+            :disabled="loading"
+            class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50"
           >
             <option disabled value="">-- Select Role --</option>
             <option value="preparer">Preparer</option>
             <option value="approver">Approver</option>
             <option value="admin">Admin</option>
             <option value="pending">Pending</option>
-
           </select>
         </div>
 
@@ -64,7 +67,8 @@
           <label class="block text-sm font-medium">Status</label>
           <select
             v-model="localForm.status"
-            class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+            :disabled="loading"
+            class="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50"
           >
             <option value="pending">Pending</option>
             <option value="active">Active</option>
@@ -77,15 +81,38 @@
           <button
             @click="$emit('close')"
             type="button"
-            class="text-gray-600 dark:text-gray-300"
+            :disabled="loading"
+            class="text-gray-600 dark:text-gray-300 disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             type="submit"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
+            :disabled="loading"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50 flex items-center gap-2"
           >
-            {{ isEditing ? "Update" : "Create" }}
+            <svg
+              v-if="loading"
+              class="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              ></path>
+            </svg>
+            {{ loading ? "Processing..." : (isEditing ? "Update" : "Create") }}
           </button>
         </div>
       </form>
@@ -100,6 +127,7 @@ const props = defineProps({
   show: Boolean,
   isEditing: Boolean,
   form: Object,
+  loading: Boolean
 });
 const emit = defineEmits(["close", "submit"]);
 
@@ -121,7 +149,12 @@ const handleSubmit = () => {
     role: localForm.role,
     status: localForm.status,
   };
+
+  // Only include password for new users
+  // if (!props.isEditing) {
+  //   payload.password = localForm.password;
+  // }
+
   emit("submit", payload);
 };
-
 </script>

@@ -16,7 +16,29 @@
 
       <!-- Loading -->
       <div v-if="loading" class="text-center text-gray-700 dark:text-gray-300">
-        Loading users...
+        <div class="flex justify-center items-center">
+          <svg
+            class="animate-spin h-5 w-5 mr-2 text-blue-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+          ⏳ Loading users, please wait...
+        </div>
       </div>
 
       <!-- Users Table -->
@@ -68,12 +90,34 @@
                 <div class="relative" ref="dropdownRefs[user.id]">
                   <button
                     @click="toggleDropdown(user.id)"
-                    class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                    :disabled="actionLoading[user.id]"
+                    class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
                   >
-                    ...
+                    <svg
+                      v-if="actionLoading[user.id]"
+                      class="animate-spin h-4 w-4 text-gray-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                    <span v-else>...</span>
                   </button>
                   <div
-                    v-if="dropdownOpen[user.id]"
+                    v-if="dropdownOpen[user.id] && !actionLoading[user.id]"
                     class="absolute right-0 mt-1 w-36 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-50"
                   >
                     <button
@@ -116,6 +160,7 @@
         :show="showModal"
         :isEditing="isEditing"
         :form="form"
+        :loading="modalLoading"
         @close="showModal = false"
         @submit="handleSubmit"
       />
@@ -136,11 +181,13 @@ const loading = ref(true);
 const showModal = ref(false);
 const isEditing = ref(false);
 const editingUserId = ref(null);
+const modalLoading = ref(false);
+const actionLoading = reactive({});
 
 const form = ref({
   name: "",
   email: "",
-  password: "",
+  // password: "",
   role: "",
   status: "pending",
 });
@@ -185,7 +232,7 @@ const openCreateModal = () => {
   form.value = {
     name: "",
     email: "",
-    password: "",
+    // password: "",
     role: "",
     status: "pending",
   };
@@ -200,7 +247,7 @@ const editUser = (user) => {
     email: user.email,
     role: user.role,
     status: user.status,
-    password: "",
+    // password: "",
   };
   isEditing.value = true;
   editingUserId.value = user.id;
@@ -208,6 +255,7 @@ const editUser = (user) => {
 };
 
 const handleSubmit = async (payload) => {
+  modalLoading.value = true;
   try {
     if (isEditing.value) {
       await api.put(`/users/${editingUserId.value}`, {
@@ -227,27 +275,35 @@ const handleSubmit = async (payload) => {
   } catch (err) {
     console.error("Failed to save user:", err);
     toast.error("Failed to save user.");
+  } finally {
+    modalLoading.value = false;
   }
 };
 
 const toggleStatus = async (user) => {
+  actionLoading[user.id] = true;
   try {
     await api.post(`/users/${user.id}/toggle-status`);
     fetchUsers();
   } catch (err) {
     console.error("Failed to toggle user status:", err);
     toast.error("Failed to toggle user status.");
+  } finally {
+    actionLoading[user.id] = false;
   }
 };
 
 const deleteUser = async (id) => {
   if (!confirm("Are you sure you want to delete this user?")) return;
+  actionLoading[id] = true;
   try {
     await api.delete(`/users/${id}`);
     fetchUsers();
   } catch (err) {
     console.error("Failed to delete user:", err);
     toast.error("Failed to delete user.");
+  } finally {
+    actionLoading[id] = false;
   }
 };
 </script>

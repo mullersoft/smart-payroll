@@ -4,7 +4,7 @@
       class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
     >
       <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
-        👥 Employees Management
+        Employees Management
       </h1>
 
       <div
@@ -12,11 +12,7 @@
       >
         <!-- Status Filter -->
         <div class="w-full sm:w-40">
-          <!-- <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-            Filter Status</label
-          > -->
+
           <select
             v-model="statusFilter"
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none dark:bg-gray-700 dark:text-gray-200"
@@ -35,9 +31,11 @@
         </button>
       </div>
     </div>
-
+        <!-- Loading -->
+      <div v-if="loading" class="text-center text-gray-700 dark:text-gray-300">
+⏳ Loading employees, please wait...      </div>
     <!-- Table -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+    <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
@@ -147,9 +145,9 @@
   :employmentTypes="employmentTypes"
   :allowances="allowances"
   @save="handleSave"
-  @close="showEditModal = false"
+  @close="closeEditModal"
 />
-<!-- 👇 Add this to render the view modal -->
+<!--  to render the view modal -->
 <EmployeeViewModal
   :show="showViewModal"
   :employee="selectedViewEmployee"
@@ -165,7 +163,7 @@ import EmployeeEditModal from "./EmployeeEditModal.vue";
 import EmployeeViewModal from "./EmployeeViewModal.vue";
 
 
-import { useToast } from "vue-toastification"; // ✅ Import useToast
+import { useToast } from "vue-toastification";
 const showViewModal = ref(false);
 const selectedViewEmployee = ref(null);
 
@@ -179,21 +177,18 @@ const openViewModal = (emp) => {
   openDropdownId.value = null; // close dropdown
 };
 
-const toast = useToast(); // ✅ Create toast instance
-
+const toast = useToast();
 const allowances = ref([]);
+const loading = ref(false);
 
-// const fetchAllowances = async () => {
-//   const res = await api.get("/allowances");
-//   allowances.value = res.data;
-// };
+
 const fetchAllowances = async () => {
   try {
     const res = await api.get("/allowances");
     allowances.value = res.data;
   } catch (error) {
     console.error("Failed to fetch allowances:", error);
-    toast.error("❌ Failed to load allowances data.");
+    toast.error("Failed to load allowances data.");
   }
 };
 
@@ -202,23 +197,17 @@ const fetchAllowances = async () => {
 const employees = ref([]);
 const positions = ref([]);
 const employmentTypes = ref([]);
-const statusFilter = ref("active");
+const statusFilter = ref("all");
 const showEditModal = ref(false);
 const isEditing = ref(false);
 const selectedEmployee = ref(null);
 const openDropdownId = ref(null);
 
-// const fetchEmployees = async () => {
-//   const params = {};
-//   if (statusFilter.value !== "all") {
-//     params.is_active = statusFilter.value === "active";
-//   }
-//   const res = await api.get("/employees", { params });
-//   employees.value = res.data;
-// };
-// 1. Error Handling for Initial Data Fetching
+
 const fetchEmployees = async () => {
+  loading.value = true;
   try {
+    loading.value = true;
     const params = {};
     if (statusFilter.value !== "all") {
       params.is_active = statusFilter.value === "active";
@@ -227,16 +216,14 @@ const fetchEmployees = async () => {
     employees.value = res.data;
   } catch (error) {
     console.error("Failed to fetch employees:", error);
-    toast.error("❌ Failed to load employees. Please try again.");
+    toast.error("Failed to load employees. Please try again.");
+  } finally {
+    loading.value = false;
   }
 };
 
 
 
-// const fetchPositions = async () => {
-//   const res = await api.get("/positions");
-//   positions.value = res.data;
-// };
 
 const fetchPositions = async () => {
   try {
@@ -244,15 +231,12 @@ const fetchPositions = async () => {
     positions.value = res.data;
   } catch (error) {
     console.error("Failed to fetch positions:", error);
-    toast.error("❌ Failed to load positions data.");
+    toast.error("Failed to load positions data.");
   }
 };
 
 
-// const fetchEmploymentTypes = async () => {
-//   const res = await api.get("/employment-types");
-//   employmentTypes.value = res.data;
-// };
+
 
 const fetchEmploymentTypes = async () => {
   try {
@@ -260,7 +244,7 @@ const fetchEmploymentTypes = async () => {
     employmentTypes.value = res.data;
   } catch (error) {
     console.error("Failed to fetch employment types:", error);
-    toast.error("❌ Failed to load employment types data.");
+    toast.error("Failed to load employment types data.");
   }
 };
 
@@ -292,47 +276,57 @@ const openEditModal = (emp) => {
   openDropdownId.value = null;
 };
 
+const closeEditModal = () => {
+  showEditModal.value = false;
+  // Reset loading state when modal is closed
+  loading.value = false;
+};
 
-// const handleSave = async (data) => {
-//   if (isEditing.value) {
-//     await api.put(`/employees/${selectedEmployee.value.id}`, data);
-//   } else {
-//     await api.post("/employees", data);
-//   }
-//   showEditModal.value = false;
-//   fetchEmployees();
-// };
 
-// 2. Error Handling for Saving (Add/Edit)
-const handleSave = async (data) => {
+const handleSave = async (data, resetLoading) => {
   try {
     if (isEditing.value) {
       await api.put(`/employees/${selectedEmployee.value.id}`, data);
-      toast.success("✅ Employee updated successfully!");
+      toast.success("Employee updated successfully!");
     } else {
       await api.post("/employees", data);
-      toast.success("✅ New employee added successfully!");
+      toast.success("New employee added successfully!");
     }
     showEditModal.value = false;
     fetchEmployees(); // Re-fetch data after a successful save
   } catch (error) {
     console.error("Error saving employee", error);
+    // Reset loading state through the callback
+    if (resetLoading) resetLoading();
+
     if (error.response?.data?.errors) {
       const errs = error.response.data.errors;
       Object.values(errs).forEach((msgArr) => {
         toast.error(msgArr[0]); // Show each validation error in a toast
       });
     } else {
-      toast.error("❌ Failed to save employee."); // Fallback error message
+      toast.error("Failed to save employee."); // Fallback error message
     }
   }
 };
 
 
-// const toggleStatus = async (emp) => {
-//   await api.post(`/employees/${emp.id}/toggle-status`);
-//   fetchEmployees();
-// };
+
+
+const toggleStatus = async (emp) => {
+  try {
+    loading.value = true;
+    await api.post(`/employees/${emp.id}/toggle-status`);
+    toast.success(`Employee ${emp.is_active ? 'deactivated' : 'activated'} successfully!`);
+    fetchEmployees();
+  } catch (error) {
+    console.error("Error toggling employee status", error);
+    toast.error("Failed to update employee status.");
+  } finally {
+    loading.value = false;
+    openDropdownId.value = null;
+  }
+};
 
 
 const toggleDropdown = (id) => {
@@ -343,7 +337,7 @@ onMounted(() => {
   fetchEmployees();
   fetchPositions();
   fetchEmploymentTypes();
-  fetchAllowances(); // ✅ added
+  fetchAllowances();
 });
 
 </script>

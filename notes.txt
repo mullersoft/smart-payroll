@@ -1,0 +1,106 @@
+steps to create spinner:
+// 1. inside the script
+const loading = ref(false);
+.
+.
+.
+    loading.value = true; // start spinner inside the button handler function
+.
+.
+.
+finally {
+    loading.value = false; // stop spinner inside the button handler function(at the end)
+  }
+
+
+// 2. inside the tamplate
+          :disabled="loading" //  to disable if it is on api calling state
+          .
+          .
+          .
+<svg
+    v-if="loading"
+    class="animate-spin h-5 w-5 mr-2 text-white"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+  >
+  <circle
+      class="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      stroke-width="4"
+    ></circle>
+    <path
+      class="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+    ></path>
+  </svg>
+  .
+  .
+  .
+
+  or
+  .
+  .
+  .
+   <button
+          type="submit"
+          @click="save"
+          :disabled="!isFormValid || loading"
+          class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg
+                hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed
+                transition-colors duration-200 font-medium
+                flex items-center gap-2"
+        >
+          <svg
+            v-if="loading"
+            class="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+          <svg v-else-if="isEditing" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          {{ loading ? "Processing..." : (isEditing ? 'Update Employee' : 'Create Employee') }}
+        </button>
+
+
+    <span>{{  ? "Logging in..." : "Login" }}</span>
+
+
+
+
+
+
+
+    // or for tables
+      <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+     <!-- 👇 Loading State -->
+        <tr v-if="loading">
+          <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+            ⏳ Loading employees, please wait...
+          </td>
+        </tr>
+
+
+
+

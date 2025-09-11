@@ -23,7 +23,7 @@
             title="Refresh dashboard"
           >
             <i class="fas fa-sync-alt mr-1" :class="{ 'fa-spin': loading }"></i>
-            {{ loading ? 'Refreshing...' : 'Refresh' }}
+            {{ loading ? 'Loading...' : 'Refresh' }}
           </button>
         </div>
       </div>
@@ -148,6 +148,7 @@
           </div>
 
           <div v-else class="space-y-4">
+
             <div v-for="payroll in recentPayrolls" :key="payroll.id" class="payroll-item">
               <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -322,10 +323,14 @@ const payrollCount = computed(() => payrolls.value.length);
 const bankAccountCount = computed(() => bankAccounts.value.length);
 
 const totalExpenditure = computed(() => {
+  if (!Array.isArray(payrolls.value)) {
+    return 0;
+  }
   return payrolls.value.reduce((total, payroll) => {
     return total + parseFloat(payroll.net_payment || 0);
   }, 0);
 });
+
 
 const companyBalance = computed(() => {
   const companyAccount = bankAccounts.value.find(acc =>
@@ -439,10 +444,23 @@ const fetchDashboardData = async () => {
       api.get("/bank-accounts"),
     ]);
 
-    employees.value = employeesRes.data || [];
-    payrolls.value = payrollsRes.data || [];
-    transactions.value = transactionsRes.data || [];
-    bankAccounts.value = bankAccountsRes.data || [];
+    console.log('Payrolls response:', payrollsRes); // Debug the response structure
+
+    // Check if the response has a specific structure (e.g., { data: { payrolls: [] } })
+    if (payrollsRes.data && Array.isArray(payrollsRes.data.payrolls)) {
+      payrolls.value = payrollsRes.data.payrolls;
+    } else if (Array.isArray(payrollsRes.data)) {
+      payrolls.value = payrollsRes.data;
+    } else {
+      payrolls.value = [];
+      console.warn('Unexpected payrolls response structure:', payrollsRes.data);
+    }
+
+    // Similarly handle other responses
+    employees.value = Array.isArray(employeesRes.data) ? employeesRes.data : [];
+    transactions.value = Array.isArray(transactionsRes.data) ? transactionsRes.data : [];
+    bankAccounts.value = Array.isArray(bankAccountsRes.data) ? bankAccountsRes.data : [];
+
   } catch (error) {
     console.error("Error loading dashboard data:", error);
     toast.error("Failed to load dashboard data.");
@@ -450,7 +468,6 @@ const fetchDashboardData = async () => {
     loading.value = false;
   }
 };
-
 const formatCurrency = (value) => {
   return parseFloat(value || 0).toLocaleString('en-US', {
     minimumFractionDigits: 2,

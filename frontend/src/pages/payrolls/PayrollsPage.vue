@@ -357,6 +357,7 @@ onMounted(() => {
 const processPayroll = async (id) => {
   try {
     await api.post(`/payrolls/${id}/process`);
+    toast.success("payroll processed successfully.")
     await fetchPayrolls();
   } catch (error) {
 console.error("Error processing payroll:", error?.response?.data || error);

@@ -21,9 +21,11 @@ import EmployeesSection from "@/pages/admin/employees/EmployeesSection.vue";
 // import EmployeeProfile from "@/pages/employees/EmployeeProfile.vue";
 import PayrollsPage from "@/pages/payrolls/PayrollsPage.vue";
 import TransactionsPage from "@/pages/transactions/TransactionsPage.vue";
+
 // Employee Pages
 import PayrollHistory from '@/pages/payrolls/PayrollHistory.vue';
 import EmployeeProfile from "@/pages/profile/EmployeeProfile.vue";
+import PendingProfile from "@/pages/profile/PendingProfile.vue";
 
 const routes = [
   // Employee routes (accessible to all authenticated users)
@@ -31,7 +33,12 @@ const routes = [
     path: "/employee-dashboard",
     name: "EmployeeDashboard",
     component: EmployeeDashboard,
-    meta: { layout: MainLayout, requiresAuth: true },
+    meta: {
+      layout: MainLayout,
+      requiresAuth: true,
+      // role: ["preparer", "admin", "approver"]
+
+    },
   },
   {
     path: "/payroll-history",
@@ -39,12 +46,12 @@ const routes = [
     component: PayrollHistory,
     meta: { layout: MainLayout, requiresAuth: true },
   },
-  // {
-  //   path: "/payroll-transactions",
-  //   name: "PayrollTransactions",
-  //   component: PayrollTransactions,
-  //   meta: { layout: MainLayout, requiresAuth: true },
-  // },
+  {
+    path: "/payroll-transactions",
+    name: "PayrollTransactions",
+    component: () => import("@/pages/transactions/PayrollTransactions.vue"),
+    meta: { layout: MainLayout, requiresAuth: true },
+  },
   {
     path: "/userProfile",
     name: "EmployeeProfile",
@@ -140,14 +147,10 @@ const routes = [
     meta: { guestOnly: true },
   },
 
-  // --------------------
-  // User Profile
-  // --------------------
-  // D:\qelem meda\smart-payroll\frontend\src\pages\profile\Profile.vue
   {
     path: "/PendingProfile",
     name: "PendingProfile",
-    component: () => import("@/pages/profile/PendingProfile.vue"),
+    component: PendingProfile,
     meta: { requiresAuth: true },
   },
 
@@ -179,7 +182,9 @@ const routes = [
       if (storedUser.role === "admin") return "/admin";
       if (storedUser.role === "preparer") return "/preparer";
       if (storedUser.role === "approver") return "/approver";
-      if (storedUser.status === "pending") return "/PendingProfile.vue";
+      // if (storedUser.status === "pending") return "/EmployeeProfile.vue";
+      if (storedUser.status === "pending" && storedUser.role === "pending")
+        return "/PendingProfile.vue";
       return "/login";
     },
   },

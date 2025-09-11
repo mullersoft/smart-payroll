@@ -11,9 +11,12 @@
         Add Employment Type
       </button>
     </div>
-
+           <!-- Loading -->
+      <div v-if="loading" class="text-center text-gray-700 dark:text-gray-300">
+        ⏳ Loading types, please wait...
+      </div>
     <!-- Table -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+    <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
@@ -87,12 +90,44 @@
         />
         <div class="flex justify-end space-x-2">
           <button @click="closeModal" class="px-4 py-2">Cancel</button>
-          <button
+          <!-- <button
             @click="saveType"
             class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
           >
             Save
-          </button>
+          </button> -->
+ <button
+          type="submit"
+          @click="saveType"
+          :disabled="loading"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded flex items-center gap-2"
+        >
+          <svg
+            v-if="loading"
+            class="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+          <svg v-else-if="isEditing" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          {{ loading ? "Saving..." : (isEditing ? 'Update Type' : 'Create Type') }}
+        </button>
         </div>
       </div>
     </div>
@@ -138,17 +173,20 @@ const showDeleteModal = ref(false);
 const isEditing = ref(false);
 const form = ref({ name: "", description: "" });
 const selectedType = ref(null);
+const loading = ref(true)
 
 const fetchTypes = async () => {
+  loading.value = true;
   try {
     const res = await api.get("/employment-types");
     types.value = res.data;
   } catch (error) {
     console.error("Failed to fetch employment types:", error);
-    toast.error("❌ Failed to load employment types data.");
+    toast.error("Failed to load employment types data.");
   }
-/*  const res = await api.get("/employment-types");
-  types.value = res.data;*/
+  finally {
+  loading.value = false
+}
 
 };
 
@@ -166,27 +204,31 @@ const openEditModal = (type) => {
 };
 
 const saveType = async () => {
+  loading.value = true
   if (isEditing.value) {
     // Update existing type
     try {
       await api.put(`/employment-types/${selectedType.value.id}`, form.value);
-      toast.success("✅ Employment type updated successfully.");
+      toast.success("Employment type updated successfully.");
       fetchTypes();
       closeModal();
     } catch (error) {
       console.error("Failed to update employment type:", error);
-      toast.error("❌ Failed to update employment type.");
+      toast.error("Failed to update employment type.");
     }
   } else {
     // Create new type
     try {
       await api.post("/employment-types", form.value);
-      toast.success("✅ Employment type created successfully.");
+      toast.success("Employment type created successfully.");
       fetchTypes();
       closeModal();
     } catch (error) {
       console.error("Failed to create employment type:", error);
-      toast.error("❌ Failed to create employment type.");
+      toast.error("Failed to create employment type.");
+    }
+    finally {
+      loading.value = false
     }
   }
   /*  if (isEditing.value) {
@@ -206,17 +248,14 @@ const confirmDelete = (type) => {
 const deleteType = async () => {
   try {
     await api.delete(`/employment-types/${selectedType.value.id}`);
-    toast.success("✅ Employment type deleted successfully.");
+    toast.success("Employment type deleted successfully.");
     fetchTypes();
     showDeleteModal.value = false;
   } catch (error) {
     console.error("Failed to delete employment type:", error);
-    toast.error("❌ Failed to delete employment type.");
+    toast.error("Failed to delete employment type.");
   }
 
-  /*  await api.delete(`/employment-types/${selectedType.value.id}`);
-  showDeleteModal.value = false;
-  fetchTypes();*/
 };
 
 const closeModal = () => {

@@ -12,6 +12,8 @@ class BankAccountController extends Controller
     {
         // return response()->json(BankAccount::all());
          $accounts = BankAccount::select(
+        'employee_id',
+
           'account_number',
           'owner_name',
           'balance',
@@ -41,6 +43,9 @@ class BankAccountController extends Controller
 
         // return response()->json($account, 201);
     return response()->json($account->only([
+        'id',
+                'employee_id',
+
     'account_number',
     'owner_name',
     'balance',

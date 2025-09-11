@@ -38,7 +38,7 @@ class PositionController extends Controller
         $data = $request->validate([
             'name' => 'required|string|unique:positions,name,' . $position->id,
             'description' => 'nullable|string',
-            'allowance' => 'required|number',
+            'allowance' => 'required|numeric|min:0', // Changed from 'number' to 'numeric'
         ]);
         $position->update($data);
         // return response()->json($position);

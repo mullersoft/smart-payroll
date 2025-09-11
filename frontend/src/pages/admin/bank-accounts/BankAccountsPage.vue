@@ -14,8 +14,35 @@
         </button>
       </div>
 
+      <!-- Loading -->
+      <div v-if="loading" class="text-center text-gray-700 dark:text-gray-300">
+        <div class="flex justify-center items-center">
+          <svg
+            class="animate-spin h-5 w-5 mr-2 text-indigo-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+          Loading accounts...
+        </div>
+      </div>
+
       <!-- Table Section -->
-      <div
+      <div v-else
         class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-300"
       >
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
@@ -29,6 +56,7 @@
               <th class="px-4 py-2">Owner Name</th>
               <th class="px-4 py-2">Account Number</th>
               <th class="px-4 py-2">Balance</th>
+              <th class="px-4 py-2">Employee ID</th>
               <th class="px-4 py-2">Actions</th>
             </tr>
           </thead>
@@ -45,16 +73,39 @@
               </td>
               <td class="px-4 py-2">{{ account.account_number }}</td>
               <td class="px-4 py-2">{{ formatCurrency(account.balance) }}</td>
+              <td class="px-4 py-2">{{ account.employee_id || 'N/A' }}</td>
               <td class="px-4 py-2 relative">
                 <!-- Actions Dropdown -->
                 <button
                   @click="toggleDropdown(account.id)"
-                  class="px-2 py-1 rounded-md text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
+                  :disabled="actionLoading[account.id]"
+                  class="px-2 py-1 rounded-md text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none disabled:opacity-50"
                 >
-                  <span class="text-2xl font-bold leading-none">...</span>
+                  <svg
+                    v-if="actionLoading[account.id]"
+                    class="animate-spin h-4 w-4 text-gray-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                  <span v-else class="text-2xl font-bold leading-none">...</span>
                 </button>
                 <div
-                  v-if="openDropdownId === account.id"
+                  v-if="openDropdownId === account.id && !actionLoading[account.id]"
                   class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10"
                 >
                   <button
@@ -74,7 +125,7 @@
             </tr>
             <tr v-if="bankAccounts.length === 0">
               <td
-                colspan="6"
+                colspan="7"
                 class="text-center py-4 text-gray-500 dark:text-gray-400"
               >
                 No bank accounts found.
@@ -91,6 +142,7 @@
         :editing-account-id="editingAccountId"
         :new-account="newAccount"
         :employees="employees"
+        :loading="modalLoading"
         @close="closeModal"
         @save="submitBankAccount"
       />
@@ -101,7 +153,7 @@
 <script setup>
 import MainLayout from "@/components/layout/MainLayout.vue";
 import api from "@/services/api";
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useToast } from "vue-toastification";
 import CreateAccountModal from "./createAndEditModal.vue";
 
@@ -113,6 +165,9 @@ const showModal = ref(false);
 const isEditMode = ref(false);
 const editingAccountId = ref(null);
 const openDropdownId = ref(null);
+const loading = ref(true);
+const modalLoading = ref(false);
+const actionLoading = reactive({});
 
 const newAccount = ref({
   bank_name: "",
@@ -127,7 +182,7 @@ const openModal = (account = null) => {
     editingAccountId.value = account.id;
     newAccount.value = {
       bank_name: account.bank_name || "",
-      owner_name: account.owner_display_name || account.owner_name || "",
+      owner_name: account.owner_name || "",
       account_number: account.account_number || "",
       employee_id: account.employee_id || null,
     };
@@ -155,6 +210,7 @@ const closeModal = () => {
     account_number: "",
     employee_id: null,
   };
+  modalLoading.value = false;
 };
 
 const toggleDropdown = (id) => {
@@ -162,12 +218,16 @@ const toggleDropdown = (id) => {
 };
 
 const fetchBankAccounts = async () => {
+  loading.value = true;
   try {
     const response = await api.get("/bank-accounts");
     bankAccounts.value = response.data;
   } catch {
-    toast.error("❌ Failed to load bank accounts data.");
+    toast.error("Failed to load bank accounts data.");
   }
+finally{
+  loading.value = false
+}
 };
 
 const fetchEmployees = async () => {
@@ -175,11 +235,12 @@ const fetchEmployees = async () => {
     const res = await api.get("/employees");
     employees.value = res.data;
   } catch {
-    toast.error("❌ Failed to load employees data.");
+    toast.error("Failed to load employees data.");
   }
 };
 
 const submitBankAccount = async () => {
+  modalLoading.value = true;
   try {
     if (isEditMode.value) {
       const res = await api.put(
@@ -199,12 +260,16 @@ const submitBankAccount = async () => {
     closeModal();
   } catch {
     toast.error("❌ Failed to save bank account.");
+  } finally {
+    modalLoading.value = false;
   }
 };
 
 const deleteBankAccount = async (id) => {
   if (!window.confirm("Are you sure you want to delete this bank account?"))
     return;
+
+  actionLoading[id] = true;
   try {
     await api.delete(`/bank-accounts/${id}`);
     bankAccounts.value = bankAccounts.value.filter((acc) => acc.id !== id);
@@ -212,6 +277,8 @@ const deleteBankAccount = async (id) => {
     toast.success("✅ Bank account deleted successfully!");
   } catch {
     toast.error("❌ Failed to delete bank account.");
+  } finally {
+    actionLoading[id] = false;
   }
 };
 

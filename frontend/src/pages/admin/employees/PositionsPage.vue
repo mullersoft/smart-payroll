@@ -11,9 +11,14 @@
         Add Position
       </button>
     </div>
+   <!-- Loading -->
+      <div v-if="loading" class="text-center text-gray-700 dark:text-gray-300">
+        ⏳ Loading positions, please wait...
+      </div>
+
 
     <!-- Table -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+    <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
@@ -60,7 +65,7 @@
             </td>
           </tr>
           <tr v-if="positions.length === 0">
-            <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
               No positions found.
             </td>
           </tr>
@@ -99,12 +104,41 @@
         />
         <div class="flex justify-end space-x-2">
           <button @click="closeModal" class="px-4 py-2">Cancel</button>
-          <button
-            @click="savePosition"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
+
+
+
+           <button
+          type="submit"
+          @click="savePosition"
+          :disabled="loading"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded flex items-center gap-2"
+        >
+          <svg
+            v-if="loading"
+            class="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
           >
-            Save
-          </button>
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+          <svg v-else-if="isEditing" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          {{ loading ? "Saving..." : (isEditing ? 'Update Position' : 'Create Position') }}
+        </button>
         </div>
       </div>
     </div>
@@ -149,66 +183,63 @@ const positions = ref([]);
 const showModal = ref(false);
 const showDeleteModal = ref(false);
 const isEditing = ref(false);
-const form = ref({ name: "", description: "" });
+const form = ref({ name: "", description: "", allowance: "" }); // Added allowance field
 const selectedPosition = ref(null);
+const loading = ref(true)
 
 const fetchPositions = async () => {
+  loading.value = true
   try {
-/*
- const res = await api.get("/positions");
-  positions.value = res.data;
-*/
-
     const res = await api.get("/positions");
     positions.value = res.data;
   } catch (error) {
     console.error("Failed to fetch positions:", error);
-    toast.error("❌ Failed to load positions data.");
+    toast.error("Failed to load positions data.");
+  }
+
+   finally {
+    loading.value = false
   }
 };
 
 const openAddModal = () => {
   isEditing.value = false;
-  form.value = { name: "", description: "" };
+  form.value = { name: "", description: "", allowance: "" }; // Added allowance field
   showModal.value = true;
 };
 
 const openEditModal = (pos) => {
   isEditing.value = true;
   selectedPosition.value = pos;
-  form.value = { name: pos.name, description: pos.description };
+  form.value = {
+    name: pos.name,
+    description: pos.description,
+    allowance: pos.allowance // Added allowance field
+  };
   showModal.value = true;
 };
 
 const savePosition = async () => {
+  loading.value = true;
   try {
     if (isEditing.value) {
       // Update existing position
       await api.put(`/positions/${selectedPosition.value.id}`, form.value);
-      toast.success("✅ Position updated successfully.");
+      toast.success("Position updated successfully.");
     } else {
       // Create new position
       await api.post("/positions", form.value);
-      toast.success("✅ Position created successfully.");
+      toast.success("Position created successfully.");
     }
     showModal.value = false;
     fetchPositions();
   } catch (error) {
     console.error("Failed to save position:", error);
-    toast.error("❌ Failed to save position.");
+    toast.error("Failed to save position.");
   }
-
-/*
-  if (isEditing.value) {
-    await api.put(`/positions/${selectedPosition.value.id}`, form.value);
-  } else {
-    await api.post("/positions", form.value);
-  }
-  showModal.value = false;
-  fetchPositions();
-*/
-
-
+  finally {
+  loading.value = false
+}
 };
 
 const confirmDelete = (pos) => {
@@ -219,17 +250,13 @@ const confirmDelete = (pos) => {
 const deletePosition = async () => {
 try {
     await api.delete(`/positions/${selectedPosition.value.id}`);
-    toast.success("✅ Position deleted successfully.");
+    toast.success("Position deleted successfully.");
     showDeleteModal.value = false;
     fetchPositions();
   } catch (error) {
     console.error("Failed to delete position:", error);
-    toast.error("❌ Failed to delete position.");
+    toast.error("Failed to delete position.");
   }
-/*  await api.delete(`/positions/${selectedPosition.value.id}`);
-  showDeleteModal.value = false;
-  fetchPositions();*/
-
 };
 
 const closeModal = () => {

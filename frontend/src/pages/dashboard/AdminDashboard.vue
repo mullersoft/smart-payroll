@@ -20,7 +20,8 @@
           </span>
 
           <button
-            class="px-3 py-1 bg-gray-100 rounded-md text-sm hidden sm:inline hover:bg-gray-200"
+
+           class="px-3 py-1 bg-gray-100 rounded-md text-sm hidden sm:inline hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
             @click="fetchDashboardData"
             :disabled="isLoading"
             title="Refresh dashboard"

@@ -240,25 +240,47 @@
         <button
           type="button"
           @click="$emit('close')"
+          :disabled="loading"
           class="px-6 py-2.5 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg
                 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200
-                font-medium"
+                font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
           @click="save"
-          :disabled="!isFormValid"
+          :disabled="!isFormValid || loading"
           class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg
                 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed
                 transition-colors duration-200 font-medium
                 flex items-center gap-2"
         >
-          <svg v-if="isEditing" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            v-if="loading"
+            class="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+          <svg v-else-if="isEditing" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
-          {{ isEditing ? 'Update Employee' : 'Create Employee' }}
+          {{ loading ? "Processing..." : (isEditing ? 'Update Employee' : 'Create Employee') }}
         </button>
       </div>
     </div>
@@ -281,6 +303,7 @@ const props = defineProps({
 const emit = defineEmits(["close", "save"]);
 
 const allowanceDropdownOpen = ref(false);
+const loading = ref(false);
 
 // Set today's date as default
 const today = new Date().toISOString().slice(0, 10);
@@ -377,7 +400,11 @@ const save = () => {
     toast.error("Please fill in all required fields.");
     return;
   }
-  emit("save", { ...form });
+  loading.value = true;
+  emit("save", { ...form }, () => {
+    // This callback will be called by the parent to reset loading state
+    loading.value = false;
+  });
 };
 
 // Event listeners
@@ -388,6 +415,16 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
 });
+
+// Watch for show prop changes to reset loading state
+watch(
+  () => props.show,
+  (newVal) => {
+    if (!newVal) {
+      loading.value = false;
+    }
+  }
+);
 </script>
 
 <style scoped>
