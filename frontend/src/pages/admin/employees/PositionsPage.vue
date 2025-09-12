@@ -32,6 +32,9 @@
               <th class="px-6 py-3 text-left text-xs font-medium uppercase">
               Value
             </th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase">Type</th>
+<th class="px-6 py-3 text-left text-xs font-medium uppercase">Taxable</th>
+
             <th class="px-6 py-3 text-left text-xs font-medium uppercase">
               Actions
             </th>
@@ -47,6 +50,12 @@
             <td class="px-6 py-4">{{ pos.name }}</td>
             <td class="px-6 py-4">{{ pos.description }}</td>
             <td class="px-6 py-4">{{ pos.allowance }}</td>
+<td class="px-6 py-4 capitalize">{{ pos.type }}</td>
+<td class="px-6 py-4">
+  <span :class="pos.is_taxable ? 'text-green-600' : 'text-gray-500'">
+    {{ pos.is_taxable ? 'Yes' : 'No' }}
+  </span>
+</td>
 
 
             <td class="px-6 py-4 space-x-2">
@@ -102,6 +111,23 @@
           placeholder="Value"
           class="w-full border rounded px-3 py-2 mb-4 dark:bg-gray-700"
         />
+        <select
+  v-model="form.type"
+  class="w-full border rounded px-3 py-2 mb-4 dark:bg-gray-700"
+>
+  <option disabled value="">Select Type</option>
+  <option value="fixed">Fixed</option>
+  <option value="percent">Percent</option>
+</select>
+
+<select
+  v-model="form.is_taxable"
+  class="w-full border rounded px-3 py-2 mb-4 dark:bg-gray-700"
+>
+  <option :value="true">Taxable</option>
+  <option :value="false">Non-Taxable</option>
+</select>
+
         <div class="flex justify-end space-x-2">
           <button @click="closeModal" class="px-4 py-2">Cancel</button>
 
@@ -183,7 +209,14 @@ const positions = ref([]);
 const showModal = ref(false);
 const showDeleteModal = ref(false);
 const isEditing = ref(false);
-const form = ref({ name: "", description: "", allowance: "" }); // Added allowance field
+// const form = ref({ name: "", description: "", allowance: "" }); // Added allowance field
+const form = ref({
+  name: "",
+  description: "",
+  allowance: "",
+  type: "fixed",
+  is_taxable: true,
+});
 const selectedPosition = ref(null);
 const loading = ref(true)
 
@@ -202,23 +235,34 @@ const fetchPositions = async () => {
   }
 };
 
+// const openAddModal = () => {
+//   isEditing.value = false;
+//   form.value = { name: "", description: "", allowance: "" }; // Added allowance field
+//   showModal.value = true;
+// };
+
+// const openEditModal = (pos) => {
+//   isEditing.value = true;
+//   selectedPosition.value = pos;
+//   form.value = {
+//     name: pos.name,
+//     description: pos.description,
+//     allowance: pos.allowance // Added allowance field
+//   };
+//   showModal.value = true;
+// };
 const openAddModal = () => {
   isEditing.value = false;
-  form.value = { name: "", description: "", allowance: "" }; // Added allowance field
+  form.value = { name: "", description: "", allowance: "", type: "fixed", is_taxable: true };
   showModal.value = true;
 };
 
 const openEditModal = (pos) => {
   isEditing.value = true;
   selectedPosition.value = pos;
-  form.value = {
-    name: pos.name,
-    description: pos.description,
-    allowance: pos.allowance // Added allowance field
-  };
+  form.value = { ...pos };
   showModal.value = true;
 };
-
 const savePosition = async () => {
   loading.value = true;
   try {

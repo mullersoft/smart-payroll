@@ -7,6 +7,7 @@ const api = axios.create({
   headers: {
     Accept: "application/json",
   },
+  withCredentials: true, // 👈 important
 });
 
 // Automatically include token if available

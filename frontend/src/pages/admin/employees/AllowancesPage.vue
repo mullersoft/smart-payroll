@@ -16,7 +16,7 @@
         ⏳ Loading allowances, please wait...
       </div>
     <!-- Table -->
-    <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+    <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-visible">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
@@ -345,9 +345,9 @@ try {
     toast.error("Failed to delete allowance. Please try again.");
   }
 
-  /*  await api.delete(`/allowances/${selectedAllowance.value.id}`);
-  showDeleteModal.value = false;
-  fetchAllowances();*/
+  // /*  await api.delete(`/allowances/${selectedAllowance.value.id}`);
+  // showDeleteModal.value = false;
+  // fetchAllowances();*/
 };
 
 const closeModal = () => {

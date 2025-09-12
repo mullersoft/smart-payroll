@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Position extends Model
 {
-    protected $fillable = ['name', 'description', 'allowance'];
+    protected $fillable = ['name',
+    'description',
+    'allowance',
+    'type',
+    'is_taxable'
+];
 
     public function employees()
     {

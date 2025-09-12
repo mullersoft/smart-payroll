@@ -32,26 +32,66 @@ class PayrollService
         $earned_salary = ($base / 30) * $working_days;
 
         // ---- Position Allowance ----
-        $position_allowance_taxable = $employee->position->allowance ?? 0;
-        $position_allowance_non_tax = 0;
+        // $position_allowance_taxable = $employee->position->allowance ?? 0;
+        // $position_allowance_non_tax = 0;
 
-        if ($employee->position && strtolower($employee->position->name) === 'ceo') {
-            $position_allowance_non_tax = 0.10 * $base; // 10% non-taxable for CEO
-        }
+        // if ($employee->position && strtolower($employee->position->name) === 'ceo') {
+        //     $position_allowance_non_tax = 0.10 * $base; // 10% non-taxable for CEO
+        // }
+
+// ---- Position Allowance ----
+$position_allowance_taxable = 0;
+$position_allowance_non_tax = 0;
+
+if ($employee->position) {
+    // Handle percent vs fixed
+    $posAmount = $employee->position->type === 'percent'
+        ? ($base * ($employee->position->allowance / 100))
+        : $employee->position->allowance;
+
+    if ($employee->position->is_taxable) {
+        $position_allowance_taxable = $posAmount;
+    } else {
+        $position_allowance_non_tax = $posAmount;
+    }
+}
+
+
+
+
+
 
         // ---- Employee Allowances ----
-        $taxable_allowances = 0;
-        $non_taxable_allowances = 0;
-        foreach ($employee->allowances as $allowance) {
-            if ($allowance->is_taxable) {
-                $taxable_allowances += $allowance->value;
-            } else {
-                $non_taxable_allowances += $allowance->value;
-            }
-        }
+$taxable_allowances = 0;
+$non_taxable_allowances = 0;
 
-        // ---- Transport Allowance ----
-        $transport_allowance = ($employee->position && strtolower($employee->position->name) === 'normal employee')
+foreach ($employee->allowances as $allowance) {
+    // If percent → calculate percentage of base salary
+    $amount = $allowance->type === 'percent'
+        ? ($base * ($allowance->value / 100))
+        : $allowance->value;
+
+    if ($allowance->is_taxable) {
+        $taxable_allowances += $amount;
+    } else {
+        $non_taxable_allowances += $amount;
+    }
+}
+
+        // // ---- Employee Allowances ----
+        // $taxable_allowances = 0;
+        // $non_taxable_allowances = 0;
+        // foreach ($employee->allowances as $allowance) {
+        //     if ($allowance->is_taxable) {
+        //         $taxable_allowances += $allowance->value;
+        //     } else {
+        //         $non_taxable_allowances += $allowance->value;
+        //     }
+        // }
+
+        // ---- Transport Allowance ----// used for the exports only
+        $transport_allowance = ($employee->position && strtolower(
+            $employee->position->name) === 'normal employee')
             ? 600
             : (Allowance::where('name', 'Transportation Allowance')->value('value') ?? 2200);
 
@@ -70,7 +110,7 @@ class PayrollService
             + $taxable_allowances
             + $non_taxable_allowances
             + $other
-            // + $transport_allowance
+            // + $transport_allowance// since it is added on allowance value
             + $overtimeTotal;
 
         $taxable_income = $earned_salary + $other + $position_allowance_taxable + $taxable_allowances + $overtimeTotal;
@@ -86,9 +126,11 @@ class PayrollService
 
         // ---- Total deduction & Net Pay ----
         $total_deduction = $income_tax + $employee_pension;
+
+
+
         $net_payment = $gross - $total_deduction-$loan_penalty;
 
-        // ✅ Create payroll record
         $payroll = Payroll::create([
             'employee_id'                => $employee->id,
             'pay_month'                  => $data['pay_month'],
@@ -112,15 +154,28 @@ class PayrollService
             'prepared_by'                => $data['prepared_by'],
             'approved_by'                => null,
         ]);
+// Save allowances snapshot
+foreach ($employee->allowances as $allowance) {
+    // Calculate final amount (handle percent or fixed)
+    $amount = $allowance->type === 'percent'
+        ? ($base * ($allowance->value / 100))
+        : $allowance->value;
+
+    $payroll->allowances()->create([
+        'name'       => $allowance->name,
+        'amount'     => $amount,
+        'is_taxable' => $allowance->is_taxable,
+    ]);
+}
 
         // Save allowances snapshot
-        foreach ($employee->allowances as $allowance) {
-            $payroll->allowances()->create([
-                'name'       => $allowance->name,
-                'amount'     => $allowance->value,
-                'is_taxable' => $allowance->is_taxable,
-            ]);
-        }
+        // foreach ($employee->allowances as $allowance) {
+        //     $payroll->allowances()->create([
+        //         'name'       => $allowance->name,
+        //         'amount'     => $allowance->value,
+        //         'is_taxable' => $allowance->is_taxable,
+        //     ]);
+        // }
 
         //  Save overtime snapshot
         foreach ($overtimeResult['records'] as $ot) {
@@ -136,111 +191,111 @@ class PayrollService
     /**
      * Recalculate payroll for an existing record
      */
-    public function regeneratePayroll(Payroll $payroll)
-    {
-        $employee = $payroll->employee()->with(['position', 'employmentType', 'allowances'])->first();
+    // public function regeneratePayroll(Payroll $payroll)
+    // {
+    //     $employee = $payroll->employee()->with(['position', 'employmentType', 'allowances'])->first();
 
-        $base = $employee->base_salary;
-        $working_days = $payroll->working_days;
-        $earned_salary = ($base / 30) * $working_days;
+    //     $base = $employee->base_salary;
+    //     $working_days = $payroll->working_days;
+    //     $earned_salary = ($base / 30) * $working_days;
 
-        // ---- Position Allowance ----
-        $position_allowance_taxable = $employee->position->allowance ?? 0;
-        $position_allowance_non_tax = 0;
+    //     // ---- Position Allowance ----
+    //     $position_allowance_taxable = $employee->position->allowance ?? 0;
+    //     $position_allowance_non_tax = 0;
 
-        if ($employee->position && strtolower($employee->position->name) === 'ceo') {
-            $position_allowance_non_tax = 0.10 * $base;
-        }
+    //     if ($employee->position && strtolower($employee->position->name) === 'ceo') {
+    //         $position_allowance_non_tax = 0.10 * $base;
+    //     }
 
-        // ---- Employee Allowances ----
-        $taxable_allowances = 0;
-        $non_taxable_allowances = 0;
-        foreach ($employee->allowances as $allowance) {
-            if ($allowance->is_taxable) {
-                $taxable_allowances += $allowance->value;
-            } else {
-                $non_taxable_allowances += $allowance->value;
-            }
-        }
+    //     // ---- Employee Allowances ----
+    //     $taxable_allowances = 0;
+    //     $non_taxable_allowances = 0;
+    //     foreach ($employee->allowances as $allowance) {
+    //         if ($allowance->is_taxable) {
+    //             $taxable_allowances += $allowance->value;
+    //         } else {
+    //             $non_taxable_allowances += $allowance->value;
+    //         }
+    //     }
 
-        // ---- Transport Allowance ----
-        $transport_allowance = ($employee->position && strtolower($employee->position->name) === 'normal employee')
-            ? 600
-            : (Allowance::where('name', 'Transportation Allowance')->value('value') ?? 2200);
+    //     // ---- Transport Allowance ----
+    //     $transport_allowance = ($employee->position && strtolower($employee->position->name) === 'normal employee')
+    //         ? 600
+    //         : (Allowance::where('name', 'Transportation Allowance')->value('value') ?? 2200);
 
-        // ---- Other commissions ----
-        $other = $payroll->other_commission ?? 0;
-        $loan_penalty = $payroll->loan_penalty ?? 0;
+    //     // ---- Other commissions ----
+    //     $other = $payroll->other_commission ?? 0;
+    //     $loan_penalty = $payroll->loan_penalty ?? 0;
 
-        // ---- Overtime ---- (recalculate from DB records)
-        $overtimeResult = $this->overtimeService->calculate($employee, $payroll->overtimes()->get()->toArray());
-        $overtimeTotal = $overtimeResult['total'];
+    //     // ---- Overtime ---- (recalculate from DB records)
+    //     $overtimeResult = $this->overtimeService->calculate($employee, $payroll->overtimes()->get()->toArray());
+    //     $overtimeTotal = $overtimeResult['total'];
 
-        // ---- Gross & Taxable Income ----
-        $gross = $earned_salary
-            + $position_allowance_taxable
-            + $position_allowance_non_tax
-            + $taxable_allowances
-            + $non_taxable_allowances
-            + $transport_allowance
-            + $other
-            + $overtimeTotal;
+    //     // ---- Gross & Taxable Income ----
+    //     $gross = $earned_salary
+    //         + $position_allowance_taxable
+    //         + $position_allowance_non_tax
+    //         + $taxable_allowances
+    //         + $non_taxable_allowances
+    //         + $transport_allowance
+    //         + $other
+    //         + $overtimeTotal;
 
-        $taxable_income = $earned_salary + $other + $position_allowance_taxable + $taxable_allowances + $overtimeTotal;
+    //     $taxable_income = $earned_salary + $other + $position_allowance_taxable + $taxable_allowances + $overtimeTotal;
 
-        // ---- Income Tax ----
-        $income_tax = $this->taxService->calculateIncomeTax($taxable_income);
+    //     // ---- Income Tax ----
+    //     $income_tax = $this->taxService->calculateIncomeTax($taxable_income);
 
-        // ---- Pension ----
-        $isPermanent = strtolower($employee->employmentType->name) === 'permanent';
-        $employee_pension = $isPermanent ? 0.07 * $earned_salary : 0;
-        $employer_pension = $isPermanent ? 0.11 * $earned_salary : 0;
-        $pension_contribution = $isPermanent ? $employee_pension + $employer_pension : 0;
+    //     // ---- Pension ----
+    //     $isPermanent = strtolower($employee->employmentType->name) === 'permanent';
+    //     $employee_pension = $isPermanent ? 0.07 * $earned_salary : 0;
+    //     $employer_pension = $isPermanent ? 0.11 * $earned_salary : 0;
+    //     $pension_contribution = $isPermanent ? $employee_pension + $employer_pension : 0;
 
-        $total_deduction = $income_tax + $employee_pension;
-        $net_payment = $gross - $total_deduction-$loan_penalty;
+    //     $total_deduction = $income_tax + $employee_pension;
+    //     $net_payment = $gross - $total_deduction-$loan_penalty;
 
-        // ✅ Update payroll record
-        $payroll->fill([
-            'earned_salary'              => $earned_salary,
-            'position_allowance_taxable' => $position_allowance_taxable,
-            'position_allowance_non_tax' => $position_allowance_non_tax,
-            'transport_allowance'        => $transport_allowance,
-            'other_commission'           => $other,
-            'loan_penalty'               => $loan_penalty,
-            'gross_pay'                  => $gross,
-            'taxable_income'             => $taxable_income,
-            'income_tax'                 => $income_tax,
-            'employee_pension'           => $employee_pension,
-            'employer_pension'           => $employer_pension,
-            'pension_contribution'       => $pension_contribution,
-            'total_deduction'            => $total_deduction,
-            'net_payment'                => $net_payment,
-            'status'                     => 'prepared',
-            'rejection_reason'           => null,
-            'rejected_at'                => null,
-            'approved_by'                => null,
-        ])->save();
+    //     // ✅ Update payroll record
+    //     $payroll->fill([
+    //         'earned_salary'              => $earned_salary,
+    //         'position_allowance_taxable' => $position_allowance_taxable,
+    //         'position_allowance_non_tax' => $position_allowance_non_tax,
+    //         'transport_allowance'        => $transport_allowance,
+    //         'other_commission'           => $other,
+    //         'loan_penalty'               => $loan_penalty,
+    //         'gross_pay'                  => $gross,
+    //         'taxable_income'             => $taxable_income,
+    //         'income_tax'                 => $income_tax,
+    //         'employee_pension'           => $employee_pension,
+    //         'employer_pension'           => $employer_pension,
+    //         'pension_contribution'       => $pension_contribution,
+    //         'total_deduction'            => $total_deduction,
+    //         'net_payment'                => $net_payment,
+    //         'status'                     => 'prepared',
+    //         'rejection_reason'           => null,
+    //         'rejected_at'                => null,
+    //         'approved_by'                => null,
+    //     ])->save();
 
-        // ✅ Refresh allowances snapshot
-        $payroll->allowances()->delete();
-        foreach ($employee->allowances as $allowance) {
-            $payroll->allowances()->create([
-                'name'       => $allowance->name,
-                'amount'     => $allowance->value,
-                'is_taxable' => $allowance->is_taxable,
-            ]);
-        }
+    //     // ✅ Refresh allowances snapshot
+    //     $payroll->allowances()->delete();
+    //     foreach ($employee->allowances as $allowance) {
+    //         $payroll->allowances()->create([
+    //             'name'       => $allowance->name,
+    //             'amount'     => $allowance->value,
+    //             'is_taxable' => $allowance->is_taxable,
+    //         ]);
+    //     }
 
-        // ✅ Refresh overtime snapshot
-        $payroll->overtimes()->delete();
-        foreach ($overtimeResult['records'] as $ot) {
-            $payroll->overtimes()->create(array_merge($ot, [
-                'payroll_id'  => $payroll->id,
-                'employee_id' => $employee->id,
-            ]));
-        }
+    //     // ✅ Refresh overtime snapshot
+    //     $payroll->overtimes()->delete();
+    //     foreach ($overtimeResult['records'] as $ot) {
+    //         $payroll->overtimes()->create(array_merge($ot, [
+    //             'payroll_id'  => $payroll->id,
+    //             'employee_id' => $employee->id,
+    //         ]));
+    //     }
 
-        return $payroll->load('allowances', 'overtimes', 'employee.position', 'employee.employmentType');
-    }
+    //     return $payroll->load('allowances', 'overtimes', 'employee.position', 'employee.employmentType');
+    // }
 }

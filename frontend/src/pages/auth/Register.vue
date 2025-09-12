@@ -30,7 +30,7 @@
         </label>
         <input
           v-model="email"
-          maxlength="20"
+          maxlength="30"
           type="email"
           id="email"
           required

@@ -28,9 +28,9 @@
           <p><strong>Earned Salary:</strong> <span class="text-green-600">Birr {{ formatNumber(payroll?.earned_salary) }}</span></p>
           <p><strong>Position Allowance (Non-Tax):</strong> <span class="text-green-600">Birr {{ formatNumber(payroll?.position_allowance_non_tax) }}</span></p>
           <p><strong>Position Allowance (Taxable):</strong> <span class="text-green-600">Birr {{ formatNumber(payroll?.position_allowance_taxable) }}</span></p>
-          <p><strong>Transport Allowance (Non-Tax):</strong> <span class="text-green-600">Birr {{ formatNumber(payroll?.transport_allowance) }}</span></p>
+          <!-- <p><strong>Transport Allowance (Non-Tax):</strong> <span class="text-green-600">Birr {{ formatNumber(payroll?.transport_allowance) }}</span></p> -->
           <p><strong>Other Commission:</strong> <span class="text-green-600">Birr {{ formatNumber(payroll?.other_commission) }}</span></p>
-          <p><strong>Gross Pay:</strong> <span class="text-green-700 font-semibold">Birr {{ formatNumber(payroll?.gross_pay) }}</span></p>
+          <!-- <p><strong>Gross Pay:</strong> <span class="text-green-700 font-semibold">Birr {{ formatNumber(payroll?.gross_pay) }}</span></p> -->
         </div>
       </div>
 
@@ -71,16 +71,26 @@
           </li>
         </ul>
       </div>
+      <div>
+          <p><strong>Gross Pay:</strong> <span class="text-green-700 font-semibold">Birr {{ formatNumber(payroll?.gross_pay) }}</span></p>
+          <p><strong>Taxable Income:</strong> <span class="text-green-700 font-semibold">Birr {{ formatNumber(payroll?.taxable_income) }}</span></p>
+
+
+      </div>
       <!-- Deductions Section -->
       <div class="mb-6">
         <h3 class="font-semibold text-red-700 mb-2">Deductions:</h3>
         <div class="grid grid-cols-2 gap-4">
-          <p><strong>Taxable Income:</strong> <span class="text-red-600">Birr {{ formatNumber(payroll?.taxable_income) }}</span></p>
+          <!-- <p><strong>Taxable Income:</strong> <span class="text-red-600">Birr {{ formatNumber(payroll?.taxable_income) }}</span></p> -->
           <p><strong>Income Tax:</strong> <span class="text-red-600">Birr {{ formatNumber(payroll?.income_tax) }}</span></p>
           <p><strong>Employee Pension:</strong> <span class="text-red-600">Birr {{ formatNumber(payroll?.employee_pension) }}</span></p>
           <p><strong>Employer Pension:</strong> <span class="text-red-600">Birr {{ formatNumber(payroll?.employer_pension) }}</span></p>
           <p><strong>Total Pension Contribution:</strong> <span class="text-red-700">Birr {{ formatNumber(payroll?.pension_contribution) }}</span></p>
           <p><strong>Total Deduction:</strong> <span class="text-red-700 font-semibold">Birr {{ formatNumber(payroll?.total_deduction) }}</span></p>
+        </div>
+        <div>
+          <p><strong>Penalty/Loan:</strong> <span class="text-red-600">Birr {{ formatNumber(payroll?.loan_penalty) }}</span></p>
+
         </div>
       </div>
        <!-- Summary Section -->

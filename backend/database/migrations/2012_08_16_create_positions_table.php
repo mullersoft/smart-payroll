@@ -7,16 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        Schema::create('positions', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique(); // e.g. CEO, HR Manager
-            $table->text('description')->nullable();
-            $table->decimal('allowance');
+      Schema::create('positions', function (Blueprint $table) {
+    $table->id();
+    $table->string('name')->unique(); // e.g. CEO, HR Manager
+    $table->text('description')->nullable();
+    $table->decimal('allowance'); // value can be fixed or percent
+    $table->enum('type', ['fixed', 'percent'])->default('fixed'); // type of allowance
+    $table->boolean('is_taxable')->default(true); // taxable or not
+    $table->timestamps();
+});
 
-
-
-            $table->timestamps();
-        });
     }
 
     public function down()
