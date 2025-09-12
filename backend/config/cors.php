@@ -7,7 +7,12 @@ return [
     'allowed_methods' => ['*'],
 
     // Allow frontend origin explicitly
-    'allowed_origins' => ['http://localhost:5173','https://smart-payroll.netlify.app'],
+   'allowed_origins' => [
+    'https://smart-payroll.netlify.app',
+    'http://localhost:5173',
+],
+'supports_credentials' => true,
+
 
     'allowed_origins_patterns' => [],
 
