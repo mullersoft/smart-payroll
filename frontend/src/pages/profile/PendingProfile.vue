@@ -209,11 +209,13 @@
   <h3 class="text-lg font-medium text-blue-800 dark:text-blue-200 mb-4">
     Default Login Credentials (Testing Only)
   </h3>
+  <h1><strong>log out and then login again with the following Credentials:</strong></h1>
   <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
     <li>👑 Admin: Email: <b>admin@gmail.com</b>, Password: <b>123456</b></li>
     <li>🛠 Preparer: Email: <b>preparer@gmail.com</b>, Password: <b>123456</b></li>
     <li>✅ Approver: Email: <b>approver@gmail.com</b>, Password: <b>123456</b></li>
-    <li>👤 Employee: Email: <b>employee@gmail.com</b>, Password: <b>123456</b></li>
+    <li>👤 Employee: Email: <b>mulugeta.linger@wu.edu.et</b>, Password: <b>MwUMBrkSVy</b></li>
+
   </ul>
 </div>
 

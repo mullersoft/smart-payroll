@@ -43,12 +43,12 @@ class UsersSeeder extends Seeder
                 'role' => 'approver',
                 'status' => 'active',
             ],
-             [
-                'name' => 'employee',
-                'email' => 'employee@gmail.com',
-                'password' => bcrypt('123456'),
-                'status' => 'active',
-            ],
+            //  [
+            //     'name' => 'employee',
+            //     'email' => 'employee@gmail.com',
+            //     'password' => bcrypt('123456'),
+            //     'status' => 'active',
+            // ],
         ];
 
         foreach ($types as $type) {
