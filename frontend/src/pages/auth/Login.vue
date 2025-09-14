@@ -131,7 +131,6 @@
 
 <script setup>
 import AuthLayout from "@/components/layout/AuthLayout.vue";
-import api from "@/services/api";
 import { useAuthStore } from "@/store/auth";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
@@ -184,6 +183,8 @@ finally {
 
 const loginWithGoogle = () => {
 
-  window.location.href = `${api.defaults.baseURL}/auth/google/redirect`;
+  // window.location.href = `${api.defaults.baseURL}/auth/google/redirect`;
+  window.location.href = "https://smart-payroll-api.onrender.com/api/auth/google";
+
 };
 </script>
