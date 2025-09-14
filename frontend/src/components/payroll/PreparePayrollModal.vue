@@ -10,7 +10,8 @@
         <input
           v-model="bulkPayMonth"
           type="month"
-          class="w-64 border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
+          :disabled="loading"
+          class="w-64 border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300 disabled:opacity-70"
         />
       </div>
 
@@ -25,7 +26,8 @@
                   type="checkbox"
                   @change="toggleAllEmployees"
                   :checked="allSelected"
-                  class="dark:bg-gray-700"
+                  :disabled="loading"
+                  class="dark:bg-gray-700 disabled:opacity-70"
                 />
               </th>
               <th class="px-3 py-2">Full Name</th>
@@ -53,7 +55,8 @@
                   type="checkbox"
                   :value="emp.id"
                   v-model="selectedEmployees"
-                  class="dark:bg-gray-700"
+                  :disabled="loading"
+                  class="dark:bg-gray-700 disabled:opacity-70"
                 />
               </td>
               <td class="px-3 py-2">{{ emp.full_name }}</td>
@@ -63,7 +66,8 @@
                   min="0"
                   max="30"
                   v-model.number="emp.working_days"
-                  class="w-20 border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
+                  :disabled="loading"
+                  class="w-20 border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300 disabled:opacity-70"
                 />
               </td>
               <td class="px-3 py-2">
@@ -71,7 +75,8 @@
                   type="number"
                   step="0.01"
                   v-model.number="emp.other_commission"
-                  class="w-24 border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
+                  :disabled="loading"
+                  class="w-24 border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300 disabled:opacity-70"
                 />
               </td>
               <td class="px-3 py-2">
@@ -80,7 +85,8 @@
                   step="0.01"
                   min="0"
                   v-model.number="emp.loan_penalty"
-                  class="w-24 border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
+                  :disabled="loading"
+                  class="w-24 border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300 disabled:opacity-70"
                 />
               </td>
               <td class="px-2 py-2">
@@ -89,7 +95,8 @@
                   min="0"
                   step="0.5"
                   v-model.number="emp.overtime_weekday_evening"
-                  class="w-full border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
+                  :disabled="loading"
+                  class="w-full border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300 disabled:opacity-70"
                 />
               </td>
               <td class="px-2 py-2">
@@ -98,7 +105,8 @@
                   min="0"
                   step="0.5"
                   v-model.number="emp.overtime_night"
-                  class="w-full border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
+                  :disabled="loading"
+                  class="w-full border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300 disabled:opacity-70"
                 />
               </td>
               <td class="px-2 py-2">
@@ -107,7 +115,8 @@
                   min="0"
                   step="0.5"
                   v-model.number="emp.overtime_rest_day"
-                  class="w-full border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
+                  :disabled="loading"
+                  class="w-full border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300 disabled:opacity-70"
                 />
               </td>
               <td class="px-2 py-2">
@@ -116,7 +125,8 @@
                   min="0"
                   step="0.5"
                   v-model.number="emp.overtime_holiday"
-                  class="w-full border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300"
+                  :disabled="loading"
+                  class="w-full border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring focus:ring-indigo-300 disabled:opacity-70"
                 />
               </td>
             </tr>
@@ -127,17 +137,21 @@
       <div class="flex justify-end space-x-3 mt-auto">
         <button
           @click="$emit('close')"
-          class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          :disabled="loading"
+          class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           @click="createBulkPayroll"
-          class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors"
-          :disabled="selectedEmployees.length === 0 || !bulkPayMonth"
-          :class="{ 'opacity-50 cursor-not-allowed': selectedEmployees.length === 0 || !bulkPayMonth }"
+          class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 min-w-[140px] disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="selectedEmployees.length === 0 || !bulkPayMonth || loading"
         >
-          Prepare Payroll
+          <svg v-if="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ loading ? 'Preparing...' : 'Prepare Payroll' }}
         </button>
       </div>
     </div>
@@ -155,6 +169,7 @@ const emit = defineEmits(["close", "payroll-created"]);
 const employees = ref([]);
 const bulkPayMonth = ref("");
 const selectedEmployees = ref([]);
+const loading = ref(false);
 
 const allSelected = computed(() => {
   return (
@@ -191,6 +206,7 @@ const toggleAllEmployees = () => {
 };
 
 const createBulkPayroll = async () => {
+  loading.value = true;
   try {
     const payload = selectedEmployees.value.map((empId) => {
       const emp = employees.value.find((e) => e.id === empId);
@@ -217,7 +233,6 @@ const createBulkPayroll = async () => {
     emit("close");
   } catch (error) {
     console.error("Error creating payrolls", error);
-    toast.error("Failed to prepare payrolls.");
     if (error.response?.data?.errors) {
       const errs = error.response.data.errors;
       Object.values(errs).forEach((msgArr) => {
@@ -226,6 +241,8 @@ const createBulkPayroll = async () => {
     } else {
       toast.error("Failed to prepare payrolls.");
     }
+  } finally {
+    loading.value = false;
   }
 };
 

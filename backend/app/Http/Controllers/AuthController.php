@@ -32,9 +32,9 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|min:3|max:10',
             'email' => 'required|email|unique:users',
-            'password' => 'nullable|string|min:6',
+            'password' => 'nullable|string|min:8|max:200',
             'role' => 'nullable|in:' . implode(',', UserRoles::ROLES),
             'status' => 'nullable|in:pending,active,deactivated',
 

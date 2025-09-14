@@ -158,7 +158,7 @@ const loading = ref(false);
 const showPassword = ref(false);
 const emailError = ref(null);
 
-// ✅ Register function
+// Register function
 const handleRegister = async () => {
   error.value = null;
 
@@ -225,8 +225,10 @@ watch(email, (newVal) => {
   }
 });
 
-// ✅ Google OAuth
+// Google OAuth
 const registerWithGoogle = () => {
-  window.location.href = `${api.defaults.baseURL}/auth/google/redirect`;
+  window.location.href = `${api.defaults.baseURL}/auth/google`;
+    // window.location.href = "https://smart-payroll-api.onrender.com/api/auth/google";
+
 };
 </script>

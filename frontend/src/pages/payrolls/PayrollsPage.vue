@@ -1,9 +1,7 @@
-
 <template>
   <MainLayout>
     <div class="space-y-6">
       <!-- Filters and Actions -->
-
       <div class="flex flex-wrap justify-between items-center gap-4">
         <h1 class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">
           Payrolls
@@ -11,7 +9,6 @@
 
         <div class="flex gap-4 items-end">
           <!-- Month Picker -->
-
           <div>
             <label
               class="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -26,7 +23,6 @@
           </div>
 
           <!-- Status Dropdown -->
-
           <div>
             <label
               class="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -45,18 +41,21 @@
           </div>
 
           <!-- Prepare Payroll Button -->
-
           <button
             @click="showBulkModal = true"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
+            :disabled="loading"
           >
+            <svg v-if="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
             ➕ Prepare Payroll
           </button>
         </div>
       </div>
 
       <!-- Payroll Table -->
-
       <ExportButtons
         v-if="!loading && filteredPayrolls.length > 0"
         :month="selectedMonth"
@@ -70,7 +69,6 @@
         :loading="loading"
         :show-actions="true"
         :show-view-button="false"
-
         @payroll-pay="payPayroll"
         @process-payroll="processPayroll"
         @view-payroll="viewPayroll"
@@ -79,7 +77,6 @@
       />
 
       <!-- Prepare Payroll Modal -->
-
       <PreparePayrollModal
         v-if="showBulkModal"
         @close="showBulkModal = false"
@@ -87,7 +84,6 @@
       />
 
       <!-- Edit Modal -->
-
       <div
         v-if="showEditModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -127,7 +123,8 @@
                   v-model="editPayrollData.working_days"
                   type="number"
                   required
-                  class="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-700"
+                  :disabled="editLoading"
+                  class="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-700 disabled:opacity-70"
                 />
               </div>
 
@@ -141,7 +138,8 @@
                   v-model="editPayrollData.other_commission"
                   type="number"
                   required
-                  class="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-700"
+                  :disabled="editLoading"
+                  class="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-700 disabled:opacity-70"
                 />
               </div>
             </div>
@@ -150,16 +148,22 @@
               <button
                 type="button"
                 @click="showEditModal = false"
-                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
+                :disabled="editLoading"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
 
               <button
                 type="submit"
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+                :disabled="editLoading"
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 min-w-[120px] disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Save Changes
+                <svg v-if="editLoading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ editLoading ? 'Saving...' : 'Save Changes' }}
               </button>
             </div>
           </form>
@@ -167,7 +171,6 @@
       </div>
 
       <!-- Delete Modal -->
-
       <div
         v-if="showDeleteModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -188,7 +191,8 @@
             <button
               type="button"
               @click="showDeleteModal = false"
-              class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
+              :disabled="deleteLoading"
+              class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md disabled:opacity-70 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
@@ -196,9 +200,14 @@
             <button
               type="button"
               @click="confirmDelete"
-              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
+              :disabled="deleteLoading"
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 min-w-[80px] disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Delete
+              <svg v-if="deleteLoading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ deleteLoading ? 'Deleting...' : 'Delete' }}
             </button>
           </div>
         </div>
@@ -226,7 +235,6 @@ import { useToast } from "vue-toastification";
 const toast = useToast();
 
 // State
-
 const payrolls = ref([]);
 const loading = ref(true);
 const showBulkModal = ref(false);
@@ -236,48 +244,43 @@ const editPayrollData = ref({});
 const payrollToDeleteId = ref(null);
 const showViewModal = ref(false);
 const selectedPayroll = ref({});
+const editLoading = ref(false);
+const deleteLoading = ref(false);
+const processingLoading = ref(false);
 
 // Filters
-
 const selectedMonth = ref(new Date().toISOString().slice(0, 7)); // Default current month
 const selectedStatus = ref("prepared");
+
 // Fetch payrolls
 const fetchPayrolls = async () => {
   loading.value = true;
   try {
     const res = await api.get("/payrolls");
-
     const items = Array.isArray(res.data) ? res.data : res.data?.payrolls ?? [];
-
     payrolls.value = items.map((p) => ({
       ...p,
-
       employee_name: p.employee?.full_name,
-
       employment_date: p.employee?.employment_date,
-
       position: p.employee?.position,
     }));
   } catch (error) {
     console.error("Error loading payrolls", error);
-    toast.error("Error loading payrolls")
+    toast.error("Error loading payrolls");
   } finally {
     loading.value = false;
   }
 };
 
 // Computed filtered payrolls
-
 const filteredPayrolls = computed(() => {
   return payrolls.value.filter((p) => {
     const matchMonth = selectedMonth.value
       ? p.pay_month?.slice(0, 7) === selectedMonth.value
       : true;
-
     const matchStatus = selectedStatus.value
       ? p.status === selectedStatus.value
       : true;
-
     return matchMonth && matchStatus;
   });
 });
@@ -290,52 +293,50 @@ const viewPayroll = (payroll) => {
 
 // Edit payroll
 const editPayroll = (payroll) => {
-try {
+  try {
     editPayrollData.value = { ...payroll };
     showEditModal.value = true;
   } catch (error) {
     console.error("Error preparing edit modal:", error);
     toast.error("Failed to open edit modal.");
   }
-  /*  editPayrollData.value = { ...payroll };
-  showEditModal.value = true;*/
 };
 
 const submitEdit = async () => {
+  editLoading.value = true;
   try {
     await api.put(`/payrolls/${editPayrollData.value.id}`, {
       working_days: editPayrollData.value.working_days,
       other_commission: editPayrollData.value.other_commission,
     });
     toast.success("Payroll updated successfully.");
-
     await fetchPayrolls();
-
     showEditModal.value = false;
   } catch (error) {
     console.error("Error updating payroll:", error);
     toast.error("Failed to update payroll.");
+  } finally {
+    editLoading.value = false;
   }
 };
 
 // Delete payroll
-
 const promptDelete = (id) => {
   payrollToDeleteId.value = id;
-
   showDeleteModal.value = true;
 };
 
 const confirmDelete = async () => {
+  deleteLoading.value = true;
   try {
     await api.delete(`/payrolls/${payrollToDeleteId.value}`);
-
     await fetchPayrolls();
-
     showDeleteModal.value = false;
   } catch (error) {
     console.error("Error deleting payroll:", error);
     toast.error("Failed to delete payroll.");
+  } finally {
+    deleteLoading.value = false;
   }
 };
 
@@ -355,27 +356,29 @@ onMounted(() => {
 
 // Process payroll
 const processPayroll = async (id) => {
+  processingLoading.value = true;
   try {
     await api.post(`/payrolls/${id}/process`);
-    toast.success("payroll processed successfully.")
+    toast.success("Payroll processed successfully.");
     await fetchPayrolls();
   } catch (error) {
-console.error("Error processing payroll:", error?.response?.data || error);
-toast.error(
+    console.error("Error processing payroll:", error?.response?.data || error);
+    toast.error(
       error?.response?.data?.error ||
         "Failed to process payroll. Ensure it's approved and accounts exist."
     );
-
+  } finally {
+    processingLoading.value = false;
   }
 };
+
 // Payment with Chapa
 const payPayroll = async (payroll) => {
   try {
-    await payWithChapa(payroll); // just pass payroll object
+    await payWithChapa(payroll);
   } catch (error) {
     console.error("Error processing payroll via Chapa:", error);
     toast.error("Payment initialization failed.");
   }
 };
-
 </script>
