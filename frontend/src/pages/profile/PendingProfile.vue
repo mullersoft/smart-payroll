@@ -204,6 +204,19 @@
 
         <!-- Quick Info Sidebar -->
         <div class="space-y-6">
+          <!-- Default Login Credentials (for testing only) -->
+<div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl shadow-lg p-6">
+  <h3 class="text-lg font-medium text-blue-800 dark:text-blue-200 mb-4">
+    Default Login Credentials (Testing Only)
+  </h3>
+  <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
+    <li>👑 Admin: Email: <b>admin@gmail.com</b>, Password: <b>123456</b></li>
+    <li>🛠 Preparer: Email: <b>preparer@gmail.com</b>, Password: <b>123456</b></li>
+    <li>✅ Approver: Email: <b>approver@gmail.com</b>, Password: <b>123456</b></li>
+    <li>👤 Employee: Email: <b>employee@gmail.com</b>, Password: <b>123456</b></li>
+  </ul>
+</div>
+
           <!-- Support Card -->
           <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <h3
