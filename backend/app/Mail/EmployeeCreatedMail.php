@@ -27,7 +27,11 @@ class EmployeeCreatedMail extends Mailable
             ->with([
                 'user' => $this->user,
                 'password' => $this->plainPassword,
-                'loginUrl' => url('/login'),
+                // 'loginUrl' => url('/login'),
+                // 'loginUrl' => env('FRONTEND_URL') . '/login'//FRONTEND_URL=https://smart-payroll.netlify.app
+
+                'loginUrl' => 'https://smart-payroll.netlify.app/login', // hardcoded frontend login
+
             ]);
     }
 }
