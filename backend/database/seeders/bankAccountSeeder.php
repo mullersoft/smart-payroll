@@ -18,15 +18,15 @@ class BankAccountSeeder extends Seeder
 
         $accounts = [
             [
-                'id' => 2,
+                'id' => 1,
                 'account_number' => 'QM-COMPANY-001',
                 'owner_name' => 'Qelemeda Technology',
-                'balance' => 100000,
+                'balance' => 1000000,
                 'bank_name' => 'Zemen Bank',
 
             ],
             [
-                'id' => 3,
+                'id' => 2,
                 'account_number' => 'TAX-AUTH-001',
                 'owner_name' => 'addis ababa revenu',
                 'balance' => 0,
@@ -34,7 +34,7 @@ class BankAccountSeeder extends Seeder
 
             ],
             [
-                'id' => 4,
+                'id' => 3,
                 'employee_id' => null,
                 'account_number' => 'PENSION-AUTH-001',
                 'owner_name' => 'addis ababa pension',
@@ -43,8 +43,8 @@ class BankAccountSeeder extends Seeder
 
             ],
             [
-                'id' => 5,
-                'employee_id' => 9,
+                'id' => 4,
+                'employee_id' => 1,
                 'account_number' => '100000264336108',
                 'owner_name' => 'Kasawu Mengesha',
                 'balance' => 0,
@@ -54,37 +54,46 @@ class BankAccountSeeder extends Seeder
 
 
             [
-                'id' => 8,
-                'employee_id' => 10,
+                'id' => 5,
+                'employee_id' => 2,
                 'account_number' => '100000264336109',
                 'owner_name' => 'Abebe Kasegn',
                 'balance' => 0,
                 'bank_name' => 'Hijira Bank',
             ],
             [
-                'id' => 9,
-                'employee_id' => 11,
+                'id' => 6,
+                'employee_id' => 3,
                 'account_number' => '100000264336110',
                 'owner_name' => 'finote Adefiris',
                 'balance' => 0,
                 'bank_name' => 'Hijira Bank',
             ],
             [
-                'id' => 10,
-                'employee_id' => 12,
+                'id' => 7,
+                'employee_id' => 4,
                 'account_number' => '100000264336111',
                 'owner_name' => 'Alemitu Gemeda',
                 'balance' => 0,
                 'bank_name' => 'Hijira Bank',
             ],
             [
-                'id' => 11,
-                'employee_id' => 13,
+                'id' => 8,
+                'employee_id' => 5,
                 'account_number' => '100000264336112',
                 'owner_name' => 'Haftom gebiru',
                 'balance' => 0,
                 'bank_name' => 'Hijira Bank',
             ],
+			 [
+                'id' => 9,
+                'employee_id' => 7,
+                'account_number' => '1000002643361172',
+                'owner_name' => 'Mulugeta Linger',
+                'balance' => 0,
+                'bank_name' => 'Hijira Bank',
+            ],
+
 
 
         ];

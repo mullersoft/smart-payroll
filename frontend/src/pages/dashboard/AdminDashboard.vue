@@ -20,7 +20,6 @@
           </span>
 
           <button
-
            class="px-3 py-1 bg-gray-100 rounded-md text-sm hidden sm:inline hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
             @click="fetchDashboardData"
             :disabled="isLoading"
@@ -32,7 +31,32 @@
       </div>
 
       <!-- Quick Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Company Balance Card -->
+        <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border-l-4 border-indigo-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Company Balance</h2>
+              <p class="text-3xl text-indigo-600 dark:text-indigo-400 font-bold mt-2">
+                Birr {{ formatCurrency(companyBalance) }}
+              </p>
+              <div class="flex items-center mt-2">
+                <span class="text-sm text-gray-500 dark:text-gray-400">Zemen Bank</span>
+              </div>
+            </div>
+            <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+
+          <router-link to="/admin/accounts" class="inline-block mt-4 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm font-medium">
+            View Accounts →
+          </router-link>
+        </div>
+
         <!-- Total Users Card -->
         <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border-l-4 border-blue-500">
           <div class="flex items-center justify-between">
@@ -302,6 +326,7 @@ const toast = useToast();
 const users = ref([]);
 const employees = ref([]);
 const accounts = ref([]);
+const companyAccount = ref(null);
 const isLoading = ref(false);
 
 // modal state
@@ -322,6 +347,9 @@ const userForm = ref({
 const usersCount = computed(() => users.value.length);
 const employeesCount = computed(() => employees.value.length);
 const accountsCount = computed(() => accounts.value.length);
+const companyBalance = computed(() => {
+  return companyAccount.value ? parseFloat(companyAccount.value.balance) : 0;
+});
 
 const activeUsersCount = computed(() => users.value.filter(u => u.status === "active").length);
 const activeEmployeesCount = computed(() => employees.value.filter(e => e.is_active).length);
@@ -362,6 +390,12 @@ const fetchDashboardData = async () => {
     users.value = uRes.data || [];
     employees.value = eRes.data || [];
     accounts.value = aRes.data || [];
+
+    // Find the company account
+    companyAccount.value = accounts.value.find(account =>
+      account.account_number === "QM-COMPANY-001" ||
+      account.owner_name === "Qelemeda Technology"
+    );
   } catch (err) {
     console.error("Dashboard fetch error:", err);
     toast.error("Failed to load dashboard data.");
@@ -487,6 +521,7 @@ onBeforeUnmount(() => {
 @media (min-width: 768px) {
   .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 @media (min-width: 1024px) {

@@ -322,14 +322,26 @@ const activeEmployeeCount = computed(() => employees.value.filter(emp => emp.is_
 const payrollCount = computed(() => payrolls.value.length);
 const bankAccountCount = computed(() => bankAccounts.value.length);
 
+
 const totalExpenditure = computed(() => {
   if (!Array.isArray(payrolls.value)) {
     return 0;
   }
-  return payrolls.value.reduce((total, payroll) => {
-    return total + parseFloat(payroll.net_payment || 0);
-  }, 0);
+
+  return payrolls.value
+    .filter(payroll => payroll.status === 'prepared' || payroll.status === 'approved')
+    .reduce((total, payroll) => {
+      return total + parseFloat(payroll.net_payment || 0);
+    }, 0);
 });
+// const totalExpenditure = computed(() => {
+//   if (!Array.isArray(payrolls.value)) {
+//     return 0;
+//   }
+//   return payrolls.value.reduce((total, payroll) => {
+//     return total + parseFloat(payroll.net_payment || 0);
+//   }, 0);
+// });
 
 
 const companyBalance = computed(() => {

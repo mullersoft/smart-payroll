@@ -38,7 +38,7 @@ class OvertimeService
 
             $records[] = [
                 'employee_id' => $employee->id,
-                'rate_type'   => $ot['rate_type'], // ✅ consistent naming
+                'rate_type'   => $ot['rate_type'],
                 'hours'       => $ot['hours'],
                 'multiplier'  => $multiplier,
                 'amount'      => $amount,

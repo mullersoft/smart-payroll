@@ -103,8 +103,8 @@
 
       <!-- Metadata -->
       <div class="grid grid-cols-2 gap-4 text-gray-900 dark:text-gray-100">
-        <p><strong>Prepared By:</strong> {{ payroll?.prepared_by?.name || 'Unknown' }}</p>
-        <p><strong>Approved By:</strong> {{ payroll?.approved_by?.name || 'Not Approved' }}</p>
+        <p><strong>Prepared By:</strong> {{ payroll?.prepared_by?.name || 'Preparer' }}</p>
+        <p><strong>Approved By:</strong> {{ payroll?.approved_by?.name || 'Approver' }}</p>
       </div>
 
       <p v-if="payroll?.rejection_reason" class="text-red-600 dark:text-red-400 mt-2">

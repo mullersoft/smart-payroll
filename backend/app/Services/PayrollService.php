@@ -185,7 +185,8 @@ foreach ($employee->allowances as $allowance) {
             ]));
         }
 
-        return $payroll->load('allowances', 'overtimes', 'employee.position', 'employee.employmentType');
+        return $payroll->load('allowances', 'overtimes', 'employee.position', 'employee.employmentType','preparedBy',
+    'approvedBy');
     }
 
     /**
