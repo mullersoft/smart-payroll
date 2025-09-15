@@ -2,9 +2,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: "https://smart-payroll-api.onrender.com/api",
+  baseURL: "https://smart-payroll-api.onrender.com/api",
+  baseURL: "https://smart-payroll-api.onrender.com/api",
 
-  baseURL: import.meta.env.VITE_API_URL_LOCAL,
+  //baseURL: import.meta.env.VITE_API_URL_LOCAL,
   headers: {
     Accept: "application/json",
   },
